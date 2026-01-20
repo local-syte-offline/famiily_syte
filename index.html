@@ -6,6 +6,10 @@
     <title>ULTRA HUB: EVOLUTION 2.1</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         :root {
             --p: #00f2ff;
             --s: #ff00ff;
@@ -46,7 +50,8 @@
 
         /* Аутентификация - ИСПРАВЛЕНО */
         #auth-overlay {
-            position: fixed; inset: 0;
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0;
             background: linear-gradient(135deg, #000 0%, #0a0a2a 100%);
             z-index: 9999;
             display: flex;
@@ -56,54 +61,68 @@
         }
         .auth-card {
             background: var(--card);
-            padding: 40px;
-            border-radius: 30px;
+            padding: 30px;
+            border-radius: 20px;
             border: 2px solid var(--p);
             text-align: center;
             width: 90%;
             max-width: 400px;
-            box-shadow: 0 0 50px var(--p);
+            box-shadow: 0 0 30px var(--p);
             animation: pulse 2s infinite;
         }
         @keyframes pulse {
-            0% { box-shadow: 0 0 20px var(--p); }
-            50% { box-shadow: 0 0 50px var(--p); }
-            100% { box-shadow: 0 0 20px var(--p); }
+            0% { box-shadow: 0 0 10px var(--p); }
+            50% { box-shadow: 0 0 30px var(--p); }
+            100% { box-shadow: 0 0 10px var(--p); }
         }
         
         /* ОДИНАКОВЫЕ ПОЛЯ ВВОДА */
         .auth-card select,
         .auth-card input,
-        .auth-card .btn {
+        .auth-btn {
             width: 100%;
-            padding: 16px;
-            margin: 12px 0;
-            border-radius: 15px;
+            padding: 14px;
+            margin: 10px 0;
+            border-radius: 12px;
             border: 2px solid var(--p);
             background: rgba(0,0,0,0.7);
             color: var(--text);
             font-size: 16px;
             font-weight: bold;
-            box-sizing: border-box;
             transition: all 0.3s;
+            display: block;
         }
         .auth-card select:focus,
         .auth-card input:focus {
             outline: none;
             border-color: var(--s);
-            box-shadow: 0 0 15px var(--s);
+            box-shadow: 0 0 10px var(--s);
+        }
+        
+        .auth-btn {
+            background: linear-gradient(45deg, var(--p), var(--s));
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            border: none;
+        }
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 242, 255, 0.4);
         }
         
         /* UI Компоненты */
         .btn {
-            padding: 14px;
-            border-radius: 12px;
+            padding: 12px;
+            border-radius: 10px;
             border: 2px solid var(--p);
             background: rgba(0,0,0,0.5);
             color: var(--text);
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
+            display: inline-block;
         }
         .btn:hover {
             background: var(--p);
@@ -116,27 +135,33 @@
         .btn-success { background: #55ff55; border-color: #00ff00; color: #000; }
         
         /* Навигация */
-        #main-content { display: none; height: 100vh; flex-direction: column; }
+        #main-content { 
+            display: none; 
+            height: 100vh; 
+            flex-direction: column; 
+        }
         nav {
             display: flex;
             gap: 5px;
-            padding: 12px;
+            padding: 10px;
             background: rgba(0,0,0,0.9);
             border-bottom: 2px solid var(--p);
             overflow-x: auto;
             position: sticky;
             top: 0;
             z-index: 100;
+            flex-wrap: wrap;
         }
         nav button {
             background: transparent;
             border: 2px solid var(--p);
             color: var(--p);
-            padding: 10px 15px;
-            border-radius: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
             font-size: 11px;
             white-space: nowrap;
             transition: all 0.3s;
+            cursor: pointer;
         }
         nav button:hover {
             background: var(--p);
@@ -150,14 +175,14 @@
         /* Секции */
         section {
             display: none;
-            padding: 20px;
+            padding: 15px;
             flex-grow: 1;
             overflow-y: auto;
             text-align: center;
         }
         section.active {
             display: block;
-            animation: slideUp 0.4s ease;
+            animation: slideUp 0.3s ease;
         }
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
@@ -166,28 +191,28 @@
 
         .card {
             background: var(--card);
-            padding: 20px;
-            border-radius: 25px;
+            padding: 15px;
+            border-radius: 15px;
             border: 1px solid var(--border);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             backdrop-filter: blur(10px);
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
         }
 
         /* Тамагочи */
         #tom-container {
             position: relative;
-            margin: 20px auto;
-            width: 200px;
-            height: 200px;
+            margin: 15px auto;
+            width: 150px;
+            height: 150px;
         }
         #tom-state {
-            font-size: 100px;
+            font-size: 80px;
             display: block;
             margin: 0;
             transition: transform 0.3s;
@@ -201,18 +226,18 @@
             position: absolute;
             top: 0;
             left: 0;
-            font-size: 60px;
+            font-size: 40px;
             z-index: 3;
             pointer-events: none;
         }
         .stat-row {
-            margin: 15px 0;
+            margin: 10px 0;
             text-align: left;
         }
         .bar {
-            height: 12px;
+            height: 10px;
             background: #222;
-            border-radius: 6px;
+            border-radius: 5px;
             overflow: hidden;
             border: 1px solid #333;
             margin-top: 5px;
@@ -225,16 +250,16 @@
         }
         .actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         /* Магазин яиц */
         .egg {
-            padding: 15px;
-            border-radius: 20px;
+            padding: 12px;
+            border-radius: 15px;
             border: 2px solid;
             text-align: center;
             cursor: pointer;
@@ -248,39 +273,38 @@
         .egg-legendary { border-color: #ffff00; background: #333300; }
         .egg-secret { border-color: #ffffff; background: #666; }
         .egg-god { border-color: #00ffff; background: #003333; }
-        .egg h3 { margin: 0; font-size: 14px; }
-        .egg .price { color: gold; font-weight: bold; }
+        .egg h3 { margin: 0; font-size: 13px; }
+        .egg .price { color: gold; font-weight: bold; font-size: 12px; }
 
         /* Питомцы */
         .pet-card {
-            padding: 10px;
+            padding: 8px;
             border: 1px solid var(--p);
-            border-radius: 15px;
+            border-radius: 12px;
             margin: 5px;
             text-align: center;
             transition: transform 0.3s;
         }
         .pet-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 242, 255, 0.3);
+            transform: translateY(-3px);
         }
-        .pet-icon { font-size: 40px; display: block; }
+        .pet-icon { font-size: 30px; display: block; }
 
         /* Игра Counter-Strike */
         #cs-game {
             position: relative;
             width: 100%;
-            height: 400px;
+            height: 300px;
             background: #1a1a2e;
             border: 2px solid var(--p);
             border-radius: 10px;
             overflow: hidden;
-            margin: 20px auto;
+            margin: 15px auto;
         }
         .player {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
             background: #00ff00;
             border-radius: 50%;
             transition: transform 0.1s;
@@ -288,28 +312,28 @@
         }
         .enemy {
             position: absolute;
-            width: 30px;
-            height: 30px;
+            width: 25px;
+            height: 25px;
             background: #ff0000;
             border-radius: 50%;
             border: 2px solid #000;
         }
         .bullet {
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 4px;
+            height: 4px;
             background: #ffff00;
             border-radius: 50%;
         }
         .mobile-controls {
             display: none;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 15px;
         }
         .mobile-controls button {
-            padding: 20px;
-            font-size: 24px;
+            padding: 15px;
+            font-size: 18px;
             background: rgba(255,255,255,0.2);
             border: 2px solid var(--p);
         }
@@ -317,18 +341,18 @@
 
         /* Чат */
         #chat-container {
-            height: 300px;
+            height: 250px;
             overflow-y: auto;
             border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 10px;
+            border-radius: 12px;
+            padding: 8px;
             margin-bottom: 10px;
             background: rgba(0,0,0,0.3);
         }
         .message {
-            padding: 8px 12px;
-            margin: 5px 0;
-            border-radius: 10px;
+            padding: 6px 10px;
+            margin: 4px 0;
+            border-radius: 8px;
             background: rgba(0, 242, 255, 0.1);
             text-align: left;
             border-left: 3px solid var(--p);
@@ -338,44 +362,45 @@
             border-left-color: #00ff00;
         }
         .message-time {
-            font-size: 10px;
+            font-size: 9px;
             color: #888;
             float: right;
         }
 
         /* Карта */
         #map-container {
-            height: 400px;
-            border-radius: 15px;
+            height: 300px;
+            border-radius: 12px;
             border: 2px solid var(--p);
-            margin: 20px 0;
+            margin: 15px 0;
             overflow: hidden;
         }
         .map-controls {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-top: 10px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
-        /* Новые фичи: Дневник и Музыка */
+        /* Новые фичи */
         .diary-entry {
             background: rgba(255,255,255,0.05);
             border-left: 3px solid var(--s);
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 0 10px 10px 0;
+            padding: 8px;
+            margin: 8px 0;
+            border-radius: 0 8px 8px 0;
             text-align: left;
         }
         .music-player {
             background: rgba(0,0,0,0.5);
-            padding: 15px;
-            border-radius: 15px;
-            margin-top: 20px;
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 15px;
         }
         .volume-slider {
             width: 100%;
-            margin: 10px 0;
+            margin: 8px 0;
         }
 
         /* Админ-панель */
@@ -385,12 +410,13 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(100, 0, 0, 0.95);
-            padding: 30px;
-            border-radius: 20px;
+            padding: 20px;
+            border-radius: 15px;
             z-index: 10001;
             display: none;
             border: 3px solid #fff;
-            min-width: 300px;
+            min-width: 280px;
+            max-width: 90%;
         }
         #admin-panel h3 {
             color: #fff;
@@ -403,17 +429,17 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 15px;
+            padding: 12px;
             background: rgba(0,0,0,0.9);
             border: 2px solid var(--p);
-            border-radius: 10px;
+            border-radius: 8px;
             z-index: 1000;
             animation: slideInRight 0.3s, fadeOut 0.3s 2.7s;
             max-width: 300px;
         }
         @keyframes slideInRight {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         @keyframes fadeOut {
             from { opacity: 1; }
@@ -423,11 +449,14 @@
         /* Адаптивные стили */
         @media (max-width: 768px) {
             .grid { grid-template-columns: repeat(2, 1fr); }
-            #tom-state { font-size: 80px; }
-            #cs-game { height: 300px; }
-            .auth-card { width: 95%; padding: 25px; }
-            nav { overflow-x: scroll; }
-            #map-container { height: 300px; }
+            #tom-state { font-size: 60px; }
+            #tom-container { width: 120px; height: 120px; }
+            .tom-clothes { font-size: 30px; }
+            #cs-game { height: 250px; }
+            .auth-card { width: 95%; padding: 20px; }
+            nav { padding: 8px; }
+            section { padding: 10px; }
+            #map-container { height: 250px; }
         }
         @media (min-width: 1024px) {
             .grid { grid-template-columns: repeat(4, 1fr); }
@@ -439,7 +468,7 @@
 <!-- Аутентификация -->
 <div id="auth-overlay">
     <div class="auth-card">
-        <h2 style="color:var(--p); margin-bottom: 30px;">🔐 CYBER IDENTITY 2.1</h2>
+        <h2 style="color:var(--p); margin-bottom: 20px;">🔐 ВХОД В СИСТЕМУ</h2>
         
         <select id="user-select">
             <option value="Никита">Никита [ADMIN]</option>
@@ -452,31 +481,19 @@
         <select id="device-select">
             <option value="pc">🖥️ Компьютер</option>
             <option value="mobile">📱 Смартфон</option>
-            <option value="tablet">📟 Планшет</option>
         </select>
         
         <input type="password" id="password-input" placeholder="ВВЕДИТЕ ЛЮБОЙ ПАРОЛЬ" autocomplete="off">
         
-        <button class="btn" onclick="identify()" style="margin-top: 20px;">
+        <button class="auth-btn" onclick="identify()" id="login-btn">
             🔓 ВОЙТИ В СИСТЕМУ
         </button>
         
         <p style="font-size: 12px; margin-top: 15px; color: #888;">
-            💡 Пароль: любой символ<br>
+            💡 Просто введите любой символ в поле пароля<br>
             ⚡ F8 - админ-панель для Никиты
         </p>
     </div>
-</div>
-
-<!-- Админ-панель -->
-<div id="admin-panel">
-    <h3>⚡ АДМИН ПАНЕЛЬ ⚡</h3>
-    <button class="btn" onclick="addBytes(100000)">+100K BYTES</button>
-    <button class="btn" onclick="addBytes(1000000)">+1M BYTES</button>
-    <button class="btn" onclick="unlockAll()">РАЗБЛОКИРОВАТЬ ВСЁ</button>
-    <button class="btn btn-success" onclick="giveAllPets()">ВСЕХ ПИТОМЦЕВ</button>
-    <button class="btn btn-danger" onclick="fullReset()">УДАЛИТЬ ВСЕ ДАННЫЕ</button>
-    <button class="btn" onclick="document.getElementById('admin-panel').style.display='none'">✖ ЗАКРЫТЬ</button>
 </div>
 
 <!-- Основной интерфейс -->
@@ -487,11 +504,9 @@
         <button onclick="switchTab('miner')">⛏️ МАЙНЕР</button>
         <button onclick="switchTab('eggs')">🥚 ЯЙЦА</button>
         <button onclick="switchTab('pets')">🎪 ПИТОМЦЫ</button>
-        <button onclick="switchTab('shop')">👕 ОДЕЖДА</button>
+        <button onclick="switchTab('shop')">👕 МАГАЗИН</button>
         <button onclick="switchTab('cs')">🔫 CS 2</button>
         <button onclick="switchTab('map')">🗺️ КАРТА</button>
-        <button onclick="switchTab('diary')">📔 ДНЕВНИК</button>
-        <button onclick="switchTab('music')">🎵 МУЗЫКА</button>
         <button onclick="switchTab('chat')">💬 ЧАТ</button>
         <button onclick="switchTab('settings')">⚙️ НАСТРОЙКИ</button>
         <button onclick="switchTab('rating')">🏆 РЕЙТИНГ</button>
@@ -501,23 +516,14 @@
     <!-- Главная -->
     <section id="home" class="active">
         <div class="card">
-            <h1 id="clock" style="font-size: 3.5rem; margin:0; text-shadow: 0 0 10px var(--p);">00:00:00</h1>
-            <p id="user-tag" style="color:var(--p); font-size: 1.2rem;"></p>
-            <div style="margin-top: 20px;">
-                <h3>📊 СТАТИСТИКА СИСТЕМЫ</h3>
+            <h1 id="clock" style="font-size: 2.5rem; margin:0; text-shadow: 0 0 10px var(--p);">00:00:00</h1>
+            <p id="user-tag" style="color:var(--p); font-size: 1rem;"></p>
+            <div style="margin-top: 15px;">
+                <h3>📊 СТАТИСТИКА</h3>
                 <p>💰 Баланс: <span id="balance-display">0</span> BYTES</p>
                 <p>🎪 Питомцев: <span id="pets-count">0</span></p>
                 <p>🔄 Перерождений: <span id="rebirth-count">0</span></p>
                 <p>⚡ Множитель: <span id="multiplier">1x</span></p>
-                <p>📅 В системе: <span id="days-count">0</span> дней</p>
-                <p>👕 Одежды: <span id="clothing-count">0</span> шт.</p>
-            </div>
-            <div style="margin-top: 30px; padding: 15px; background: rgba(0,255,0,0.1); border-radius: 15px;">
-                <h4>🎯 СЕГОДНЯШНИЕ ЗАДАЧИ:</h4>
-                <p>✅ Собрать 1000 BYTES</p>
-                <p>✅ Покормить кота</p>
-                <p>🔲 Выиграть 3 раунда в CS</p>
-                <p>🔲 Купить новое яйцо</p>
             </div>
         </div>
     </section>
@@ -550,11 +556,8 @@
                 <button class="btn btn-small" onclick="tomAction('sleep')">😴 СПАТЬ</button>
                 <button class="btn btn-small" onclick="tomAction('play')">⚽ ИГРАТЬ</button>
                 <button class="btn btn-small" onclick="tomAction('clean')">🛁 МЫТЬ</button>
-                <button class="btn btn-small" onclick="tomAction('heal')">💊 ЛЕЧИТЬ</button>
-                <button class="btn btn-small" onclick="tomAction('pet')">❤ ГЛАДИТЬ</button>
-                <button class="btn btn-small" onclick="tomAction('train')">💪 ТРЕНИРОВАТЬ</button>
             </div>
-            <p id="tom-message" style="min-height: 20px; margin-top: 10px; color: var(--s);"></p>
+            <p id="tom-message" style="min-height: 20px; margin-top: 10px; color: var(--s); font-size: 14px;"></p>
         </div>
     </section>
 
@@ -563,14 +566,9 @@
         <div class="card">
             <h2 id="bytes-display">0 BYTES</h2>
             <p>⚡ Множитель: <span id="miner-multiplier">1x</span></p>
-            <div id="core" onclick="clickCore()" style="width: 150px; height: 150px; background: radial-gradient(circle, var(--p) 0%, transparent 70%); border-radius: 50%; border: 5px solid #fff; margin: 30px auto; cursor: pointer; transition: all 0.1s; position: relative;">
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; font-size: 14px;">КЛИКНИ!</div>
-            </div>
+            <div id="core" onclick="clickCore()" style="width: 120px; height: 120px; background: radial-gradient(circle, var(--p) 0%, transparent 70%); border-radius: 50%; border: 3px solid #fff; margin: 20px auto; cursor: pointer; transition: all 0.1s; position: relative;"></div>
             <p>🔥 Кликай для добычи BYTES!</p>
-            <div style="margin-top: 20px;">
-                <button class="btn" onclick="autoClicker()" id="auto-clicker">🤖 АВТОКЛИКЕР (5000 BYTES)</button>
-                <button class="btn" onclick="prestige()" style="margin-top: 10px;">🔄 ПЕРЕРОЖДЕНИЕ (<span id="prestige-cost">10000</span> BYTES)</button>
-            </div>
+            <button class="btn" onclick="prestige()" style="margin-top: 15px;">🔄 ПЕРЕРОЖДЕНИЕ (<span id="prestige-cost">10000</span> BYTES)</button>
         </div>
     </section>
 
@@ -583,40 +581,21 @@
                 <div class="egg egg-common" onclick="buyEgg('common')">
                     <h3>🥚 Обычное</h3>
                     <div class="price">100 BYTES</div>
-                    <p style="font-size: 11px;">Шансы: Обычный 80%, Редкий 15%, Эпический 4%, Мифический 1%</p>
                 </div>
                 <div class="egg egg-rare" onclick="buyEgg('rare')">
                     <h3>🔵 Редкое</h3>
                     <div class="price">500 BYTES</div>
-                    <p style="font-size: 11px;">Шансы: Редкий 70%, Эпический 25%, Мифический 4%, Легендарный 1%</p>
                 </div>
                 <div class="egg egg-epic" onclick="buyEgg('epic')">
                     <h3>💜 Эпическое</h3>
                     <div class="price">2,000 BYTES</div>
-                    <p style="font-size: 11px;">Шансы: Эпический 65%, Мифический 30%, Легендарный 4%, Секретное 1%</p>
                 </div>
                 <div class="egg egg-mythic" onclick="buyEgg('mythic')">
                     <h3>🟠 Мифическое</h3>
                     <div class="price">10,000 BYTES</div>
-                    <p style="font-size: 11px;">Шансы: Мифический 60%, Легендарный 35%, Секретное 4%, Бог 1%</p>
-                </div>
-                <div class="egg egg-legendary" onclick="buyEgg('legendary')">
-                    <h3>⭐ Легендарное</h3>
-                    <div class="price">50,000 BYTES</div>
-                    <p style="font-size: 11px;">Шансы: Легендарный 70%, Секретное 25%, Бог 5%</p>
-                </div>
-                <div class="egg egg-secret" onclick="buyEgg('secret')">
-                    <h3>👁️ Секретное</h3>
-                    <div class="price">250,000 BYTES</div>
-                    <p style="font-size: 11px;">Шансы: Секретное 85%, Бог 15%</p>
-                </div>
-                <div class="egg egg-god" onclick="buyEgg('god')">
-                    <h3>👑 БОГ ЯЙЦО</h3>
-                    <div class="price">1,000,000 BYTES</div>
-                    <p style="font-size: 11px;">Гарантировано: Бог-питомец + 3 случайных легедарных</p>
                 </div>
             </div>
-            <div id="egg-result" style="margin-top: 20px; padding: 15px; border-radius: 15px; background: rgba(0,255,0,0.1); display: none;"></div>
+            <div id="egg-result" style="margin-top: 15px; padding: 12px; border-radius: 12px; background: rgba(0,255,0,0.1); display: none;"></div>
         </div>
     </section>
 
@@ -624,19 +603,15 @@
     <section id="pets">
         <div class="card">
             <h3>🎪 ВАШИ ПИТОМЦЫ</h3>
-            <p>📊 Всего: <span id="total-pets">0</span> | ⚡ Активные бонусы: <span id="active-bonuses">0</span></p>
+            <p>📊 Всего: <span id="total-pets">0</span></p>
             <div class="grid" id="pets-container"></div>
-            <div style="margin-top: 20px;">
-                <button class="btn" onclick="activateAllPets()">⚡ АКТИВИРОВАТЬ ВСЕХ</button>
-                <button class="btn btn-success" onclick="petFusion()">🔮 СЛИЯНИЕ ПИТОМЦЕВ (2->1)</button>
-            </div>
         </div>
     </section>
 
-    <!-- Магазин одежды -->
+    <!-- Магазин -->
     <section id="shop">
         <div class="card">
-            <h3>👕 МАГАЗИН ОДЕЖДЫ ДЛЯ КОТА</h3>
+            <h3>👕 МАГАЗИН</h3>
             <p>💰 Ваши BYTES: <span id="shop-balance">0</span></p>
             <div class="grid">
                 <div class="shop-item" onclick="buyClothing('hat', 1000)">
@@ -651,45 +626,17 @@
                     <h4>👔 Галстук</h4>
                     <p>1500 BYTES</p>
                 </div>
-                <div class="shop-item" onclick="buyClothing('cape', 5000)">
-                    <h4>🧣 Плащ</h4>
-                    <p>5000 BYTES</p>
-                </div>
-                <div class="shop-item" onclick="buyClothing('crown', 10000)">
-                    <h4>👑 Корона</h4>
-                    <p>10000 BYTES</p>
-                </div>
-                <div class="shop-item" onclick="buyClothing('armor', 20000)">
-                    <h4>🛡️ Броня</h4>
-                    <p>20000 BYTES</p>
-                </div>
-                <div class="shop-item" onclick="buyClothing('wings', 50000)">
-                    <h4>🪽 Крылья</h4>
-                    <p>50000 BYTES</p>
-                </div>
-                <div class="shop-item" onclick="buyClothing('halo', 100000)">
-                    <h4>😇 Гало</h4>
-                    <p>100000 BYTES</p>
-                </div>
             </div>
-            <h4 style="margin-top: 30px;">🎪 Ваша одежда:</h4>
-            <div id="owned-clothing" class="grid"></div>
         </div>
     </section>
 
-    <!-- Counter-Strike игра -->
+    <!-- Counter-Strike -->
     <section id="cs">
         <div class="card">
-            <h3>🔫 COUNTER-STRIKE 2 MINI</h3>
-            <select id="map-select" onchange="changeMap()" style="margin-bottom: 15px;">
+            <h3>🔫 COUNTER-STRIKE 2</h3>
+            <select id="map-select" onchange="changeMap()" style="margin-bottom: 10px;">
                 <option value="dust2">Dust II</option>
                 <option value="inferno">Inferno</option>
-                <option value="mirage">Mirage</option>
-            </select>
-            <select id="game-mode" onchange="changeGameMode()" style="margin-bottom: 15px;">
-                <option value="1v1">1 vs 1 (бот)</option>
-                <option value="4v4">4 vs 4 (боты)</option>
-                <option value="zombie">🧟 ЗОМБИ МОД</option>
             </select>
             <div id="cs-game"></div>
             <div class="mobile-controls">
@@ -698,60 +645,20 @@
                 <button onclick="shoot()">FIRE</button>
                 <button onclick="movePlayer('down')">↓</button>
                 <button onclick="movePlayer('right')">→</button>
-                <button onclick="reloadGame()">R</button>
             </div>
-            <p style="margin-top: 15px;">🎮 Управление: WASD (движение), SPACE (огонь), R (перезарядка)</p>
-            <p>🎯 Счёт: <span id="cs-score">0</span> | ❤️ Здоровье: <span id="cs-health">100</span> | 🔫 Патроны: <span id="cs-ammo">30</span>/120</p>
+            <p style="margin-top: 10px;">🎮 Управление: WASD (движение), SPACE (огонь)</p>
+            <p>🎯 Счёт: <span id="cs-score">0</span> | ❤️ Здоровье: <span id="cs-health">100</span></p>
         </div>
     </section>
 
     <!-- Карта -->
     <section id="map">
         <div class="card">
-            <h3>🗺️ ОФФЛАЙН КАРТА</h3>
-            <p>📍 Используется OpenStreetMap (работает оффлайн при кэшировании)</p>
+            <h3>🗺️ КАРТА</h3>
             <div id="map-container"></div>
             <div class="map-controls">
-                <button class="btn" onclick="findMyLocation()">📍 МОЕ МЕСТОПОЛОЖЕНИЕ</button>
+                <button class="btn" onclick="findMyLocation()">📍 МОЕ МЕСТО</button>
                 <button class="btn" onclick="addMarker()">📌 ДОБАВИТЬ МЕТКУ</button>
-                <button class="btn" onclick="clearMarkers()">🗑️ ОЧИСТИТЬ МЕТКИ</button>
-            </div>
-            <div id="marker-list" style="margin-top: 20px;"></div>
-        </div>
-    </section>
-
-    <!-- Дневник -->
-    <section id="diary">
-        <div class="card">
-            <h3>📔 ПЕРСОНАЛЬНЫЙ ДНЕВНИК</h3>
-            <textarea id="diary-input" placeholder="Напишите что-нибудь..." style="width: 100%; height: 100px; padding: 10px; border-radius: 10px; background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--p);"></textarea>
-            <button class="btn" onclick="addDiaryEntry()" style="margin-top: 10px;">💾 СОХРАНИТЬ ЗАПИСЬ</button>
-            <div id="diary-entries" style="margin-top: 20px; text-align: left;">
-                <!-- Записи будут здесь -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Музыка -->
-    <section id="music">
-        <div class="card">
-            <h3>🎵 ОФФЛАЙН МУЗЫКА</h3>
-            <p>🎧 Встроенные треки (симуляция - в реальности нужны файлы)</p>
-            <div class="music-player">
-                <select id="track-select" style="width: 100%; padding: 10px; margin-bottom: 10px;">
-                    <option value="1">🎵 Lo-Fi Chill Beats</option>
-                    <option value="2">🎸 Cyberpunk Synthwave</option>
-                    <option value="3">🎮 8-Bit Game Music</option>
-                    <option value="4">🌌 Space Ambient</option>
-                </select>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <button class="btn" onclick="playMusic()" id="play-btn">▶️ ВОСПРОИЗВЕСТИ</button>
-                    <button class="btn" onclick="pauseMusic()">⏸️ ПАУЗА</button>
-                    <button class="btn" onclick="stopMusic()">⏹️ СТОП</button>
-                </div>
-                <input type="range" min="0" max="100" value="50" class="volume-slider" onchange="changeVolume(this.value)">
-                <p style="margin-top: 10px;">🔊 Громкость: <span id="volume-level">50</span>%</p>
-                <p id="now-playing" style="color: var(--s); font-size: 14px;"></p>
             </div>
         </div>
     </section>
@@ -759,54 +666,34 @@
     <!-- Чат -->
     <section id="chat">
         <div class="card">
-            <h3>💬 МИНИ-ЧАТ</h3>
+            <h3>💬 ЧАТ</h3>
             <div id="chat-container"></div>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <input type="text" id="chat-input" placeholder="Введите сообщение..." style="flex-grow: 1; padding: 10px; border-radius: 10px; background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--p);">
-                <button class="btn" onclick="sendMessage()">📨 ОТПРАВИТЬ</button>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+                <input type="text" id="chat-input" placeholder="Сообщение..." style="flex-grow: 1; padding: 8px; border-radius: 8px; background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--p);">
+                <button class="btn" onclick="sendMessage()">📨</button>
             </div>
-            <p style="font-size: 12px; color: #888; margin-top: 10px;">💡 Сообщения сохраняются локально между пользователями</p>
         </div>
     </section>
 
     <!-- Настройки -->
     <section id="settings">
         <div class="card">
-            <h3>⚙️ НАСТРОЙКИ СИСТЕМЫ</h3>
-            
-            <h4>🎨 Тема оформления:</h4>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+            <h3>⚙️ НАСТРОЙКИ</h3>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px;">
                 <button class="btn" onclick="setTheme('dark')">🌙 Тёмная</button>
                 <button class="btn" onclick="setTheme('light')">☀️ Светлая</button>
-                <button class="btn" onclick="setTheme('neon')">💚 Неоновая</button>
-                <button class="btn" onclick="setTheme('cyber')">🔴 Киберпанк</button>
+                <button class="btn" onclick="setTheme('neon')">💚 Неон</button>
             </div>
-            
-            <h4>🎮 Управление игрой:</h4>
-            <select id="control-type" onchange="changeControls()" style="width: 100%; margin-bottom: 20px;">
-                <option value="auto">🔄 Автоопределение</option>
-                <option value="keyboard">⌨️ Клавиатура</option>
-                <option value="touch">👆 Сенсорное</option>
-            </select>
-            
-            <h4>💾 Управление данными:</h4>
-            <button class="btn" onclick="exportData()">📤 ЭКСПОРТ ДАННЫХ</button>
-            <button class="btn" onclick="importData()" style="margin-top: 10px;">📥 ИМПОРТ ДАННЫХ</button>
+            <button class="btn" onclick="exportData()">💾 ЭКСПОРТ ДАННЫХ</button>
             <input type="file" id="import-file" accept=".json" style="display: none;" onchange="handleFileImport(this.files[0])">
-            
-            <h4 style="margin-top: 30px;">📊 О системе:</h4>
-            <p>🚀 Версия: ULTRA HUB 2.1</p>
-            <p>💾 Все данные хранятся локально</p>
-            <p>🔑 Для админ-панели нажмите F8 (только Никита)</p>
-            <p>👥 Пользователей: 5</p>
-            <p>📅 Дата сборки: 2024</p>
+            <button class="btn" onclick="importData()" style="margin-top: 10px;">📥 ИМПОРТ ДАННЫХ</button>
         </div>
     </section>
 
     <!-- Рейтинг -->
     <section id="rating">
         <div class="card">
-            <h3>🏆 ТАБЛИЦА ЛИДЕРОВ</h3>
+            <h3>🏆 РЕЙТИНГ</h3>
             <div id="leader-list"></div>
         </div>
     </section>
@@ -814,22 +701,11 @@
     <!-- Выход -->
     <section id="exit">
         <div class="card">
-            <button class="btn" onclick="logout()">🚪 ВЫЙТИ ИЗ АККАУНТА</button>
-            <button class="btn btn-danger" onclick="fullReset()" style="margin-top: 20px;">💣 СБРОСИТЬ ВСЕ ДАННЫЕ</button>
-            <div style="margin-top: 30px; padding: 15px; background: rgba(255,0,0,0.1); border-radius: 15px;">
-                <h4>⚠️ ВНИМАНИЕ!</h4>
-                <p>Сброс данных удалит ВСЁ:</p>
-                <p>• Ваши BYTES и прогресс</p>
-                <p>• Питомцев и одежду</p>
-                <p>• Все сообщения в чате</p>
-                <p>• Настройки системы</p>
-            </div>
+            <button class="btn" onclick="logout()">🚪 ВЫЙТИ</button>
+            <button class="btn btn-danger" onclick="fullReset()" style="margin-top: 15px;">💣 СБРОС ВСЕХ ДАННЫХ</button>
         </div>
     </section>
 </div>
-
-<!-- Уведомления -->
-<div id="notification-area"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -838,64 +714,17 @@
 // ====================
 let currentUser = "";
 let currentDevice = "";
-let gameInterval = null;
 let csInterval = null;
 let map = null;
 let markers = [];
-let autoClickerActive = false;
 
 // Данные из localStorage
 let hubData = JSON.parse(localStorage.getItem('hub_data')) || {
-    "Никита": { 
-        bytes: 1000, 
-        rebirths: 0, 
-        pets: [], 
-        clothing: [], 
-        theme: 'dark',
-        diary: [],
-        autoClicker: false,
-        joinDate: new Date().toISOString()
-    },
-    "Алена": { 
-        bytes: 500, 
-        rebirths: 0, 
-        pets: [], 
-        clothing: [], 
-        theme: 'dark',
-        diary: [],
-        autoClicker: false,
-        joinDate: new Date().toISOString()
-    },
-    "Саша": { 
-        bytes: 300, 
-        rebirths: 0, 
-        pets: [], 
-        clothing: [], 
-        theme: 'dark',
-        diary: [],
-        autoClicker: false,
-        joinDate: new Date().toISOString()
-    },
-    "Алиса": { 
-        bytes: 200, 
-        rebirths: 0, 
-        pets: [], 
-        clothing: [], 
-        theme: 'dark',
-        diary: [],
-        autoClicker: false,
-        joinDate: new Date().toISOString()
-    },
-    "Гость": { 
-        bytes: 100, 
-        rebirths: 0, 
-        pets: [], 
-        clothing: [], 
-        theme: 'dark',
-        diary: [],
-        autoClicker: false,
-        joinDate: new Date().toISOString()
-    }
+    "Никита": { bytes: 1000, rebirths: 0, pets: [], clothing: [] },
+    "Алена": { bytes: 500, rebirths: 0, pets: [], clothing: [] },
+    "Саша": { bytes: 300, rebirths: 0, pets: [], clothing: [] },
+    "Алиса": { bytes: 200, rebirths: 0, pets: [], clothing: [] },
+    "Гость": { bytes: 100, rebirths: 0, pets: [], clothing: [] }
 };
 
 // Чат
@@ -903,147 +732,96 @@ let chatData = JSON.parse(localStorage.getItem('hub_chat')) || [];
 
 // Тамагочи
 let tomData = JSON.parse(localStorage.getItem('hub_tom')) || {
-    health: 100,
-    food: 100,
-    energy: 100,
-    mood: 100,
-    clothing: null,
-    lastUpdate: Date.now()
+    health: 100, food: 100, energy: 100, mood: 100, clothing: null
 };
 
-// Питомцы (расширенная база)
+// Питомцы
 const petsDatabase = {
     common: [
-        { id: 1, name: "Котёнок", emoji: "🐱", bonus: "Множитель +0.1x", value: 0.1, rarity: "common" },
-        { id: 2, name: "Щенок", emoji: "🐶", bonus: "Множитель +0.1x", value: 0.1, rarity: "common" },
-        { id: 3, name: "Хомяк", emoji: "🐹", bonus: "Множитель +0.05x", value: 0.05, rarity: "common" },
-        { id: 4, name: "Попугай", emoji: "🦜", bonus: "Множитель +0.08x", value: 0.08, rarity: "common" },
-        { id: 5, name: "Рыбка", emoji: "🐠", bonus: "Множитель +0.03x", value: 0.03, rarity: "common" }
+        { id: 1, name: "Котёнок", emoji: "🐱", bonus: "+0.1x", value: 0.1 },
+        { id: 2, name: "Щенок", emoji: "🐶", bonus: "+0.1x", value: 0.1 }
     ],
     rare: [
-        { id: 6, name: "Лиса", emoji: "🦊", bonus: "Множитель +0.2x", value: 0.2, rarity: "rare" },
-        { id: 7, name: "Енот", emoji: "🦝", bonus: "Множитель +0.2x", value: 0.2, rarity: "rare" },
-        { id: 8, name: "Панда", emoji: "🐼", bonus: "Множитель +0.15x", value: 0.15, rarity: "rare" },
-        { id: 9, name: "Сова", emoji: "🦉", bonus: "Множитель +0.18x", value: 0.18, rarity: "rare" },
-        { id: 10, name: "Ежик", emoji: "🦔", bonus: "Множитель +0.12x", value: 0.12, rarity: "rare" }
+        { id: 3, name: "Лиса", emoji: "🦊", bonus: "+0.2x", value: 0.2 },
+        { id: 4, name: "Панда", emoji: "🐼", bonus: "+0.15x", value: 0.15 }
     ],
     epic: [
-        { id: 11, name: "Дракон", emoji: "🐲", bonus: "Множитель +0.5x", value: 0.5, rarity: "epic" },
-        { id: 12, name: "Единорог", emoji: "🦄", bonus: "Множитель +0.5x", value: 0.5, rarity: "epic" },
-        { id: 13, name: "Феникс", emoji: "🔥", bonus: "Множитель +0.4x", value: 0.4, rarity: "epic" },
-        { id: 14, name: "Пегас", emoji: "🦄💨", bonus: "Множитель +0.45x", value: 0.45, rarity: "epic" },
-        { id: 15, name: "Василиск", emoji: "🐍👁️", bonus: "Множитель +0.35x", value: 0.35, rarity: "epic" }
+        { id: 5, name: "Дракон", emoji: "🐲", bonus: "+0.5x", value: 0.5 },
+        { id: 6, name: "Единорог", emoji: "🦄", bonus: "+0.5x", value: 0.5 }
     ],
     mythic: [
-        { id: 16, name: "Грифон", emoji: "🦅", bonus: "Множитель +1x", value: 1, rarity: "mythic" },
-        { id: 17, name: "Кракен", emoji: "🐙", bonus: "Множитель +1x", value: 1, rarity: "mythic" },
-        { id: 18, name: "Цербер", emoji: "🐕‍🦺", bonus: "Множитель +0.8x", value: 0.8, rarity: "mythic" },
-        { id: 19, name: "Химера", emoji: "🦁🐐🐍", bonus: "Множитель +0.9x", value: 0.9, rarity: "mythic" },
-        { id: 20, name: "Мантикора", emoji: "🦂🦁", bonus: "Множитель +0.7x", value: 0.7, rarity: "mythic" }
-    ],
-    legendary: [
-        { id: 21, name: "Ангел", emoji: "👼", bonus: "Множитель +2x", value: 2, rarity: "legendary" },
-        { id: 22, name: "Демон", emoji: "😈", bonus: "Множитель +2x", value: 2, rarity: "legendary" },
-        { id: 23, name: "Титан", emoji: "🗿", bonus: "Множитель +1.5x", value: 1.5, rarity: "legendary" },
-        { id: 24, name: "Джинн", emoji: "🧞", bonus: "Множитель +1.8x", value: 1.8, rarity: "legendary" },
-        { id: 25, name: "Фея", emoji: "🧚", bonus: "Множитель +1.3x", value: 1.3, rarity: "legendary" }
-    ],
-    secret: [
-        { id: 26, name: "Инопланетянин", emoji: "👽", bonus: "Множитель +3x", value: 3, rarity: "secret" },
-        { id: 27, name: "Призрак", emoji: "👻", bonus: "Множитель +3x", value: 3, rarity: "secret" },
-        { id: 28, name: "Робот", emoji: "🤖", bonus: "Множитель +2.5x", value: 2.5, rarity: "secret" },
-        { id: 29, name: "Вампир", emoji: "🧛", bonus: "Множитель +2.8x", value: 2.8, rarity: "secret" },
-        { id: 30, name: "Оборотень", emoji: "🐺", bonus: "Множитель +2.2x", value: 2.2, rarity: "secret" }
-    ],
-    god: [
-        { id: 31, name: "БОГ-КОТ", emoji: "😼⚡", bonus: "Множитель +5x", value: 5, rarity: "god" },
-        { id: 32, name: "ВСЕЛЕННАЯ", emoji: "🌌", bonus: "Множитель +5x", value: 5, rarity: "god" },
-        { id: 33, name: "СОЗДАТЕЛЬ", emoji: "👨‍💻", bonus: "Множитель +10x", value: 10, rarity: "god" },
-        { id: 34, name: "ХРАНИТЕЛЬ", emoji: "🛡️", bonus: "Множитель +7x", value: 7, rarity: "god" }
+        { id: 7, name: "Грифон", emoji: "🦅", bonus: "+1x", value: 1 },
+        { id: 8, name: "Демон", emoji: "😈", bonus: "+0.8x", value: 0.8 }
     ]
 };
 
-// Одежда (расширенная)
+// Одежда
 const clothingItems = {
-    hat: { name: "🎩 Шляпа", price: 1000, emoji: "🎩" },
-    glasses: { name: "👓 Очки", price: 2000, emoji: "👓" },
-    tie: { name: "👔 Галстук", price: 1500, emoji: "👔" },
-    cape: { name: "🧣 Плащ", price: 5000, emoji: "🧣" },
-    crown: { name: "👑 Корона", price: 10000, emoji: "👑" },
-    armor: { name: "🛡️ Броня", price: 20000, emoji: "🛡️" },
-    wings: { name: "🪽 Крылья", price: 50000, emoji: "🪽" },
-    halo: { name: "😇 Гало", price: 100000, emoji: "😇" }
+    hat: { name: "🎩 Шляпа", price: 1000 },
+    glasses: { name: "👓 Очки", price: 2000 },
+    tie: { name: "👔 Галстук", price: 1500 }
 };
 
 // ====================
-// ФУНКЦИИ СИСТЕМЫ
+// АВТОРИЗАЦИЯ - ИСПРАВЛЕНА!
 // ====================
 function identify() {
-    const user = document.getElementById('user-select').value;
-    const device = document.getElementById('device-select').value;
-    const password = document.getElementById('password-input').value;
+    const userSelect = document.getElementById('user-select');
+    const deviceSelect = document.getElementById('device-select');
+    const passwordInput = document.getElementById('password-input');
+    
+    const user = userSelect.value;
+    const device = deviceSelect.value;
+    const password = passwordInput.value;
+    
+    console.log('Попытка входа:', { user, device, password });
     
     if (!password || password.trim() === "") {
-        showNotification("⚠️ Введите любой пароль!", "warning");
+        alert("⚠️ Введите любой символ в поле пароля!");
+        passwordInput.focus();
         return;
     }
     
     currentUser = user;
     currentDevice = device;
     
-    // Инициализация пользователя, если его нет
+    // Инициализация пользователя
     if (!hubData[user]) {
-        hubData[user] = {
-            bytes: 100,
-            rebirths: 0,
-            pets: [],
-            clothing: [],
-            theme: 'dark',
-            diary: [],
-            autoClicker: false,
-            joinDate: new Date().toISOString()
-        };
+        hubData[user] = { bytes: 100, rebirths: 0, pets: [], clothing: [] };
     }
     
-    // Адаптация под устройство
-    if (device === 'mobile' || device === 'tablet') {
+    // Устройство
+    if (device === 'mobile') {
         document.body.classList.add('mobile');
-        document.getElementById('control-type').value = 'touch';
     } else {
         document.body.classList.remove('mobile');
-        document.getElementById('control-type').value = 'keyboard';
     }
-    
-    // Применяем тему пользователя
-    setTheme(hubData[user]?.theme || 'dark');
     
     // Показываем интерфейс
     document.getElementById('auth-overlay').style.display = 'none';
     document.getElementById('main-content').style.display = 'flex';
-    document.getElementById('user-tag').innerText = `👤 ${user} | 📱 ${device === 'pc' ? 'Компьютер' : device === 'mobile' ? 'Смартфон' : 'Планшет'}`;
+    document.getElementById('user-tag').innerText = `👤 ${user}`;
     
     // Запускаем системы
     updateAllUI();
     startTomSystem();
     loadChat();
-    loadDiary();
     startGameClock();
     renderLeaders();
     
-    // Показываем приветствие
-    showNotification(`🎉 Добро пожаловать, ${user}!`, "success");
-    
-    // Автокликер
-    if (hubData[user].autoClicker) {
-        startAutoClicker();
-    }
+    showNotification(`🎉 Добро пожаловать, ${user}!`);
     
     saveData();
 }
 
+// ====================
+// ОСНОВНЫЕ ФУНКЦИИ
+// ====================
 function switchTab(tabId) {
     // Обновляем активную кнопку
-    document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(btn => {
+        btn.classList.remove('active');
+    });
     event.target.classList.add('active');
     
     // Показываем нужную секцию
@@ -1052,7 +830,7 @@ function switchTab(tabId) {
     });
     document.getElementById(tabId).classList.add('active');
     
-    // Особые действия для некоторых вкладок
+    // Особые действия
     if (tabId === 'cs') {
         startCSGame();
     }
@@ -1065,68 +843,31 @@ function switchTab(tabId) {
     if (tabId === 'chat') {
         scrollChatToBottom();
     }
-    if (tabId === 'diary') {
-        loadDiary();
-    }
 }
 
 function updateAllUI() {
-    const userData = hubData[currentUser] || { bytes: 0, rebirths: 0, pets: [], clothing: [] };
+    if (!currentUser || !hubData[currentUser]) return;
     
-    // Обновляем баланс везде
-    document.getElementById('balance-display').textContent = userData.bytes.toLocaleString();
-    document.getElementById('bytes-display').textContent = userData.bytes.toLocaleString() + ' BYTES';
-    document.getElementById('egg-balance').textContent = userData.bytes.toLocaleString();
-    document.getElementById('shop-balance').textContent = userData.bytes.toLocaleString();
+    const userData = hubData[currentUser];
+    
+    // Обновляем баланс
+    document.getElementById('balance-display').textContent = userData.bytes;
+    document.getElementById('bytes-display').textContent = userData.bytes + ' BYTES';
+    document.getElementById('egg-balance').textContent = userData.bytes;
+    document.getElementById('shop-balance').textContent = userData.bytes;
     
     // Перерождения
     document.getElementById('rebirth-count').textContent = userData.rebirths || 0;
-    const multiplier = calculateMultiplier();
+    const multiplier = 1 + (userData.rebirths || 0) * 0.5;
     document.getElementById('multiplier').textContent = multiplier.toFixed(1) + 'x';
     document.getElementById('miner-multiplier').textContent = multiplier.toFixed(1) + 'x';
-    document.getElementById('prestige-cost').textContent = Math.floor(10000 * Math.pow(1.5, userData.rebirths || 0)).toLocaleString();
+    document.getElementById('prestige-cost').textContent = Math.floor(10000 * Math.pow(1.5, userData.rebirths || 0));
     
     // Питомцы
     document.getElementById('pets-count').textContent = (userData.pets || []).length;
     document.getElementById('total-pets').textContent = (userData.pets || []).length;
-    document.getElementById('clothing-count').textContent = (userData.clothing || []).length;
     
-    // Дни в системе
-    if (userData.joinDate) {
-        const joinDate = new Date(userData.joinDate);
-        const days = Math.floor((Date.now() - joinDate.getTime()) / (1000 * 60 * 60 * 24));
-        document.getElementById('days-count').textContent = days;
-    }
-    
-    // Автокликер
-    const autoClickerBtn = document.getElementById('auto-clicker');
-    if (userData.autoClicker) {
-        autoClickerBtn.innerHTML = "🤖 АВТОКЛИКЕР (АКТИВЕН)";
-        autoClickerBtn.style.background = "#00ff00";
-        autoClickerBtn.style.color = "#000";
-    } else {
-        autoClickerBtn.innerHTML = "🤖 АВТОКЛИКЕР (5000 BYTES)";
-        autoClickerBtn.style.background = "";
-        autoClickerBtn.style.color = "";
-    }
-    
-    // Обновляем бонусы
-    updatePetBonuses();
     renderPets();
-    renderOwnedClothing();
-}
-
-function calculateMultiplier() {
-    const userData = hubData[currentUser] || { rebirths: 0, pets: [] };
-    let multiplier = 1 + (userData.rebirths || 0) * 0.5;
-    
-    // Бонусы от питомцев
-    const activePets = (userData.pets || []).filter(p => p.active);
-    activePets.forEach(pet => {
-        multiplier += pet.value || 0;
-    });
-    
-    return multiplier;
 }
 
 function saveData() {
@@ -1137,44 +878,16 @@ function saveData() {
 }
 
 // ====================
-// ТАМАГОЧИ ТОМ 2
+// ТАМАГОЧИ
 // ====================
 function startTomSystem() {
-    // Восстанавливаем время
-    const now = Date.now();
-    const diff = now - (tomData.lastUpdate || now);
-    const minutesPassed = diff / (1000 * 60);
-    
-    if (minutesPassed > 1) {
-        tomData.health = Math.max(0, tomData.health - minutesPassed * 0.5);
-        tomData.food = Math.max(0, tomData.food - minutesPassed * 1);
-        tomData.energy = Math.max(0, tomData.energy - minutesPassed * 0.7);
-        tomData.mood = Math.max(0, tomData.mood - minutesPassed * 0.3);
-    }
-    
     updateTomUI();
-    
-    // Авто-обновление
     setInterval(() => {
-        tomData.health = Math.max(0, tomData.health - 0.1);
         tomData.food = Math.max(0, tomData.food - 0.2);
         tomData.energy = Math.max(0, tomData.energy - 0.15);
         tomData.mood = Math.max(0, tomData.mood - 0.08);
-        tomData.lastUpdate = Date.now();
-        
         updateTomUI();
         saveData();
-        
-        // Случайные события
-        if (Math.random() < 0.01) {
-            const events = [
-                "Кот хочет поиграть!",
-                "Кот скучает по тебе!",
-                "Пора покормить кота!",
-                "Кот устал и хочет спать!"
-            ];
-            showNotification(`😸 ${events[Math.floor(Math.random() * events.length)]}`, "info");
-        }
     }, 10000);
 }
 
@@ -1191,20 +904,14 @@ function updateTomUI() {
     
     // Эмоции
     const tomState = document.getElementById('tom-state');
-    if (tomData.health < 20) tomState.textContent = "💀";
-    else if (tomData.health < 30) tomState.textContent = "🤕";
-    else if (tomData.food < 10) tomState.textContent = "🍕";
-    else if (tomData.food < 20) tomState.textContent = "😫";
-    else if (tomData.energy < 10) tomState.textContent = "😴";
-    else if (tomData.energy < 20) tomState.textContent = "😪";
-    else if (tomData.mood < 20) tomState.textContent = "😾";
-    else if (tomData.mood < 40) tomState.textContent = "😿";
-    else if (tomData.mood > 80) tomState.textContent = "😻";
+    if (tomData.food < 20) tomState.textContent = "🍕";
+    else if (tomData.energy < 20) tomState.textContent = "😴";
+    else if (tomData.mood < 30) tomState.textContent = "😾";
     else tomState.textContent = "😸";
     
     // Одежда
     const clothesElement = document.getElementById('tom-clothes');
-    clothesElement.innerHTML = tomData.clothing ? clothingItems[tomData.clothing].emoji : '';
+    clothesElement.innerHTML = tomData.clothing ? clothingItems[tomData.clothing].name.split(' ')[0] : '';
 }
 
 function tomAction(action) {
@@ -1212,120 +919,50 @@ function tomAction(action) {
     
     switch(action) {
         case 'feed':
-            if (tomData.food >= 100) {
-                messageElement.textContent = "Я не голоден! 🍕";
-                return;
-            }
             tomData.food = Math.min(100, tomData.food + 30);
-            tomData.mood = Math.min(100, tomData.mood + 5);
-            messageElement.textContent = "Вкусно! Муррр... 😋";
+            tomData.mood += 5;
+            messageElement.textContent = "Вкусно! Муррр...";
             break;
-            
         case 'sleep':
             tomData.energy = 100;
             tomData.health = Math.min(100, tomData.health + 10);
-            messageElement.textContent = "Zzz... Хорошо сплю... 💤";
+            messageElement.textContent = "Zzz... Хорошо сплю...";
             break;
-            
         case 'play':
-            if (tomData.energy < 20) {
-                messageElement.textContent = "Я устал для игры! 😴";
-                return;
-            }
-            tomData.energy = Math.max(0, tomData.energy - 15);
-            tomData.mood = Math.min(100, tomData.mood + 25);
-            messageElement.textContent = "Ура! Играем! ⚽";
+            tomData.energy -= 15;
+            tomData.mood += 20;
+            messageElement.textContent = "Ура! Играем!";
             break;
-            
         case 'clean':
-            tomData.mood = Math.min(100, tomData.mood + 10);
-            tomData.health = Math.min(100, tomData.health + 5);
-            messageElement.textContent = "Чистота - залог здоровья! 🛁";
-            break;
-            
-        case 'heal':
-            if (tomData.health >= 100) {
-                messageElement.textContent = "Я уже здоров! ❤️";
-                return;
-            }
-            tomData.health = 100;
-            messageElement.textContent = "Спасибо, я здоров! 💊";
-            break;
-            
-        case 'pet':
-            tomData.mood = Math.min(100, tomData.mood + 15);
-            messageElement.textContent = "Муррр... ❤️";
-            break;
-            
-        case 'train':
-            if (tomData.energy < 40) {
-                messageElement.textContent = "Слишком устал для тренировки! 💪";
-                return;
-            }
-            tomData.energy -= 30;
             tomData.mood += 10;
-            messageElement.textContent = "Становлюсь сильнее! 💪";
+            messageElement.textContent = "Чистота!";
             break;
     }
     
     updateTomUI();
     saveData();
     
-    // Очищаем сообщение через 2 секунды
     setTimeout(() => {
         messageElement.textContent = '';
     }, 2000);
 }
 
 // ====================
-// МАЙНЕР И ПЕРЕРОЖДЕНИЯ
+// МАЙНЕР
 // ====================
 function clickCore() {
     const core = document.getElementById('core');
-    const multiplier = calculateMultiplier();
-    
-    // Анимация
-    core.style.transform = 'scale(0.8)';
-    core.style.boxShadow = '0 0 30px ' + (multiplier > 2 ? '#ff0000' : '#00ff00');
-    
-    setTimeout(() => {
-        core.style.transform = 'scale(1)';
-        core.style.boxShadow = 'none';
-    }, 100);
-    
-    // Добавляем байты
     const userData = hubData[currentUser];
-    const baseGain = 10;
-    const gain = Math.floor(baseGain * multiplier);
+    const multiplier = 1 + (userData.rebirths || 0) * 0.5;
     
-    userData.bytes += gain;
+    core.style.transform = 'scale(0.9)';
+    setTimeout(() => core.style.transform = 'scale(1)', 100);
+    
+    userData.bytes += Math.floor(10 * multiplier);
     hubData[currentUser] = userData;
-    
-    // Показываем всплывающий текст
-    showFloatingText(`+${gain}`, core.getBoundingClientRect().left + 75, core.getBoundingClientRect().top + 75);
     
     updateAllUI();
     saveData();
-}
-
-function showFloatingText(text, x, y) {
-    const floating = document.createElement('div');
-    floating.textContent = text;
-    floating.style.position = 'fixed';
-    floating.style.left = x + 'px';
-    floating.style.top = y + 'px';
-    floating.style.color = '#00ff00';
-    floating.style.fontWeight = 'bold';
-    floating.style.fontSize = '20px';
-    floating.style.pointerEvents = 'none';
-    floating.style.zIndex = '1000';
-    floating.style.animation = 'floatUp 1s forwards';
-    
-    document.body.appendChild(floating);
-    
-    setTimeout(() => {
-        document.body.removeChild(floating);
-    }, 1000);
 }
 
 function prestige() {
@@ -1333,64 +970,19 @@ function prestige() {
     const cost = Math.floor(10000 * Math.pow(1.5, userData.rebirths || 0));
     
     if (userData.bytes < cost) {
-        showNotification(`💰 Нужно ${cost.toLocaleString()} BYTES для перерождения!`, "warning");
+        showNotification(`Нужно ${cost} BYTES!`);
         return;
     }
     
-    if (!confirm(`Переродиться за ${cost.toLocaleString()} BYTES?\nВы получите +0.5x к множителю!`)) {
-        return;
-    }
+    if (!confirm(`Переродиться за ${cost} BYTES?\n+0.5x к множителю`)) return;
     
     userData.bytes -= cost;
     userData.rebirths = (userData.rebirths || 0) + 1;
-    
-    hubData[currentUser] = userData;
-    updateAllUI();
-    saveData();
-    showNotification(`🔄 Перерождение #${userData.rebirths}!\n⚡ Множитель теперь: ${(1 + userData.rebirths * 0.5).toFixed(1)}x`, "success");
-}
-
-function autoClicker() {
-    const userData = hubData[currentUser];
-    
-    if (userData.autoClicker) {
-        showNotification("🤖 Автокликер уже активен!", "info");
-        return;
-    }
-    
-    const cost = 5000;
-    if (userData.bytes < cost) {
-        showNotification(`💰 Нужно ${cost.toLocaleString()} BYTES для автокликера!`, "warning");
-        return;
-    }
-    
-    userData.bytes -= cost;
-    userData.autoClicker = true;
     hubData[currentUser] = userData;
     
-    startAutoClicker();
     updateAllUI();
     saveData();
-    showNotification("🤖 Автокликер активирован! +10 BYTES/сек", "success");
-}
-
-function startAutoClicker() {
-    if (autoClickerActive) return;
-    autoClickerActive = true;
-    
-    setInterval(() => {
-        if (!hubData[currentUser]?.autoClicker) return;
-        
-        const multiplier = calculateMultiplier();
-        const gain = Math.floor(10 * multiplier);
-        hubData[currentUser].bytes += gain;
-        
-        if (document.getElementById('miner').classList.contains('active')) {
-            updateAllUI();
-        }
-        
-        saveData();
-    }, 1000);
+    showNotification(`🔄 Перерождение #${userData.rebirths}!`);
 }
 
 // ====================
@@ -1398,132 +990,50 @@ function startAutoClicker() {
 // ====================
 function buyEgg(type) {
     const userData = hubData[currentUser];
-    const price = eggPrices[type];
+    const prices = { common: 100, rare: 500, epic: 2000, mythic: 10000 };
+    const price = prices[type];
     
     if (userData.bytes < price) {
-        showNotification(`💰 Недостаточно BYTES! Нужно: ${price.toLocaleString()}`, "warning");
+        showNotification(`Нужно ${price} BYTES!`);
         return;
     }
     
     userData.bytes -= price;
-    hubData[currentUser] = userData;
-    
-    // Открываем яйцо
     const result = openEgg(type);
     const resultElement = document.getElementById('egg-result');
     
-    // Показываем результат
-    resultElement.innerHTML = `
-        <h4>🎉 ВЫ ПОЛУЧИЛИ:</h4>
-        ${result.map(pet => `
-            <div style="margin: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 10px;">
-                <span style="font-size: 30px;">${pet.emoji}</span>
-                <h4>${pet.name}</h4>
-                <p>${pet.bonus}</p>
-                <p style="font-size: 12px; color: #888;">Редкость: ${getRarityName(pet.rarity)}</p>
-            </div>
-        `).join('')}
-    `;
+    resultElement.innerHTML = `<h4>🎉 Получено:</h4>` + 
+        result.map(pet => `<div>${pet.emoji} ${pet.name} (${pet.bonus})</div>`).join('');
     resultElement.style.display = 'block';
     
-    // Добавляем питомцев
     if (!userData.pets) userData.pets = [];
-    result.forEach(pet => {
-        userData.pets.push({
-            ...pet,
-            active: true
-        });
-    });
+    result.forEach(pet => userData.pets.push({...pet, active: true}));
     
     hubData[currentUser] = userData;
     updateAllUI();
-    renderPets();
     saveData();
     
-    showNotification(`🥚 Открыто яйцо! Получено: ${result.length} питомцев`, "success");
-    
-    // Скрываем результат через 5 секунд
     setTimeout(() => {
         resultElement.style.display = 'none';
-    }, 5000);
+    }, 3000);
 }
-
-const eggPrices = {
-    common: 100,
-    rare: 500,
-    epic: 2000,
-    mythic: 10000,
-    legendary: 50000,
-    secret: 250000,
-    god: 1000000
-};
 
 function openEgg(type) {
-    const results = [];
-    
-    // Гарантированный питомец в зависимости от типа яйца
-    switch(type) {
-        case 'common':
-            results.push(getRandomPet('common'));
-            break;
-        case 'rare':
-            results.push(getRandomPet('rare'));
-            break;
-        case 'epic':
-            results.push(getRandomPet('epic'));
-            break;
-        case 'mythic':
-            results.push(getRandomPet('mythic'));
-            break;
-        case 'legendary':
-            results.push(getRandomPet('legendary'));
-            break;
-        case 'secret':
-            results.push(getRandomPet('secret'));
-            break;
-        case 'god':
-            results.push(getRandomPet('god'));
-            break;
+    const result = [];
+    const pool = petsDatabase[type];
+    if (pool && pool.length > 0) {
+        result.push({...pool[Math.floor(Math.random() * pool.length)]});
     }
     
-    // Дополнительные питомцы
-    const extraCount = Math.floor(Math.random() * 3) + 1; // 1-3 дополнительных
-    for (let i = 0; i < extraCount; i++) {
-        const chance = Math.random();
-        if (chance < 0.6) results.push(getRandomPet('common'));
-        else if (chance < 0.85) results.push(getRandomPet('rare'));
-        else if (chance < 0.95) results.push(getRandomPet('epic'));
-        else results.push(getRandomPet('mythic'));
+    // Добавляем случайного питомца
+    const types = ['common', 'rare', 'epic', 'mythic'];
+    const randomType = types[Math.floor(Math.random() * types.length)];
+    const randomPool = petsDatabase[randomType];
+    if (randomPool && randomPool.length > 0) {
+        result.push({...randomPool[Math.floor(Math.random() * randomPool.length)]});
     }
     
-    // Особый бонус для дорогих яиц
-    if (type === 'god') {
-        for (let i = 0; i < 3; i++) {
-            results.push(getRandomPet('legendary'));
-        }
-    }
-    
-    return results;
-}
-
-function getRandomPet(rarity) {
-    const pool = petsDatabase[rarity];
-    const pet = {...pool[Math.floor(Math.random() * pool.length)]};
-    pet.id = Date.now() + Math.random(); // Уникальный ID
-    return pet;
-}
-
-function getRarityName(rarity) {
-    const names = {
-        'common': 'Обычный',
-        'rare': 'Редкий',
-        'epic': 'Эпический',
-        'mythic': 'Мифический',
-        'legendary': 'Легендарный',
-        'secret': 'Секретный',
-        'god': 'Божественный'
-    };
-    return names[rarity] || rarity;
+    return result;
 }
 
 function renderPets() {
@@ -1533,143 +1043,32 @@ function renderPets() {
     
     container.innerHTML = '';
     
-    if (pets.length === 0) {
-        container.innerHTML = '<p>У вас пока нет питомцев. Купите яйца в магазине!</p>';
-        return;
-    }
-    
-    // Сортируем по редкости
-    const rarityOrder = ['god', 'secret', 'legendary', 'mythic', 'epic', 'rare', 'common'];
-    pets.sort((a, b) => {
-        return rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity);
-    });
-    
-    pets.forEach((pet, index) => {
+    pets.forEach(pet => {
         const petCard = document.createElement('div');
         petCard.className = 'pet-card';
         petCard.innerHTML = `
             <span class="pet-icon">${pet.emoji}</span>
             <h4>${pet.name}</h4>
-            <p style="font-size: 12px;">${pet.bonus}</p>
-            <p style="font-size: 11px; color: #888;">Редкость: ${getRarityName(pet.rarity)}</p>
-            <p>Статус: <span style="color:${pet.active ? '#00ff00' : '#ff5555'}">
-                ${pet.active ? '⚡ АКТИВЕН' : '💤 НЕАКТИВЕН'}
-            </span></p>
-            <button class="btn-small" onclick="togglePet(${index})">
-                ${pet.active ? '✖ Деактивировать' : '✔ Активировать'}
-            </button>
+            <p>${pet.bonus}</p>
         `;
         container.appendChild(petCard);
     });
 }
 
-function togglePet(index) {
-    const userData = hubData[currentUser];
-    if (userData.pets && userData.pets[index]) {
-        userData.pets[index].active = !userData.pets[index].active;
-        hubData[currentUser] = userData;
-        renderPets();
-        updatePetBonuses();
-        updateAllUI();
-        saveData();
-    }
-}
-
-function activateAllPets() {
-    const userData = hubData[currentUser];
-    if (userData.pets) {
-        userData.pets.forEach(pet => pet.active = true);
-        hubData[currentUser] = userData;
-        renderPets();
-        updatePetBonuses();
-        updateAllUI();
-        saveData();
-        showNotification("⚡ Все питомцы активированы!", "success");
-    }
-}
-
-function petFusion() {
-    const userData = hubData[currentUser];
-    const pets = userData.pets || [];
-    
-    if (pets.length < 2) {
-        showNotification("Нужно минимум 2 питомца для слияния!", "warning");
-        return;
-    }
-    
-    // Выбираем двух случайных питомцев
-    const index1 = Math.floor(Math.random() * pets.length);
-    let index2;
-    do {
-        index2 = Math.floor(Math.random() * pets.length);
-    } while (index2 === index1);
-    
-    const pet1 = pets[index1];
-    const pet2 = pets[index2];
-    
-    // Удаляем старых питомцев
-    pets.splice(Math.max(index1, index2), 1);
-    pets.splice(Math.min(index1, index2), 1);
-    
-    // Создаем нового улучшенного питомца
-    const newPet = {
-        id: Date.now(),
-        name: `${pet1.name}-${pet2.name}`,
-        emoji: pet1.emoji + pet2.emoji,
-        bonus: `Множитель +${(pet1.value + pet2.value + 0.1).toFixed(1)}x`,
-        value: pet1.value + pet2.value + 0.1,
-        rarity: getUpgradedRarity(pet1.rarity, pet2.rarity),
-        active: true
-    };
-    
-    pets.push(newPet);
-    userData.pets = pets;
-    hubData[currentUser] = userData;
-    
-    renderPets();
-    updateAllUI();
-    saveData();
-    
-    showNotification(
-        `🔮 Слияние успешно!\n` +
-        `${pet1.emoji}${pet2.emoji} -> ${newPet.emoji}\n` +
-        `Новый питомец: ${newPet.name}`,
-        "success"
-    );
-}
-
-function getUpgradedRarity(rarity1, rarity2) {
-    const rarityOrder = ['common', 'rare', 'epic', 'mythic', 'legendary', 'secret', 'god'];
-    const index1 = rarityOrder.indexOf(rarity1);
-    const index2 = rarityOrder.indexOf(rarity2);
-    const newIndex = Math.min(rarityOrder.length - 1, Math.floor((index1 + index2) / 2) + 1);
-    return rarityOrder[newIndex];
-}
-
-function updatePetBonuses() {
-    const userData = hubData[currentUser];
-    const pets = userData.pets || [];
-    const activePets = pets.filter(p => p.active);
-    
-    document.getElementById('active-bonuses').textContent = activePets.length;
-}
-
 // ====================
-// МАГАЗИН ОДЕЖДЫ
+// МАГАЗИН
 // ====================
 function buyClothing(item, price) {
     const userData = hubData[currentUser];
     
     if (userData.bytes < price) {
-        showNotification(`💰 Недостаточно BYTES! Нужно: ${price.toLocaleString()}`, "warning");
+        showNotification(`Нужно ${price} BYTES!`);
         return;
     }
     
     if (!userData.clothing) userData.clothing = [];
-    
-    // Проверяем, есть ли уже
     if (userData.clothing.includes(item)) {
-        showNotification("Эта одежда уже куплена!", "info");
+        showNotification("Уже куплено!");
         return;
     }
     
@@ -1678,137 +1077,59 @@ function buyClothing(item, price) {
     hubData[currentUser] = userData;
     
     updateAllUI();
-    renderOwnedClothing();
     saveData();
-    showNotification(`👕 Куплено: ${clothingItems[item].name}`, "success");
-}
-
-function renderOwnedClothing() {
-    const container = document.getElementById('owned-clothing');
-    const userData = hubData[currentUser];
-    const owned = userData.clothing || [];
+    showNotification(`Куплено: ${clothingItems[item].name}`);
     
-    container.innerHTML = '';
-    
-    if (owned.length === 0) {
-        container.innerHTML = '<p>У вас пока нет одежды. Купите в магазине!</p>';
-        return;
-    }
-    
-    owned.forEach(item => {
-        const clothing = clothingItems[item];
-        const div = document.createElement('div');
-        div.className = 'shop-item';
-        div.innerHTML = `
-            <h4>${clothing.emoji} ${clothing.name}</h4>
-            <button class="btn-small" onclick="wearClothing('${item}')">👕 НАДЕТЬ</button>
-            <button class="btn-small" onclick="sellClothing('${item}')" style="background: #ff5555; margin-top: 5px;">💰 ПРОДАТЬ (${Math.floor(clothing.price * 0.5)})</button>
-        `;
-        container.appendChild(div);
-    });
-}
-
-function wearClothing(item) {
+    // Надеваем
     tomData.clothing = item;
     updateTomUI();
-    saveData();
-    showNotification(`👕 Надето: ${clothingItems[item].name}`, "success");
-}
-
-function sellClothing(item) {
-    const userData = hubData[currentUser];
-    const clothing = clothingItems[item];
-    const sellPrice = Math.floor(clothing.price * 0.5);
-    
-    if (!confirm(`Продать ${clothing.name} за ${sellPrice} BYTES?`)) return;
-    
-    // Удаляем из инвентаря
-    const index = userData.clothing.indexOf(item);
-    if (index > -1) {
-        userData.clothing.splice(index, 1);
-        userData.bytes += sellPrice;
-        
-        // Если эта одежда надета, снимаем
-        if (tomData.clothing === item) {
-            tomData.clothing = null;
-            updateTomUI();
-        }
-        
-        hubData[currentUser] = userData;
-        updateAllUI();
-        renderOwnedClothing();
-        saveData();
-        showNotification(`💰 Продано: ${clothing.name}`, "success");
-    }
 }
 
 // ====================
-// ИГРА COUNTER-STRIKE
+// ИГРА CS
 // ====================
 let csGameState = {
-    player: { x: 100, y: 200, health: 100 },
+    player: { x: 100, y: 150, health: 100 },
     enemies: [],
     bullets: [],
-    score: 0,
-    ammo: 30,
-    totalAmmo: 120,
-    map: 'dust2',
-    zombies: false
+    score: 0
 };
 
 function startCSGame() {
-    clearInterval(csInterval);
+    if (csInterval) clearInterval(csInterval);
     
     const gameDiv = document.getElementById('cs-game');
     gameDiv.innerHTML = '';
     
-    // Создаем игрока
+    // Игрок
     const player = document.createElement('div');
     player.className = 'player';
     player.id = 'cs-player';
     gameDiv.appendChild(player);
     
-    // Создаем врагов в зависимости от режима
-    const mode = document.getElementById('game-mode').value;
-    csGameState.zombies = mode === 'zombie';
-    
-    let enemyCount;
-    if (mode === '1v1') enemyCount = 1;
-    else if (mode === 'zombie') enemyCount = 10;
-    else enemyCount = 7;
-    
+    // Враги
     csGameState.enemies = [];
-    for (let i = 0; i < enemyCount; i++) {
+    for (let i = 0; i < 5; i++) {
         createEnemy();
     }
     
-    // Обновляем UI
     updateCSGame();
-    
-    // Запускаем игровой цикл
     csInterval = setInterval(gameLoop, 50);
 }
 
 function createEnemy() {
     const gameDiv = document.getElementById('cs-game');
     const enemy = document.createElement('div');
-    enemy.className = csGameState.zombies ? 'enemy zombie' : 'enemy';
-    if (csGameState.zombies) {
-        enemy.innerHTML = '🧟';
-        enemy.style.fontSize = '25px';
-        enemy.style.background = 'transparent';
-    }
-    enemy.style.left = (Math.random() * 600 + 200) + 'px';
-    enemy.style.top = (Math.random() * 300) + 'px';
+    enemy.className = 'enemy';
+    enemy.style.left = (Math.random() * 500 + 200) + 'px';
+    enemy.style.top = (Math.random() * 250) + 'px';
     gameDiv.appendChild(enemy);
     
     csGameState.enemies.push({
         element: enemy,
         x: parseInt(enemy.style.left),
         y: parseInt(enemy.style.top),
-        health: csGameState.zombies ? 150 : 100,
-        speed: csGameState.zombies ? 1.5 : 2,
-        isZombie: csGameState.zombies
+        health: 100
     });
 }
 
@@ -1819,22 +1140,22 @@ function gameLoop() {
         const dy = csGameState.player.y - enemy.y;
         const dist = Math.sqrt(dx*dx + dy*dy);
         
-        if (dist > 20) {
-            enemy.x += dx / dist * enemy.speed;
-            enemy.y += dy / dist * enemy.speed;
+        if (dist > 30) {
+            enemy.x += dx / dist;
+            enemy.y += dy / dist;
         }
         
         enemy.element.style.left = enemy.x + 'px';
         enemy.element.style.top = enemy.y + 'px';
         
-        // Проверка столкновения с игроком
+        // Столкновение
         if (dist < 25) {
-            csGameState.player.health -= csGameState.zombies ? 2 : 0.5;
+            csGameState.player.health -= 0.5;
             updateCSGame();
         }
     });
     
-    // Двигаем пули
+    // Пули
     csGameState.bullets.forEach((bullet, index) => {
         bullet.x += bullet.vx;
         bullet.y += bullet.vy;
@@ -1844,126 +1165,64 @@ function gameLoop() {
             bullet.element.style.top = bullet.y + 'px';
         }
         
-        // Проверка столкновения с врагами
+        // Попадание
         csGameState.enemies.forEach((enemy, eIndex) => {
             const dx = bullet.x - enemy.x;
             const dy = bullet.y - enemy.y;
-            if (Math.sqrt(dx*dx + dy*dy) < 20) {
-                // Попадание!
-                enemy.health -= csGameState.zombies ? 50 : 34;
+            if (Math.sqrt(dx*dx + dy*dy) < 15) {
                 if (bullet.element) bullet.element.remove();
                 csGameState.bullets.splice(index, 1);
                 
+                enemy.health -= 34;
                 if (enemy.health <= 0) {
                     enemy.element.remove();
                     csGameState.enemies.splice(eIndex, 1);
-                    csGameState.score += csGameState.zombies ? 50 : 100;
-                    
-                    // Спавн нового врага
-                    if (csGameState.enemies.length < getEnemyCount()) {
-                        setTimeout(() => createEnemy(), 1000);
-                    }
+                    csGameState.score += 100;
+                    createEnemy();
                 }
                 updateCSGame();
             }
         });
         
-        // Удаляем пули за пределами экрана
+        // Удаление пуль
         if (bullet.x > 800 || bullet.x < 0 || bullet.y > 400 || bullet.y < 0) {
             if (bullet.element) bullet.element.remove();
             csGameState.bullets.splice(index, 1);
         }
     });
     
-    // Проверка смерти игрока
+    // Смерть
     if (csGameState.player.health <= 0) {
         clearInterval(csInterval);
-        showNotification(`💀 Игра окончена! Счёт: ${csGameState.score}`, "warning");
-        setTimeout(() => startCSGame(), 2000);
+        alert(`Игра окончена! Счёт: ${csGameState.score}`);
+        startCSGame();
     }
 }
 
-function getEnemyCount() {
-    const mode = document.getElementById('game-mode').value;
-    if (mode === '1v1') return 1;
-    if (mode === 'zombie') return 10;
-    return 7;
-}
-
 function movePlayer(direction) {
-    const speed = 10;
     switch(direction) {
-        case 'up': csGameState.player.y = Math.max(0, csGameState.player.y - speed); break;
-        case 'down': csGameState.player.y = Math.min(350, csGameState.player.y + speed); break;
-        case 'left': csGameState.player.x = Math.max(0, csGameState.player.x - speed); break;
-        case 'right': csGameState.player.x = Math.min(750, csGameState.player.x + speed); break;
+        case 'up': csGameState.player.y = Math.max(0, csGameState.player.y - 10); break;
+        case 'down': csGameState.player.y = Math.min(270, csGameState.player.y + 10); break;
+        case 'left': csGameState.player.x = Math.max(0, csGameState.player.x - 10); break;
+        case 'right': csGameState.player.x = Math.min(770, csGameState.player.x + 10); break;
     }
     updateCSGame();
 }
 
 function shoot() {
-    if (csGameState.ammo <= 0) {
-        showNotification('🔫 Нет патронов! Нажмите R для перезарядки.', "warning");
-        return;
-    }
-    
-    csGameState.ammo--;
-    
-    // Создаем пулю
     const bullet = document.createElement('div');
     bullet.className = 'bullet';
-    bullet.style.left = (csGameState.player.x + 20) + 'px';
-    bullet.style.top = (csGameState.player.y + 20) + 'px';
+    bullet.style.left = (csGameState.player.x + 15) + 'px';
+    bullet.style.top = (csGameState.player.y + 15) + 'px';
     document.getElementById('cs-game').appendChild(bullet);
-    
-    // Направление к ближайшему врагу
-    let targetX = csGameState.player.x + 100;
-    let targetY = csGameState.player.y;
-    
-    if (csGameState.enemies.length > 0) {
-        const nearest = csGameState.enemies.reduce((nearest, enemy) => {
-            const dist = Math.sqrt(
-                Math.pow(enemy.x - csGameState.player.x, 2) + 
-                Math.pow(enemy.y - csGameState.player.y, 2)
-            );
-            return dist < nearest.dist ? {enemy, dist} : nearest;
-        }, {enemy: null, dist: Infinity});
-        
-        if (nearest.enemy) {
-            targetX = nearest.enemy.x;
-            targetY = nearest.enemy.y;
-        }
-    }
-    
-    const dx = targetX - csGameState.player.x;
-    const dy = targetY - csGameState.player.y;
-    const dist = Math.sqrt(dx*dx + dy*dy);
     
     csGameState.bullets.push({
         element: bullet,
-        x: csGameState.player.x + 20,
-        y: csGameState.player.y + 20,
-        vx: dx / dist * 15,
-        vy: dy / dist * 15
+        x: csGameState.player.x + 15,
+        y: csGameState.player.y + 15,
+        vx: 10,
+        vy: 0
     });
-    
-    updateCSGame();
-}
-
-function reloadGame() {
-    if (csGameState.totalAmmo <= 0) {
-        showNotification('💣 Нет запасных патронов!', "warning");
-        return;
-    }
-    
-    const needed = 30 - csGameState.ammo;
-    const canReload = Math.min(needed, csGameState.totalAmmo);
-    
-    csGameState.ammo += canReload;
-    csGameState.totalAmmo -= canReload;
-    
-    updateCSGame();
-    showNotification(`🔫 Перезарядка: +${canReload} патронов`, "info");
 }
 
 function updateCSGame() {
@@ -1975,41 +1234,27 @@ function updateCSGame() {
     
     document.getElementById('cs-score').textContent = csGameState.score;
     document.getElementById('cs-health').textContent = Math.round(csGameState.player.health);
-    document.getElementById('cs-ammo').textContent = csGameState.ammo + '/' + csGameState.totalAmmo;
 }
 
 function changeMap() {
-    const map = document.getElementById('map-select').value;
-    csGameState.map = map;
+    const mapType = document.getElementById('map-select').value;
     const gameDiv = document.getElementById('cs-game');
-    const colors = {
-        'dust2': ['#1a1a2e', '#4a2c2c'],
-        'inferno': ['#2e1a1a', '#4a2c2c'],
-        'mirage': ['#1a2e2e', '#2c4a4a']
-    };
-    gameDiv.style.background = `linear-gradient(135deg, ${colors[map][0]}, ${colors[map][1]})`;
-    startCSGame();
-}
-
-function changeGameMode() {
+    gameDiv.style.background = mapType === 'dust2' ? '#1a1a2e' : '#2e1a1a';
     startCSGame();
 }
 
 // ====================
-// КАРТА (ОФФЛАЙН)
+// КАРТА
 // ====================
 function initMap() {
     if (map) return;
     
     map = L.map('map-container').setView([55.7558, 37.6173], 10);
     
-    // Используем OpenStreetMap (работает при наличии кэша)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 18
+        attribution: '© OpenStreetMap'
     }).addTo(map);
     
-    // Добавляем маркеры из localStorage
     loadMarkers();
 }
 
@@ -2026,16 +1271,15 @@ function findMyLocation() {
                     .bindPopup('📍 Ваше местоположение')
                     .openPopup();
                 
-                showNotification('📍 Местоположение найдено!', "success");
+                showNotification('📍 Местоположение найдено!');
             },
             () => {
-                showNotification('⚠️ Не удалось определить местоположение', "warning");
-                // Устанавливаем Москву по умолчанию
+                showNotification('⚠️ Не удалось определить местоположение');
                 map.setView([55.7558, 37.6173], 10);
             }
         );
     } else {
-        showNotification('⚠️ Геолокация не поддерживается', "warning");
+        showNotification('⚠️ Геолокация не поддерживается');
     }
 }
 
@@ -2043,27 +1287,18 @@ function addMarker() {
     const center = map.getCenter();
     const marker = L.marker([center.lat, center.lng])
         .addTo(map)
-        .bindPopup(`Метка от ${currentUser}<br>${new Date().toLocaleString()}`)
+        .bindPopup(`Метка от ${currentUser}`)
         .openPopup();
     
     markers.push(marker);
     saveMarkers();
-    showNotification('📌 Метка добавлена!', "success");
-}
-
-function clearMarkers() {
-    markers.forEach(marker => map.removeLayer(marker));
-    markers = [];
-    localStorage.removeItem('hub_map_markers');
-    showNotification('🗑️ Все метки удалены!', "info");
+    showNotification('📌 Метка добавлена!');
 }
 
 function saveMarkers() {
     const markersData = markers.map(marker => ({
         lat: marker.getLatLng().lat,
-        lng: marker.getLatLng().lng,
-        user: currentUser,
-        time: new Date().toISOString()
+        lng: marker.getLatLng().lng
     }));
     localStorage.setItem('hub_map_markers', JSON.stringify(markersData));
 }
@@ -2071,114 +1306,9 @@ function saveMarkers() {
 function loadMarkers() {
     const markersData = JSON.parse(localStorage.getItem('hub_map_markers') || '[]');
     markersData.forEach(data => {
-        const marker = L.marker([data.lat, data.lng])
-            .addTo(map)
-            .bindPopup(`Метка от ${data.user}<br>${new Date(data.time).toLocaleString()}`);
+        const marker = L.marker([data.lat, data.lng]).addTo(map);
         markers.push(marker);
     });
-}
-
-// ====================
-// ДНЕВНИК
-// ====================
-function loadDiary() {
-    const container = document.getElementById('diary-entries');
-    const userData = hubData[currentUser];
-    const entries = userData.diary || [];
-    
-    container.innerHTML = '';
-    
-    if (entries.length === 0) {
-        container.innerHTML = '<p>Записей пока нет. Напишите что-нибудь!</p>';
-        return;
-    }
-    
-    entries.reverse().forEach((entry, index) => {
-        const entryDiv = document.createElement('div');
-        entryDiv.className = 'diary-entry';
-        entryDiv.innerHTML = `
-            <strong>📅 ${new Date(entry.time).toLocaleString()}</strong>
-            <p>${entry.text}</p>
-            <button class="btn-small" onclick="deleteDiaryEntry(${entries.length - 1 - index})" style="background: #ff5555; margin-top: 5px;">🗑️ Удалить</button>
-        `;
-        container.appendChild(entryDiv);
-    });
-}
-
-function addDiaryEntry() {
-    const input = document.getElementById('diary-input');
-    const text = input.value.trim();
-    
-    if (!text) {
-        showNotification('⚠️ Введите текст записи!', "warning");
-        return;
-    }
-    
-    const userData = hubData[currentUser];
-    if (!userData.diary) userData.diary = [];
-    
-    userData.diary.push({
-        text: text,
-        time: new Date().toISOString()
-    });
-    
-    // Ограничиваем количество записей
-    if (userData.diary.length > 100) {
-        userData.diary.shift();
-    }
-    
-    hubData[currentUser] = userData;
-    saveData();
-    loadDiary();
-    
-    input.value = '';
-    showNotification('📔 Запись сохранена!', "success");
-}
-
-function deleteDiaryEntry(index) {
-    const userData = hubData[currentUser];
-    if (userData.diary && userData.diary[index]) {
-        userData.diary.splice(index, 1);
-        hubData[currentUser] = userData;
-        saveData();
-        loadDiary();
-        showNotification('🗑️ Запись удалена!', "info");
-    }
-}
-
-// ====================
-// МУЗЫКА
-// ====================
-function playMusic() {
-    const track = document.getElementById('track-select').value;
-    const trackNames = {
-        '1': '🎵 Lo-Fi Chill Beats',
-        '2': '🎸 Cyberpunk Synthwave',
-        '3': '🎮 8-Bit Game Music',
-        '4': '🌌 Space Ambient'
-    };
-    
-    document.getElementById('now-playing').textContent = `▶️ Сейчас играет: ${trackNames[track]}`;
-    document.getElementById('play-btn').innerHTML = '⏸️ ПАУЗА';
-    document.getElementById('play-btn').onclick = pauseMusic;
-    
-    showNotification(`🎵 Воспроизведение: ${trackNames[track]}`, "info");
-}
-
-function pauseMusic() {
-    document.getElementById('now-playing').textContent = '⏸️ Воспроизведение на паузе';
-    document.getElementById('play-btn').innerHTML = '▶️ ПРОДОЛЖИТЬ';
-    document.getElementById('play-btn').onclick = playMusic;
-}
-
-function stopMusic() {
-    document.getElementById('now-playing').textContent = '⏹️ Воспроизведение остановлено';
-    document.getElementById('play-btn').innerHTML = '▶️ ВОСПРОИЗВЕСТИ';
-    document.getElementById('play-btn').onclick = playMusic;
-}
-
-function changeVolume(value) {
-    document.getElementById('volume-level').textContent = value;
 }
 
 // ====================
@@ -2194,7 +1324,6 @@ function loadChat() {
         msgDiv.innerHTML = `
             <strong>${msg.user}</strong> (${msg.time}):
             <br>${msg.text}
-            <span class="message-time">${msg.time}</span>
         `;
         container.appendChild(msgDiv);
     });
@@ -2216,34 +1345,11 @@ function sendMessage() {
     };
     
     chatData.push(message);
-    if (chatData.length > 200) chatData.shift(); // Ограничиваем историю
+    if (chatData.length > 100) chatData.shift();
     
     localStorage.setItem('hub_chat', JSON.stringify(chatData));
     loadChat();
     input.value = '';
-    
-    // Автоответ для ботов
-    if (currentUser !== "Никита" && Math.random() < 0.3) {
-        setTimeout(() => {
-            const responses = [
-                "Привет! Как дела?",
-                "Интересный чат у нас!",
-                "Кто-нибудь играл в CS?",
-                "Сколько у вас BYTES?",
-                "Купил новое яйцо сегодня!",
-                "Мой кот сегодня такой милый!"
-            ];
-            const botMessage = {
-                user: ["Никита", "Алена", "Саша", "Алиса"][Math.floor(Math.random() * 4)],
-                text: responses[Math.floor(Math.random() * responses.length)],
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
-            chatData.push(botMessage);
-            if (chatData.length > 200) chatData.shift();
-            localStorage.setItem('hub_chat', JSON.stringify(chatData));
-            loadChat();
-        }, 1000 + Math.random() * 3000);
-    }
 }
 
 function scrollChatToBottom() {
@@ -2256,44 +1362,29 @@ function scrollChatToBottom() {
 // ====================
 function setTheme(theme) {
     document.body.className = theme + '-theme';
-    
-    // Сохраняем тему для пользователя
     if (hubData[currentUser]) {
         hubData[currentUser].theme = theme;
         saveData();
     }
-    
-    showNotification(`🎨 Тема изменена на: ${theme}`, "info");
-}
-
-function changeControls() {
-    const type = document.getElementById('control-type').value;
-    if (type === 'touch') {
-        document.body.classList.add('mobile');
-    } else {
-        document.body.classList.remove('mobile');
-    }
+    showNotification(`Тема: ${theme}`);
 }
 
 function exportData() {
     const data = {
         hubData: hubData,
         tomData: tomData,
-        chatData: chatData,
-        exportDate: new Date().toISOString()
+        chatData: chatData
     };
     
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `ultra-hub-backup-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
+    a.download = `ultra-hub-backup.json`;
     a.click();
-    document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    showNotification('💾 Данные экспортированы в файл!', "success");
+    showNotification('💾 Данные экспортированы!');
 }
 
 function importData() {
@@ -2308,7 +1399,7 @@ function handleFileImport(file) {
         try {
             const data = JSON.parse(e.target.result);
             
-            if (confirm("Заменить все текущие данные импортированными?")) {
+            if (confirm("Заменить все данные?")) {
                 if (data.hubData) hubData = data.hubData;
                 if (data.tomData) tomData = data.tomData;
                 if (data.chatData) chatData = data.chatData;
@@ -2316,11 +1407,10 @@ function handleFileImport(file) {
                 saveData();
                 updateAllUI();
                 loadChat();
-                showNotification('💾 Данные успешно импортированы!', "success");
-                setTimeout(() => location.reload(), 1000);
+                showNotification('💾 Данные импортированы!');
             }
         } catch (err) {
-            showNotification('⚠️ Ошибка при импорте файла!', "error");
+            showNotification('⚠️ Ошибка при импорте!');
         }
     };
     reader.readAsText(file);
@@ -2334,145 +1424,41 @@ function renderLeaders() {
     list.innerHTML = '';
     
     const leaders = Object.entries(hubData)
-        .filter(([name]) => name !== "Гость") // Исключаем гостя
         .map(([name, data]) => ({
             name,
             bytes: data.bytes || 0,
             rebirths: data.rebirths || 0,
-            pets: (data.pets || []).length,
-            multiplier: calculateMultiplierForUser(name),
-            joinDate: data.joinDate
+            pets: (data.pets || []).length
         }))
         .sort((a, b) => b.bytes - a.bytes);
-    
-    if (leaders.length === 0) {
-        list.innerHTML = '<p>Нет данных для отображения</p>';
-        return;
-    }
     
     leaders.forEach((user, index) => {
         const div = document.createElement('div');
         div.className = `leader-item ${user.name === currentUser ? 'me' : ''}`;
-        div.style.padding = '15px';
-        div.style.margin = '10px 0';
-        div.style.borderRadius = '10px';
+        div.style.padding = '10px';
+        div.style.margin = '5px 0';
+        div.style.borderRadius = '8px';
         div.style.background = 'rgba(255,255,255,0.05)';
         
-        let medal = '';
-        if (index === 0) medal = '🥇 ';
-        else if (index === 1) medal = '🥈 ';
-        else if (index === 2) medal = '🥉 ';
-        
         div.innerHTML = `
-            <div style="font-size: 20px; font-weight: bold;">${medal}${index + 1}. ${user.name}</div>
-            <div>💰 ${user.bytes.toLocaleString()} BYTES</div>
-            <div>⚡ Множитель: ${user.multiplier.toFixed(1)}x</div>
-            <div>🔄 Перерождений: ${user.rebirths}</div>
-            <div>🎪 Питомцев: ${user.pets}</div>
+            <strong>${index + 1}. ${user.name}</strong>
+            <div>💰 ${user.bytes} BYTES</div>
+            <div>🔄 ${user.rebirths} перерождений</div>
+            <div>🎪 ${user.pets} питомцев</div>
         `;
         list.appendChild(div);
     });
 }
 
-function calculateMultiplierForUser(username) {
-    const userData = hubData[username] || { rebirths: 0, pets: [] };
-    let multiplier = 1 + (userData.rebirths || 0) * 0.5;
-    
-    const activePets = (userData.pets || []).filter(p => p.active);
-    activePets.forEach(pet => {
-        multiplier += pet.value || 0;
-    });
-    
-    return multiplier;
-}
-
 // ====================
-// АДМИН-ФУНКЦИИ
+// УТИЛИТЫ
 // ====================
-function addBytes(amount) {
-    if (!hubData[currentUser]) return;
-    hubData[currentUser].bytes += amount;
-    updateAllUI();
-    saveData();
-    showNotification(`💰 Добавлено ${amount.toLocaleString()} BYTES`, "success");
-}
-
-function unlockAll() {
-    if (!hubData[currentUser]) return;
-    hubData[currentUser].bytes = 1000000;
-    hubData[currentUser].rebirths = 10;
-    hubData[currentUser].clothing = Object.keys(clothingItems);
-    hubData[currentUser].autoClicker = true;
-    
-    // Добавляем всех питомцев
-    hubData[currentUser].pets = [];
-    Object.values(petsDatabase).forEach(category => {
-        category.forEach(pet => {
-            hubData[currentUser].pets.push({...pet, active: true});
-        });
-    });
-    
-    updateAllUI();
-    renderPets();
-    renderOwnedClothing();
-    saveData();
-    showNotification('🎉 Всё разблокировано!', "success");
-}
-
-function giveAllPets() {
-    const userData = hubData[currentUser];
-    userData.pets = [];
-    
-    Object.values(petsDatabase).forEach(category => {
-        category.forEach(pet => {
-            userData.pets.push({
-                ...pet,
-                active: true,
-                id: Date.now() + Math.random()
-            });
-        });
-    });
-    
-    hubData[currentUser] = userData;
-    updateAllUI();
-    renderPets();
-    saveData();
-    showNotification('🎪 Все питомцы получены!', "success");
-}
-
-function fullReset() {
-    if (confirm('💣 ВНИМАНИЕ! Все данные будут удалены без возможности восстановления!\n\nПродолжить?')) {
-        localStorage.clear();
-        showNotification('💾 Все данные удалены', "info");
-        setTimeout(() => location.reload(), 1000);
-    }
-}
-
-function logout() {
-    if (confirm('Выйти из аккаунта?')) {
-        saveData();
-        location.reload();
-    }
-}
-
-// ====================
-// УТИЛИТЫ И УВЕДОМЛЕНИЯ
-// ====================
-function showNotification(message, type = "info") {
+function showNotification(message) {
     const notification = document.createElement('div');
     notification.className = 'notification';
-    notification.innerHTML = message;
+    notification.textContent = message;
     
-    // Цвета по типам
-    const colors = {
-        success: '#00ff00',
-        warning: '#ffff00',
-        error: '#ff0000',
-        info: '#00f2ff'
-    };
-    notification.style.borderColor = colors[type] || colors.info;
-    
-    document.getElementById('notification-area').appendChild(notification);
+    document.body.appendChild(notification);
     
     setTimeout(() => {
         if (notification.parentNode) {
@@ -2491,53 +1477,41 @@ function startGameClock() {
     setInterval(updateClock, 1000);
 }
 
-// Глобальные обработчики
-window.onkeydown = function(e) {
-    // Админ-панель
-    if (e.key === 'F8' && currentUser === "Никита") {
-        document.getElementById('admin-panel').style.display = 
-            document.getElementById('admin-panel').style.display === 'block' ? 'none' : 'block';
-        e.preventDefault();
+function logout() {
+    if (confirm('Выйти из аккаунта?')) {
+        saveData();
+        location.reload();
     }
-    
-    // Управление игрой CS
-    if (document.getElementById('cs').classList.contains('active')) {
-        switch(e.key.toLowerCase()) {
-            case 'w': movePlayer('up'); break;
-            case 's': movePlayer('down'); break;
-            case 'a': movePlayer('left'); break;
-            case 'd': movePlayer('right'); break;
-            case ' ': shoot(); e.preventDefault(); break;
-            case 'r': reloadGame(); break;
-        }
-    }
-    
-    // Быстрая отправка сообщения в чат
-    if (e.key === 'Enter' && document.getElementById('chat-input') === document.activeElement) {
-        sendMessage();
-    }
-};
+}
 
-// Автозагрузка при возврате на страницу
-window.addEventListener('load', () => {
-    // Добавляем CSS для анимации всплывающего текста
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-50px); opacity: 0; }
-        }
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-    `;
-    document.head.appendChild(style);
+function fullReset() {
+    if (confirm('💣 УДАЛИТЬ ВСЕ ДАННЫЕ?\nЭто действие необратимо!')) {
+        localStorage.clear();
+        location.reload();
+    }
+}
+
+// ====================
+// ИНИЦИАЛИЗАЦИЯ
+// ====================
+window.addEventListener('load', function() {
+    // Автозаполнение пароля для удобства
+    document.getElementById('password-input').value = "1";
     
-    // Проверяем, был ли пользователь авторизован
+    // Обработка Enter в поле пароля
+    document.getElementById('password-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            identify();
+        }
+    });
+    
+    // Кнопка входа
+    document.getElementById('login-btn').addEventListener('click', identify);
+    
+    // Проверка предыдущей сессии
     const lastUser = localStorage.getItem('last_user');
     if (lastUser && hubData[lastUser]) {
-        // Автоматический вход (для удобства)
+        // Автовход
         currentUser = lastUser;
         document.getElementById('auth-overlay').style.display = 'none';
         document.getElementById('main-content').style.display = 'flex';
@@ -2545,37 +1519,53 @@ window.addEventListener('load', () => {
         updateAllUI();
         startTomSystem();
         loadChat();
-        loadDiary();
         startGameClock();
         renderLeaders();
-        showNotification(`👋 С возвращением, ${lastUser}!`, "info");
-        
-        // Запускаем автокликер если был активен
-        if (hubData[lastUser].autoClicker) {
-            startAutoClicker();
-        }
     }
 });
 
-// Сохраняем последнего пользователя
-window.addEventListener('beforeunload', () => {
-    if (currentUser) {
-        localStorage.setItem('last_user', currentUser);
-    }
-});
-
-// Добавляем обработчик кликов на кнопки навигации
-document.addEventListener('DOMContentLoaded', function() {
-    // Создаем контейнер для уведомлений если его нет
-    if (!document.getElementById('notification-area')) {
-        const div = document.createElement('div');
-        div.id = 'notification-area';
-        document.body.appendChild(div);
+// Горячие клавиши
+window.addEventListener('keydown', function(e) {
+    // Админ-панель
+    if (e.key === 'F8' && currentUser === "Никита") {
+        const panel = document.getElementById('admin-panel') || createAdminPanel();
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
     }
     
-    // Устанавливаем фокус на поле пароля
-    document.getElementById('password-input')?.focus();
+    // Управление в CS
+    if (document.getElementById('cs').classList.contains('active')) {
+        switch(e.key.toLowerCase()) {
+            case 'w': movePlayer('up'); break;
+            case 's': movePlayer('down'); break;
+            case 'a': movePlayer('left'); break;
+            case 'd': movePlayer('right'); break;
+            case ' ': shoot(); break;
+        }
+    }
+    
+    // Отправка сообщения в чате
+    if (e.key === 'Enter' && document.getElementById('chat-input') === document.activeElement) {
+        sendMessage();
+    }
 });
+
+function createAdminPanel() {
+    const panel = document.createElement('div');
+    panel.id = 'admin-panel';
+    panel.innerHTML = `
+        <h3>⚡ АДМИН ПАНЕЛЬ</h3>
+        <button class="btn" onclick="hubData[currentUser].bytes += 100000; updateAllUI(); saveData();">+100K BYTES</button>
+        <button class="btn" onclick="hubData[currentUser].bytes = 1000000; updateAllUI(); saveData();">1M BYTES</button>
+        <button class="btn" onclick="panel.style.display='none'">✖ ЗАКРЫТЬ</button>
+    `;
+    document.body.appendChild(panel);
+    return panel;
+}
+
+// Создаем контейнер для уведомлений
+const notificationArea = document.createElement('div');
+notificationArea.id = 'notification-area';
+document.body.appendChild(notificationArea);
 </script>
 </body>
 </html>
