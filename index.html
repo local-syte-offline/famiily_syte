@@ -3,235 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ULTRA HUB SUPREME FINAL</title>
+    <title>ULTRA HUB: EVOLUTION</title>
     <style>
-        :root { --p: #00f2ff; --bg: #020202; --glass: rgba(255, 255, 255, 0.08); --red: #ff3b30; }
-        body { background: var(--bg); color: #fff; font-family: -apple-system, sans-serif; margin: 0; overflow: hidden; height: 100vh; transition: 0.5s; }
-        #snow { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.3; }
+        :root { --p: #00f2ff; --bg: #050505; --glass: rgba(255, 255, 255, 0.08); }
+        body { background: var(--bg); color: #fff; font-family: -apple-system, sans-serif; margin: 0; overflow: hidden; height: 100vh; }
+        body.mobile { font-size: 18px; }
         
-        /* AUTH */
+        /* AUTH & ADAPTIVE */
         #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .auth-card { background: var(--glass); padding: 30px; border-radius: 30px; border: 1px solid var(--p); text-align: center; width: 300px; box-shadow: 0 0 30px var(--p); }
+        .auth-card { background: var(--glass); padding: 30px; border-radius: 30px; border: 1px solid var(--p); text-align: center; width: 320px; }
         
-        input, select, .btn { width: 100%; padding: 12px; margin-top: 10px; border-radius: 12px; border: 1px solid var(--p); background: #000; color: #fff; font-weight: bold; cursor: pointer; }
+        select, input, .btn { width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; border: 1px solid var(--p); background: #000; color: #fff; font-weight: bold; cursor: pointer; }
         .btn:hover { background: var(--p); color: #000; }
 
         /* UI */
-        #main-content { display: none; height: 100vh; flex-direction: column; z-index: 2; position: relative; }
-        nav { display: flex; gap: 5px; padding: 10px; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--p); overflow-x: auto; }
-        nav button { background: none; border: 1px solid var(--p); color: var(--p); padding: 8px 12px; border-radius: 8px; font-size: 11px; cursor: pointer; white-space: nowrap; font-weight: bold; }
+        #main-content { display: none; height: 100vh; flex-direction: column; }
+        nav { display: flex; gap: 5px; padding: 10px; background: #000; border-bottom: 1px solid var(--p); overflow-x: auto; }
+        nav button { background: var(--glass); border: 1px solid var(--p); color: var(--p); padding: 10px 15px; border-radius: 10px; font-size: 11px; white-space: nowrap; }
 
-        section { display: none; padding: 20px; flex-grow: 1; overflow-y: auto; text-align: center; box-sizing: border-box; }
-        section.active { display: block; animation: appleAppear 0.5s ease; }
-        @keyframes appleAppear { from { opacity: 0; transform: scale(0.95); filter: blur(10px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
+        section { display: none; padding: 20px; flex-grow: 1; overflow-y: auto; text-align: center; }
+        section.active { display: block; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background: var(--glass); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
-        
-        /* GAMES */
-        #core { width: 110px; height: 110px; background: radial-gradient(circle, var(--p), transparent); border-radius: 50%; border: 3px solid #fff; margin: 20px auto; cursor: pointer; transition: 0.1s; }
-        #core:active { transform: scale(0.9); }
-        canvas { background: #000; border: 1px solid var(--p); max-width: 100%; display: block; margin: 0 auto; }
-        #drop-zone { width: 100%; height: 300px; background: #000; position: relative; overflow: hidden; border: 1px solid var(--p); border-radius: 15px; }
-        .drop-item { position: absolute; font-size: 24px; cursor: pointer; }
+        .card { background: var(--glass); padding: 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+
+        /* TAMAGOTCHI TOM 2 */
+        #tom-state { font-size: 100px; display: block; margin: 20px 0; transition: 0.3s; }
+        .stat-row { margin: 10px 0; text-align: left; }
+        .bar { height: 12px; background: #222; border-radius: 6px; overflow: hidden; border: 1px solid #333; }
+        .fill { height: 100%; background: var(--p); width: 100%; transition: 0.5s; }
+
+        /* LEADERBOARD */
+        .leader-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid var(--glass); }
+        .leader-item.me { color: var(--p); font-weight: bold; border-left: 3px solid var(--p); padding-left: 10px; }
+
+        #core { width: 130px; height: 130px; background: radial-gradient(circle, var(--p), transparent); border-radius: 50%; border: 4px solid #fff; margin: 20px auto; cursor: pointer; transition: 0.1s; }
         #admin-panel { position: fixed; top: 10%; left: 50%; transform: translateX(-50%); background: #600; padding: 20px; border-radius: 20px; z-index: 10001; display: none; border: 2px solid #fff; }
     </style>
 </head>
 <body id="b">
 
-<canvas id="snow"></canvas>
-
-<!-- ВХОД -->
 <div id="auth-overlay">
     <div class="auth-card">
-        <h2 style="color:var(--p)">SYSTEM ID</h2>
-        <select id="u-sel">
-            <option>Никита</option><option>Алена</option><option>Саша</option><option>Алиса</option>
-        </select>
+        <h2 style="color:var(--p)">CYBER IDENTITY</h2>
+        <select id="u-sel"><option>Никита</option><option>Алена</option><option>Саша</option><option>Алиса</option></select>
+        <select id="d-sel"><option value="pc">Компьютер</option><option value="mobile">Смартфон</option></select>
         <input type="password" id="p-in" placeholder="ПАРОЛЬ">
-        <button class="btn" onclick="login()">ВХОД</button>
+        <button class="btn" onclick="identify()">ACCESS HUB</button>
     </div>
 </div>
 
-<!-- АДМИНКА (F8) -->
 <div id="admin-panel">
-    <h3>ADMIN PANEL</h3>
+    <h3>ADMIN: NIKITA</h3>
     <button class="btn" onclick="addB()">+100K BYTES</button>
-    <button class="btn" style="background:red" onclick="reset()">FULL RESET</button>
+    <button class="btn" style="background:red" onclick="fullReset()">WIPE ALL</button>
     <button class="btn" onclick="document.getElementById('admin-panel').style.display='none'">CLOSE</button>
 </div>
 
 <div id="main-content">
     <nav>
-        <button onclick="st('h')">HUB</button>
-        <button onclick="st('m')">MINER</button>
-        <button onclick="st('d')">DROP</button>
-        <button onclick="st('r')">RUNNER</button>
-        <button onclick="st('t')">TOM</button>
-        <button onclick="st('s')">STATS</button>
-        <button onclick="st('f')">FILES</button>
+        <button onclick="st('home')">CORE</button>
+        <button onclick="st('tom')">ТОМ 2</button>
+        <button onclick="st('miner')">MINER</button>
+        <button onclick="st('rating')">РЕЙТИНГ</button>
+        <button onclick="st('sys')">ВЫХОД</button>
     </nav>
 
-    <section id="h" class="active">
+    <section id="home" class="active">
         <div class="card">
-            <h1 id="tm" style="font-size: 3rem; margin:0;">00:00:00</h1>
-            <div id="cp" style="width:70px; height:70px; border:2px solid var(--p); border-radius:50%; margin:15px auto; position:relative;">
-                <div id="ar" style="width:2px; height:50px; background:red; position:absolute; left:34px; top:10px; transition:0.2s;"></div>
+            <h1 id="clock" style="font-size: 3.5rem; margin:0;">00:00:00</h1>
+            <p id="usr-tag"></p>
+        </div>
+    </section>
+
+    <section id="tom">
+        <div class="card">
+            <div id="tom-state">😸</div>
+            <div class="stat-row">Еда: <div class="bar"><div id="f-bar" class="fill"></div></div></div>
+            <div class="stat-row">Энергия: <div class="bar"><div id="e-bar" class="fill" style="background:#ffcc00"></div></div></div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn" onclick="tomAct('feed')">КОРМИТЬ</button>
+                <button class="btn" onclick="tomAct('sleep')">СПАТЬ</button>
             </div>
-            <p id="usr-tag" style="color:var(--p); font-weight:bold;"></p>
         </div>
     </section>
 
-    <section id="m">
+    <section id="miner">
         <div class="card">
-            <h2 id="bd">0 BYTES</h2>
+            <h2 id="bytes">0 BYTES</h2>
             <div id="core" onclick="ck()"></div>
-            <p>Кликай на ядро</p>
         </div>
     </section>
 
-    <section id="d">
+    <section id="rating">
         <div class="card">
-            <h3>CYBER DROP (LVL <span id="dlvl">1</span>)</h3>
-            <div id="drop-zone" onclick="dropCatch(event)"></div>
+            <h3>ТАБЛИЦА ЛИДЕРОВ</h3>
+            <div id="leader-list"></div>
         </div>
     </section>
 
-    <section id="r">
+    <section id="sys">
         <div class="card">
-            <h3>SUBWAY RUNNER</h3>
-            <canvas id="rc" width="300" height="400"></canvas>
-            <p>Стрелки ← →</p>
-        </div>
-    </section>
-
-    <section id="t">
-        <div class="card">
-            <div style="font-size:100px" id="t-emoji">😸</div>
-            <p>Сытость: <span id="fv">100</span>%</p>
-            <button class="btn" onclick="fd()">КОРМИТЬ (50B)</button>
-        </div>
-    </section>
-
-    <section id="s">
-        <div class="card">
-            <h3>РЕКОРДЫ</h3>
-            <p>MINER: <span id="r-m">0</span></p>
-            <p>DROP: <span id="r-d">0</span></p>
-            <p>RUNNER: <span id="r-r">0</span></p>
-        </div>
-    </section>
-
-    <section id="f">
-        <div class="card">
-            <input type="file" id="fi" onchange="ld(event)" style="display:none">
-            <button class="btn" onclick="document.getElementById('fi').click()">ОТКРЫТЬ ФАЙЛ</button>
-            <video id="vi" controls style="width:100%; display:none; margin-top:10px; border-radius:10px;"></video>
-            <img id="im" style="width:100%; display:none; margin-top:10px; border-radius:10px;">
+            <button class="btn" onclick="location.reload()">ВЫЙТИ</button>
+            <button class="btn" style="background:red" onclick="fullReset()">RESET ALL</button>
         </div>
     </section>
 </div>
 
 <script>
-    let b = parseInt(localStorage.getItem('b')) || 0, u = "", dScore = 0, rScore = 0;
-    const rec = JSON.parse(localStorage.getItem('rec')) || {m:0, d:0, r:0};
+    let curU = "", dev = "";
+    let bData = JSON.parse(localStorage.getItem('h_data')) || { "Никита":0, "Алена":0, "Саша":0, "Алиса":0 };
+    let tom = { f:100, e:100 };
 
-    function login() {
-        const name = document.getElementById('u-sel').value, p = document.getElementById('p-in').value;
+    function identify() {
+        const u = document.getElementById('u-sel').value, d = document.getElementById('d-sel').value, p = document.getElementById('p-in').value;
         if(!p) return;
-        u = name;
-        document.getElementById('auth-overlay').style.display = 'none';
-        document.getElementById('main-content').style.display = 'flex';
-        document.getElementById('usr-tag').innerText = "ONLINE: " + u.toUpperCase();
-        upStats();
+        curU = u; dev = d;
+        if(d === 'mobile') document.body.classList.add('mobile');
+        document.getElementById('auth-overlay').style.display='none';
+        document.getElementById('main-content').style.display='flex';
+        document.getElementById('usr-tag').innerText = "IDENTIFIED: " + u;
+        updateUI(); startTom(); renderLeaders();
     }
 
     function st(id) {
-        document.querySelectorAll('section').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        if(id === 'd') startDrop();
-        if(id === 'r') startRun();
+        if(id === 'rating') renderLeaders();
     }
 
     // MINER
     function ck() {
-        b++; document.getElementById('bd').innerText = b + " BYTES";
-        if(b > rec.m) { rec.m = b; saveRec(); }
-        localStorage.setItem('b', b);
+        bData[curU]++;
+        updateUI();
+        localStorage.setItem('h_data', JSON.stringify(bData));
     }
 
-    // DROP
-    function startDrop() {
-        if(window.dInt) clearInterval(window.dInt);
-        dScore = 0;
-        window.dInt = setInterval(() => {
-            const dz = document.getElementById('drop-zone');
-            const item = document.createElement('div');
-            item.className = 'drop-item'; item.innerText = '💎';
-            item.style.left = Math.random() * 90 + '%'; item.style.top = '-30px';
-            dz.appendChild(item);
-            let pos = 0, fall = setInterval(() => {
-                pos += (3 + Math.floor(dScore/10)); item.style.top = pos + 'px';
-                if(pos > 300) { clearInterval(fall); item.remove(); }
-            }, 30);
-            item.onclick = (e) => {
-                e.stopPropagation(); dScore++;
-                document.getElementById('dlvl').innerText = 1 + Math.floor(dScore/10);
-                if(dScore > rec.d) { rec.d = dScore; saveRec(); }
-                item.remove();
-            };
-        }, 1000);
+    // TOM 2 LOGIC
+    function startTom() {
+        setInterval(() => {
+            tom.f = Math.max(0, tom.f - 1);
+            tom.e = Math.max(0, tom.e - 0.5);
+            updateTomUI();
+        }, 3000);
+    }
+    function updateTomUI() {
+        document.getElementById('f-bar').style.width = tom.f + "%";
+        document.getElementById('e-bar').style.width = tom.e + "%";
+        const ts = document.getElementById('tom-state');
+        if(tom.f < 20) ts.innerText = "🍕?"; else if(tom.e < 20) ts.innerText = "😴"; else ts.innerText = "😸";
+    }
+    function tomAct(a) {
+        if(a === 'feed') { tom.f = Math.min(100, tom.f + 30); document.getElementById('tom-state').innerText = "😋"; }
+        if(a === 'sleep') { tom.e = 100; document.getElementById('tom-state').innerText = "💤"; }
     }
 
-    // RUNNER
-    function startRun() {
-        const c = document.getElementById('rc'), x = c.getContext('2d');
-        let px = 135, obs = [], f = 0; rScore = 0;
-        if(window.rInt) clearInterval(window.rInt);
-        window.rInt = setInterval(() => {
-            f++; x.clearRect(0, 0, 300, 400);
-            x.fillStyle = "#00f2ff"; x.fillRect(px, 350, 30, 30);
-            if(f % 60 == 0) obs.push({x: Math.random()*270, y: -30});
-            obs.forEach((o, i) => {
-                o.y += 4; x.fillStyle = 'red'; x.fillRect(o.x, o.y, 30, 30);
-                if(o.y > 350 && Math.abs(o.x - px) < 30) { clearInterval(window.rInt); alert('GAME OVER'); }
-                if(o.y > 400) { obs.splice(i, 1); rScore++; if(rScore > rec.r) { rec.r = rScore; saveRec(); } }
+    // LEADERBOARD
+    function renderLeaders() {
+        const list = document.getElementById('leader-list');
+        list.innerHTML = "";
+        Object.entries(bData)
+            .sort(([,a], [,b]) => b - a)
+            .forEach(([name, val]) => {
+                const div = document.createElement('div');
+                div.className = `leader-item ${name === curU ? 'me' : ''}`;
+                div.innerHTML = `<span>${name}</span><span>${val} BYTES</span>`;
+                list.appendChild(div);
             });
-        }, 20);
-        window.onkeydown = (e) => {
-            if(e.key === 'ArrowLeft' && px > 0) px -= 30;
-            if(e.key === 'ArrowRight' && px < 270) px += 30;
-        };
     }
 
-    // OTHER
-    function fd() { if(b >= 50) { b -= 50; document.getElementById('fv').innerText = "100"; ck(); } }
-    function ld(e) {
-        const f = e.target.files, url = URL.createObjectURL(f), v = document.getElementById('vi'), i = document.getElementById('im');
-        v.style.display = i.style.display = 'none';
-        if(f.type.includes('video')) { v.src = url; v.style.display = 'block'; }
-        else { i.src = url; i.style.display = 'block'; }
-    }
-    function saveRec() { localStorage.setItem('rec', JSON.stringify(rec)); upStats(); }
-    function upStats() {
-        document.getElementById('r-m').innerText = rec.m;
-        document.getElementById('r-d').innerText = rec.d;
-        document.getElementById('r-r').innerText = rec.r;
-    }
-    function addB() { b += 100000; ck(); }
-    function reset() { localStorage.clear(); location.reload(); }
-    window.onkeydown = (e) => { if(e.key === 'F8' && u === "Никита") document.getElementById('admin-panel').style.display = 'block'; };
-    
-    setInterval(() => { document.getElementById('tm').innerText = new Date().toLocaleTimeString(); }, 1000);
-    window.addEventListener('deviceorientation', e => { document.getElementById('ar').style.transform = `rotate(${-e.alpha}deg)`; });
+    function updateUI() { document.getElementById('bytes').innerText = bData[curU] + " BYTES"; }
+    function addB() { bData[curU] += 100000; updateUI(); localStorage.setItem('h_data', JSON.stringify(bData)); }
+    function fullReset() { localStorage.clear(); location.reload(); }
 
-    // SNOW
-    const sn = document.getElementById('snow'), scx = sn.getContext('2d');
-    sn.width = innerWidth; sn.height = innerHeight;
-    function ds() {
-        scx.clearRect(0,0,innerWidth,innerHeight); scx.fillStyle="#fff";
-        for(let i=0; i<30; i++) scx.fillRect(Math.random()*innerWidth, Math.random()*innerHeight, 2, 2);
-        requestAnimationFrame(ds);
-    } ds();
+    window.onkeydown = e => { if(e.key === 'F8' && curU === "Никита") document.getElementById('admin-panel').style.display='block'; };
+    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
 </script>
 </body>
 </html>
