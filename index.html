@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Платформа</title>
+    <title>Game Platform</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -14,26 +14,28 @@
         }
 
         :root {
-            --primary: #4361ee;
-            --secondary: #3a0ca3;
-            --accent: #4cc9f0;
-            --success: #4ade80;
+            --primary: #7c3aed;
+            --secondary: #8b5cf6;
+            --accent: #10b981;
+            --success: #22c55e;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --text: #f8fafc;
+            --text: #ffffff;
             --bg: #0f172a;
             --card: #1e293b;
             --border: #334155;
+            --sidebar: #111827;
         }
 
         [data-theme="light"] {
-            --primary: #3b82f6;
-            --secondary: #1d4ed8;
+            --primary: #6366f1;
+            --secondary: #4f46e5;
             --accent: #0ea5e9;
             --text: #1e293b;
             --bg: #f8fafc;
             --card: #ffffff;
             --border: #e2e8f0;
+            --sidebar: #f1f5f9;
         }
 
         [data-theme="purple"] {
@@ -44,6 +46,7 @@
             --bg: #1e1b4b;
             --card: #312e81;
             --border: #4f46e5;
+            --sidebar: #2e1065;
         }
 
         body {
@@ -51,7 +54,6 @@
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
-            transition: all 0.3s ease;
         }
 
         /* Снежинки */
@@ -62,7 +64,8 @@
             pointer-events: none;
             z-index: 9999;
             animation: fall linear infinite;
-            filter: blur(0.5px);
+            filter: blur(1px);
+            opacity: 0.8;
         }
 
         @keyframes fall {
@@ -91,14 +94,15 @@
             background: var(--card);
             padding: 40px;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
             text-align: center;
             max-width: 500px;
             width: 100%;
+            border: 2px solid var(--border);
         }
 
         .user-btn {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             border: none;
             padding: 15px 25px;
@@ -108,11 +112,12 @@
             cursor: pointer;
             transition: all 0.3s ease;
             width: 180px;
+            font-weight: 600;
         }
 
         .user-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
         .user-btn.selected {
@@ -126,7 +131,7 @@
         }
 
         .login-btn {
-            background: var(--success);
+            background: linear-gradient(135deg, var(--success) 0%, var(--accent) 100%);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -135,11 +140,12 @@
             font-size: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-weight: 600;
         }
 
         .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(74, 222, 128, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
         }
 
         /* Основной интерфейс */
@@ -150,7 +156,7 @@
 
         .header {
             background: var(--card);
-            padding: 15px 20px;
+            padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -158,6 +164,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .user-info {
@@ -169,53 +176,116 @@
         .user-avatar {
             width: 50px;
             height: 50px;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
             font-weight: bold;
+            color: white;
         }
 
         .balance {
             background: var(--accent);
-            padding: 8px 15px;
+            padding: 8px 20px;
             border-radius: 25px;
             font-weight: bold;
+            color: white;
         }
 
+        /* Нотификации */
+        .notifications {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        .notification {
+            background: var(--card);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .notification-btn {
+            padding: 5px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .notification-btn.accept {
+            background: var(--success);
+            color: white;
+        }
+
+        .notification-btn.decline {
+            background: var(--danger);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Навигация */
         .nav {
             display: flex;
             gap: 10px;
             overflow-x: auto;
-            padding: 10px 0;
+            padding: 15px 20px;
+            background: var(--sidebar);
         }
 
         .tab {
             background: var(--card);
             border: none;
             color: var(--text);
-            padding: 12px 24px;
-            border-radius: 10px;
+            padding: 14px 28px;
+            border-radius: 12px;
             cursor: pointer;
             white-space: nowrap;
             transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .tab:hover {
             background: var(--primary);
+            transform: translateY(-2px);
         }
 
         .tab.active {
-            background: var(--primary);
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
         }
 
         .page {
             display: none;
-            padding: 20px;
-            min-height: calc(100vh - 150px);
+            padding: 25px;
+            min-height: calc(100vh - 160px);
         }
 
         .page.active {
@@ -233,68 +303,78 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .files-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
         }
 
         .file {
             background: var(--card);
             border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 16px;
+            padding: 25px;
             position: relative;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .file:hover {
             border-color: var(--primary);
-            transform: translateY(-5px);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
         }
 
         .file-icon {
-            font-size: 40px;
-            margin-bottom: 10px;
+            font-size: 48px;
+            margin-bottom: 15px;
+            text-align: center;
         }
 
         .file-name {
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 18px;
+            text-align: center;
         }
 
         .file-size {
             opacity: 0.7;
             font-size: 14px;
+            text-align: center;
         }
 
         .delete-file {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 12px;
+            right: 12px;
             background: var(--danger);
             color: white;
             border: none;
-            width: 25px;
-            height: 25px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Игры */
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
         }
 
         .game-card {
             background: var(--card);
-            border-radius: 15px;
-            padding: 25px;
+            border-radius: 20px;
+            padding: 30px;
             text-align: center;
             border: 2px solid var(--border);
             cursor: pointer;
@@ -303,180 +383,250 @@
 
         .game-card:hover {
             border-color: var(--primary);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
         }
 
         .game-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
+            font-size: 56px;
+            margin-bottom: 20px;
         }
 
         .game-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .game-desc {
+            opacity: 0.8;
+            margin-top: 10px;
+            font-size: 15px;
+            line-height: 1.5;
         }
 
         /* Переводчик */
-        .translator {
-            max-width: 800px;
+        .translator-container {
+            max-width: 900px;
             margin: 0 auto;
+            background: var(--card);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
         .lang-selector {
             display: flex;
-            gap: 20px;
             align-items: center;
-            margin-bottom: 20px;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
             flex-wrap: wrap;
         }
 
         .lang-box {
             flex: 1;
-            min-width: 200px;
+            min-width: 250px;
         }
 
         select {
             width: 100%;
-            background: var(--card);
+            background: var(--bg);
             border: 2px solid var(--border);
             color: var(--text);
-            padding: 12px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 12px;
             font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
         }
 
         .swap-btn {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            min-width: 50px;
+        }
+
+        .swap-btn:hover {
+            background: var(--secondary);
+            transform: rotate(180deg);
+        }
+
+        .voice-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
         }
 
         .voice-btn {
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 12px 25px;
+            border-radius: 10px;
             cursor: pointer;
-            margin: 5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .voice-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
+        }
+
+        .translation-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .translation-box {
+                grid-template-columns: 1fr;
+            }
         }
 
         textarea {
             width: 100%;
-            min-height: 150px;
-            background: var(--card);
+            min-height: 180px;
+            background: var(--bg);
             border: 2px solid var(--border);
             color: var(--text);
-            padding: 15px;
-            border-radius: 10px;
+            padding: 20px;
+            border-radius: 15px;
             font-size: 16px;
             resize: vertical;
+            line-height: 1.6;
         }
 
-        /* Часы */
+        /* Часы мира */
         .clocks-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
         }
 
         .clock {
             background: var(--card);
-            border-radius: 15px;
-            padding: 25px;
+            border-radius: 20px;
+            padding: 30px;
             text-align: center;
             border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .clock:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
         }
 
         .clock-city {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
             color: var(--accent);
         }
 
         .clock-time {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
         }
 
         .clock-date {
             opacity: 0.8;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         /* Чат */
         .chat-container {
             display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 20px;
-            height: 600px;
+            grid-template-columns: 280px 1fr;
+            gap: 25px;
+            height: 650px;
+        }
+
+        @media (max-width: 1024px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
         }
 
         .chat-users {
             background: var(--card);
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 20px;
+            padding: 25px;
             overflow-y: auto;
+            border: 2px solid var(--border);
         }
 
         .chat-user {
             background: var(--bg);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .chat-user:hover {
             background: var(--primary);
+            transform: translateX(5px);
         }
 
         .chat-user.active {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             border: 2px solid var(--accent);
+            color: white;
         }
 
         .chat-messages {
             background: var(--card);
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 20px;
+            padding: 25px;
             display: flex;
             flex-direction: column;
+            border: 2px solid var(--border);
         }
 
         .messages-list {
             flex: 1;
             overflow-y: auto;
-            margin-bottom: 20px;
-            padding-right: 10px;
+            margin-bottom: 25px;
+            padding-right: 15px;
         }
 
         .message {
             background: var(--bg);
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            max-width: 70%;
+            padding: 18px;
+            border-radius: 18px;
+            margin-bottom: 18px;
+            max-width: 75%;
             word-wrap: break-word;
         }
 
         .message.sent {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             margin-left: auto;
+            color: white;
         }
 
         .chat-input {
             display: flex;
-            gap: 10px;
+            gap: 15px;
         }
 
         .chat-input input {
@@ -484,19 +634,60 @@
             background: var(--bg);
             border: 2px solid var(--border);
             color: var(--text);
-            padding: 15px;
-            border-radius: 10px;
+            padding: 18px;
+            border-radius: 15px;
             font-size: 16px;
         }
 
         .chat-send {
-            background: var(--success);
+            background: linear-gradient(135deg, var(--success) 0%, var(--accent) 100%);
             color: white;
             border: none;
-            width: 50px;
-            border-radius: 10px;
+            width: 60px;
+            border-radius: 15px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .chat-send:hover {
+            transform: scale(1.05);
+        }
+
+        /* Карты */
+        .map-container {
+            height: 600px;
+            background: var(--card);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            position: relative;
+        }
+
+        .map-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 10;
+        }
+
+        .map-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .map-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
 
         /* Модальные окна */
@@ -507,110 +698,209 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(5px);
         }
 
         .modal-content {
             background: var(--card);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 800px;
-            width: 90%;
+            border-radius: 25px;
+            padding: 35px;
+            max-width: 900px;
+            width: 95%;
             max-height: 90vh;
             overflow-y: auto;
+            border: 2px solid var(--border);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .close-btn {
             background: var(--danger);
             color: white;
             border: none;
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             font-size: 24px;
             cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Talking Tom */
-        .tom-container {
+        .close-btn:hover {
+            transform: rotate(90deg);
+        }
+
+        /* Talking Tom 2 - Улучшенная версия */
+        .tom-game {
             text-align: center;
-            margin: 20px 0;
         }
 
-        .tom-body {
-            width: 200px;
-            height: 200px;
+        .tom-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .tom-pet {
+            width: 250px;
+            height: 250px;
             background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
             border-radius: 50%;
-            margin: 0 auto;
             position: relative;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
 
-        .tom-body:hover {
-            transform: scale(1.05);
+        .tom-pet:hover {
+            transform: scale(1.08);
+            box-shadow: 0 15px 35px rgba(76, 201, 240, 0.3);
+        }
+
+        .tom-eye {
+            position: absolute;
+            width: 30px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            top: 80px;
+        }
+
+        .tom-eye.left {
+            left: 70px;
+        }
+
+        .tom-eye.right {
+            right: 70px;
+        }
+
+        .tom-mouth {
+            position: absolute;
+            width: 60px;
+            height: 30px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            bottom: 70px;
         }
 
         .tom-stats {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
-            margin: 30px 0;
+            margin: 40px 0;
         }
 
         .tom-stat {
             background: var(--bg);
-            padding: 20px;
-            border-radius: 12px;
+            padding: 25px;
+            border-radius: 15px;
             text-align: center;
+            border: 2px solid var(--border);
         }
 
-        .play-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 15px 30px;
+        .tom-stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 10px;
+            color: var(--accent);
+        }
+
+        /* Инвентарь Tom */
+        .tom-inventory {
+            margin-top: 40px;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .inventory-item {
+            background: var(--bg);
+            border: 2px solid var(--border);
             border-radius: 12px;
-            font-size: 16px;
+            padding: 20px;
+            text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin: 5px;
         }
 
-        .play-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+        .inventory-item:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
         }
 
         /* Крестики-нолики */
+        .tic-tac-toe-game {
+            text-align: center;
+        }
+
+        .tic-modes {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .mode-btn {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            color: var(--text);
+            padding: 15px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .mode-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
         .tic-board {
             display: grid;
             grid-template-columns: repeat(3, 100px);
             grid-template-rows: repeat(3, 100px);
-            gap: 5px;
-            margin: 20px auto;
+            gap: 10px;
+            margin: 30px auto;
             width: fit-content;
         }
 
         .tic-cell {
             background: var(--bg);
-            border: 2px solid var(--border);
-            border-radius: 10px;
+            border: 3px solid var(--border);
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 48px;
+            font-size: 56px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -619,70 +909,167 @@
         .tic-cell:hover {
             background: var(--primary);
             border-color: var(--accent);
+            transform: scale(1.05);
         }
 
-        /* Кликер */
-        .clicker-money {
-            font-size: 48px;
-            font-weight: bold;
+        .tic-cell.x {
+            color: #ef4444;
+        }
+
+        .tic-cell.o {
+            color: #3b82f6;
+        }
+
+        /* Кликер - Современный дизайн */
+        .clicker-game {
             text-align: center;
-            margin: 20px 0;
+        }
+
+        .clicker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .clicker-stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
             color: var(--accent);
         }
 
-        .clicker-btn {
-            display: block;
-            margin: 30px auto;
-            background: var(--warning);
-            color: white;
+        .clicker-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        @media (max-width: 768px) {
+            .clicker-main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .clicker-button {
+            background: linear-gradient(135deg, var(--warning) 0%, #f59e0b 100%);
             border: none;
-            padding: 25px 50px;
-            font-size: 24px;
-            border-radius: 20px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
             cursor: pointer;
             transition: all 0.1s ease;
+            box-shadow: 0 20px 40px rgba(245, 158, 11, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
         }
 
-        .clicker-btn:active {
+        .clicker-button:active {
             transform: scale(0.95);
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.4);
         }
 
-        .clicker-upgrades {
+        .upgrades-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .upgrade-card {
+            background: var(--bg);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upgrade-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .upgrade-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .upgrade-icon {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+
+        .upgrade-price {
+            color: var(--success);
+            font-weight: 700;
+            font-size: 18px;
+            margin-top: 15px;
+        }
+
+        /* Магазин кликера */
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
             margin: 30px 0;
         }
 
-        .upgrade {
+        .shop-item {
             background: var(--bg);
-            padding: 20px;
-            border-radius: 12px;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
             border: 2px solid var(--border);
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .upgrade:hover {
+        .shop-item:hover {
             border-color: var(--primary);
             transform: translateY(-5px);
         }
 
-        .upgrade-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: bold;
-            margin-bottom: 10px;
+        .shop-item-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
         }
 
-        .upgrade-price {
-            color: var(--success);
-            font-weight: bold;
-            margin-top: 10px;
+        .egg-animation {
+            animation: pulse 2s infinite;
         }
 
-        /* CS игра */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* CS 1.6 стиль */
         .cs-game {
             display: none;
             position: fixed;
@@ -691,7 +1078,7 @@
             width: 100%;
             height: 100%;
             background: #000;
-            z-index: 2000;
+            z-index: 3000;
         }
 
         #cs-canvas {
@@ -703,63 +1090,79 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 20px;
-        }
-
-        .cs-controls {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
             right: 20px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Arial', sans-serif;
         }
 
-        .weapon-selector {
+        .cs-hud-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .cs-weapons {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             gap: 10px;
         }
 
-        .weapon-btn {
+        .cs-weapon {
             background: rgba(0,0,0,0.7);
-            color: white;
             border: 2px solid #666;
-            padding: 10px 15px;
+            padding: 10px 20px;
+            color: white;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .weapon-btn:hover, .weapon-btn.active {
+        .cs-weapon:hover, .cs-weapon.active {
             border-color: #4cc9f0;
             background: rgba(76, 201, 240, 0.2);
         }
 
         .cs-exit {
-            background: rgba(239, 68, 68, 0.7);
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(239, 68, 68, 0.8);
             color: white;
             border: none;
-            padding: 15px 25px;
+            padding: 15px 30px;
             border-radius: 10px;
             cursor: pointer;
             font-size: 18px;
+            font-weight: bold;
         }
 
         /* Настройки */
         .settings-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
+        }
+
+        .setting-card {
+            background: var(--bg);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid var(--border);
         }
 
         .theme-selector {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             flex-wrap: wrap;
         }
 
@@ -767,10 +1170,16 @@
             flex: 1;
             padding: 15px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             color: white;
-            font-weight: bold;
+            font-weight: 600;
+            min-width: 120px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover {
+            transform: translateY(-3px);
         }
 
         .theme-dark {
@@ -790,11 +1199,14 @@
             box-shadow: 0 0 0 3px var(--accent);
         }
 
-        .toggle {
+        .toggle-group {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            padding: 15px;
+            background: var(--card);
+            border-radius: 12px;
         }
 
         .toggle-switch {
@@ -842,30 +1254,123 @@
             transform: translateX(26px);
         }
 
+        /* Чат-бот */
+        .chat-bot {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .chat-bot-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .chat-bot-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(124, 58, 237, 0.6);
+        }
+
+        .chat-bot-modal {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 350px;
+            max-height: 500px;
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            z-index: 1001;
+            border: 2px solid var(--border);
+            overflow: hidden;
+        }
+
+        .chat-bot-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 20px;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-bot-messages {
+            height: 350px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .bot-message {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+
+        .bot-message.user {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            margin-left: auto;
+        }
+
+        .chat-bot-input {
+            display: flex;
+            padding: 20px;
+            border-top: 2px solid var(--border);
+        }
+
+        .chat-bot-input input {
+            flex: 1;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            color: var(--text);
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+
         /* Адаптивность */
         @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .nav {
+                padding: 10px;
+                overflow-x: scroll;
+            }
+            
+            .tab {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+            
             .chat-container {
                 grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .tom-stats {
+                grid-template-columns: repeat(2, 1fr);
             }
             
             .clocks-grid {
                 grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .translator {
-                padding: 10px;
-            }
-            
-            .lang-selector {
-                flex-direction: column;
-            }
-            
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .tom-stats {
-                grid-template-columns: 1fr;
             }
         }
 
@@ -878,9 +1383,19 @@
                 grid-template-columns: 1fr;
             }
             
+            .tom-stats {
+                grid-template-columns: 1fr;
+            }
+            
             .tic-board {
                 grid-template-columns: repeat(3, 80px);
                 grid-template-rows: repeat(3, 80px);
+            }
+            
+            .chat-bot-modal {
+                width: 90%;
+                right: 5%;
+                bottom: 80px;
             }
         }
     </style>
@@ -889,14 +1404,16 @@
     <!-- Экран логина -->
     <div class="login-screen">
         <div class="login-container">
-            <h1 style="font-size: 32px; margin-bottom: 30px; color: white;">👨‍💻 Выберите пользователя</h1>
-            <p style="margin-bottom: 30px; opacity: 0.9; color: white;">Выберите пользователя для входа в систему</p>
+            <h1 style="font-size: 36px; margin-bottom: 30px; color: white; font-weight: 800;">🎮 Game Platform</h1>
+            <p style="margin-bottom: 40px; opacity: 0.9; color: white; font-size: 18px;">Выберите пользователя для входа</p>
             
-            <div id="user-list" style="display: flex; flex-wrap: wrap; justify-content: center; margin: 20px 0;">
+            <div id="user-list" style="display: flex; flex-wrap: wrap; justify-content: center; margin: 30px 0; gap: 15px;">
                 <!-- Пользователи будут созданы через JS -->
             </div>
             
-            <button class="login-btn" onclick="login()">🚀 Начать</button>
+            <button class="login-btn" onclick="login()">
+                <span style="margin-right: 10px;">🚀</span> Начать игру
+            </button>
         </div>
     </div>
 
@@ -907,25 +1424,44 @@
             <div class="user-info">
                 <div class="user-avatar" id="current-avatar">N</div>
                 <div>
-                    <div style="font-weight: bold; font-size: 18px;" id="current-username">Никита</div>
+                    <div style="font-weight: 800; font-size: 20px;" id="current-username">Никита</div>
                     <div class="balance" id="balance">$1000</div>
                 </div>
             </div>
             
-            <div style="display: flex; gap: 10px;">
-                <button class="play-btn" onclick="openSettings()" style="background: var(--warning);">⚙️ Настройки</button>
-                <button class="play-btn" onclick="exitApp()" style="background: var(--danger);">🚪 Выход</button>
+            <div style="display: flex; gap: 15px;">
+                <button class="voice-btn" onclick="openSettings()" style="background: var(--warning);">
+                    <span style="margin-right: 8px;">⚙️</span> Настройки
+                </button>
+                <button class="voice-btn" onclick="exitApp()" style="background: var(--danger);">
+                    <span style="margin-right: 8px;">🚪</span> Выход
+                </button>
             </div>
         </div>
         
+        <!-- Нотификации -->
+        <div class="notifications" id="notifications"></div>
+        
         <!-- Навигация -->
         <nav class="nav">
-            <button class="tab active" data-page="cloud">☁️ Облако</button>
-            <button class="tab" data-page="games">🎮 Игры</button>
-            <button class="tab" data-page="translator">🔤 Переводчик</button>
-            <button class="tab" data-page="clocks">🕐 Часы мира</button>
-            <button class="tab" data-page="chat">💬 Чат</button>
-            <button class="tab" data-page="maps">🗺️ Карты</button>
+            <button class="tab active" data-page="cloud">
+                <span>☁️</span> Облако
+            </button>
+            <button class="tab" data-page="games">
+                <span>🎮</span> Игры
+            </button>
+            <button class="tab" data-page="translator">
+                <span>🔤</span> Переводчик
+            </button>
+            <button class="tab" data-page="clocks">
+                <span>🕐</span> Часы мира
+            </button>
+            <button class="tab" data-page="chat">
+                <span>💬</span> Чат
+            </button>
+            <button class="tab" data-page="maps">
+                <span>🗺️</span> Карты
+            </button>
         </nav>
         
         <!-- Основное содержимое -->
@@ -933,8 +1469,10 @@
             <!-- Облако -->
             <section id="cloud" class="page active">
                 <div class="cloud-header">
-                    <h2 style="font-size: 28px;">☁️ Облачное хранилище</h2>
-                    <button class="play-btn" onclick="addFile()">+ Добавить файл</button>
+                    <h2 style="font-size: 32px; font-weight: 800;">☁️ Облачное хранилище</h2>
+                    <button class="voice-btn" onclick="addFile()">
+                        <span style="margin-right: 10px;">+</span> Добавить файл
+                    </button>
                 </div>
                 <div class="files-grid" id="files-grid">
                     <!-- Файлы будут созданы через JS -->
@@ -943,45 +1481,50 @@
             
             <!-- Игры -->
             <section id="games" class="page">
-                <h2 style="font-size: 28px; margin-bottom: 20px;">🎮 Игры</h2>
+                <h2 style="font-size: 32px; margin-bottom: 30px; font-weight: 800;">🎮 Игры</h2>
                 <div class="games-grid">
                     <div class="game-card" onclick="startCS()">
                         <div class="game-icon">🔫</div>
-                        <div class="game-title">Counter-Strike 3D</div>
-                        <div style="opacity: 0.8; margin-top: 10px;">3D шутер с ботами</div>
+                        <div class="game-title">Counter-Strike 1.6</div>
+                        <div class="game-desc">Классический шутер с ботами и мультиплеером</div>
                     </div>
                     
                     <div class="game-card" onclick="startTalkingTom()">
                         <div class="game-icon">😺</div>
                         <div class="game-title">My Talking Tom 2</div>
-                        <div style="opacity: 0.8; margin-top: 10px;">Заботься о питомце</div>
+                        <div class="game-desc">Заботься о питомце, кейсы, инвентарь</div>
                     </div>
                     
                     <div class="game-card" onclick="startTicTacToe()">
                         <div class="game-icon">❌⭕</div>
                         <div class="game-title">Крестики-нолики</div>
-                        <div style="opacity: 0.8; margin-top: 10px;">Классическая игра</div>
+                        <div class="game-desc">Играй с ботом или вызывай друзей на дуэль</div>
                     </div>
                     
                     <div class="game-card" onclick="startClicker()">
                         <div class="game-icon">💰</div>
-                        <div class="game-title">Кликер игра</div>
-                        <div style="opacity: 0.8; margin-top: 10px;">Зарабатывай кликами</div>
+                        <div class="game-title">Кликер Pro</div>
+                        <div class="game-desc">Зарабатывай, покупай яйца, выращивай питомцев</div>
                     </div>
                 </div>
             </section>
             
             <!-- Переводчик -->
             <section id="translator" class="page">
-                <div class="translator">
-                    <h2 style="font-size: 28px; margin-bottom: 30px;">🔤 Переводчик</h2>
+                <div class="translator-container">
+                    <h2 style="font-size: 32px; margin-bottom: 35px; font-weight: 800; text-align: center;">🔤 Переводчик</h2>
                     
                     <div class="lang-selector">
                         <div class="lang-box">
                             <select id="lang-from">
                                 <option value="ru">🇷🇺 Русский</option>
                                 <option value="en">🇺🇸 Английский</option>
+                                <option value="es">🇪🇸 Испанский</option>
+                                <option value="de">🇩🇪 Немецкий</option>
+                                <option value="fr">🇫🇷 Французский</option>
                                 <option value="zh">🇨🇳 Китайский</option>
+                                <option value="ja">🇯🇵 Японский</option>
+                                <option value="ko">🇰🇷 Корейский</option>
                                 <option value="ar">🇸🇦 Арабский</option>
                             </select>
                         </div>
@@ -992,30 +1535,54 @@
                             <select id="lang-to">
                                 <option value="en">🇺🇸 Английский</option>
                                 <option value="ru">🇷🇺 Русский</option>
+                                <option value="es">🇪🇸 Испанский</option>
+                                <option value="de">🇩🇪 Немецкий</option>
+                                <option value="fr">🇫🇷 Французский</option>
                                 <option value="zh">🇨🇳 Китайский</option>
+                                <option value="ja">🇯🇵 Японский</option>
+                                <option value="ko">🇰🇷 Корейский</option>
                                 <option value="ar">🇸🇦 Арабский</option>
                             </select>
                         </div>
                     </div>
                     
-                    <div style="margin: 20px 0; text-align: center;">
-                        <button class="voice-btn" onclick="startVoiceInput()">🎤 Голосовой ввод</button>
-                        <button class="voice-btn" onclick="speakTranslation()">🔊 Озвучить</button>
+                    <div class="voice-controls">
+                        <button class="voice-btn" onclick="startVoiceInput()">
+                            <span>🎤</span> Голосовой ввод
+                        </button>
+                        <button class="voice-btn" onclick="speakTranslation()">
+                            <span>🔊</span> Озвучить
+                        </button>
+                        <button class="voice-btn" onclick="clearTranslation()" style="background: var(--danger);">
+                            <span>🗑️</span> Очистить
+                        </button>
                     </div>
                     
-                    <div style="margin-bottom: 20px;">
-                        <textarea id="input-text" placeholder="Введите текст для перевода..." oninput="translate()"></textarea>
-                    </div>
-                    
-                    <div>
-                        <textarea id="output-text" placeholder="Перевод..." readonly></textarea>
+                    <div class="translation-box">
+                        <div>
+                            <h3 style="margin-bottom: 15px; font-weight: 700;">Исходный текст</h3>
+                            <textarea id="input-text" placeholder="Введите текст для перевода..." oninput="translateText()"></textarea>
+                            <div style="margin-top: 10px; opacity: 0.7; font-size: 14px;">
+                                <span id="char-count">0</span> символов
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 style="margin-bottom: 15px; font-weight: 700;">Перевод</h3>
+                            <textarea id="output-text" placeholder="Результат перевода..." readonly></textarea>
+                            <div style="margin-top: 10px; display: flex; gap: 10px;">
+                                <button class="voice-btn" onclick="copyTranslation()" style="padding: 8px 15px; font-size: 14px;">
+                                    📋 Копировать
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
             
             <!-- Часы мира -->
             <section id="clocks" class="page">
-                <h2 style="font-size: 28px; margin-bottom: 20px;">🕐 Часы мира</h2>
+                <h2 style="font-size: 32px; margin-bottom: 30px; font-weight: 800;">🕐 Часы мира</h2>
                 <div class="clocks-grid" id="clocks-grid">
                     <!-- Часы будут созданы через JS -->
                 </div>
@@ -1025,22 +1592,22 @@
             <section id="chat" class="page">
                 <div class="chat-container">
                     <div class="chat-users">
-                        <h3 style="margin-bottom: 15px;">Пользователи</h3>
+                        <h3 style="margin-bottom: 20px; font-size: 22px; font-weight: 800;">👥 Пользователи</h3>
                         <div class="chat-list" id="chat-users">
                             <!-- Пользователи будут созданы через JS -->
                         </div>
-                        <div style="opacity: 0.7; font-size: 14px; text-align: center; margin-top: 20px;">
-                            Для личных сообщений выберите пользователя
+                        <div style="opacity: 0.7; font-size: 14px; text-align: center; margin-top: 25px; padding: 15px; background: var(--bg); border-radius: 10px;">
+                            💡 Для личных сообщений выберите пользователя. Красные - офлайн, зеленые - онлайн.
                         </div>
                     </div>
                     
                     <div class="chat-messages">
-                        <h3 id="chat-title" style="margin-bottom: 20px;">Общий чат</h3>
+                        <h3 id="chat-title" style="margin-bottom: 25px; font-size: 24px; font-weight: 800;">💬 Общий чат</h3>
                         <div class="messages-list" id="messages-list">
                             <!-- Сообщения будут созданы через JS -->
                         </div>
                         <div class="chat-input">
-                            <input type="text" id="chat-message" placeholder="Введите сообщение...">
+                            <input type="text" id="chat-message" placeholder="Введите сообщение... (Enter для отправки)">
                             <button class="chat-send" onclick="sendMessage()">➤</button>
                         </div>
                     </div>
@@ -1049,70 +1616,121 @@
             
             <!-- Карты -->
             <section id="maps" class="page">
-                <div style="height: 100%;" id="map-container">
+                <h2 style="font-size: 32px; margin-bottom: 30px; font-weight: 800;">🗺️ Карты</h2>
+                <div class="map-container" id="map-container">
                     <!-- Карта будет загружена через JS -->
                 </div>
             </section>
         </main>
     </div>
 
-    <!-- CS 3D Игра -->
+    <!-- Чат-бот -->
+    <div class="chat-bot">
+        <button class="chat-bot-btn" onclick="toggleChatBot()">🤖</button>
+        <div class="chat-bot-modal" id="chat-bot-modal">
+            <div class="chat-bot-header">
+                <span>🤖 Помощник</span>
+                <button class="close-btn" onclick="toggleChatBot()" style="width: 30px; height: 30px; font-size: 18px;">×</button>
+            </div>
+            <div class="chat-bot-messages" id="chat-bot-messages">
+                <div class="bot-message">
+                    <div style="font-weight: 700; margin-bottom: 5px;">🤖 Помощник:</div>
+                    <div>Привет! Я ваш помощник. Чем могу помочь?</div>
+                </div>
+            </div>
+            <div class="chat-bot-input">
+                <input type="text" id="bot-input" placeholder="Спросите что-нибудь..." onkeypress="if(event.key === 'Enter') sendBotMessage()">
+                <button class="chat-send" onclick="sendBotMessage()" style="width: 50px; margin-left: 10px;">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CS 1.6 -->
     <div class="cs-game" id="cs-game">
         <canvas id="cs-canvas"></canvas>
         <div class="cs-hud">
-            <div id="cs-health">❤️ 100</div>
-            <div id="cs-money">💰 $800</div>
-            <div id="cs-kills">🎯 0 убийств</div>
-            <div id="cs-ammo">🔫 30/90</div>
-        </div>
-        <div class="cs-controls">
-            <div class="weapon-selector">
-                <button class="weapon-btn" onclick="selectWeapon('akm')">🔫 AKM</button>
-                <button class="weapon-btn" onclick="selectWeapon('awp')">🎯 AWP</button>
-                <button class="weapon-btn" onclick="selectWeapon('glock')">🔫 GLOCK</button>
-                <button class="weapon-btn" onclick="selectWeapon('deagle')">🔫 DEAGLE</button>
+            <div class="cs-hud-item">
+                <span>❤️</span>
+                <span id="cs-health">100</span>
             </div>
-            <button class="cs-exit" onclick="exitCS()">🚪 Выход</button>
+            <div class="cs-hud-item">
+                <span>💰</span>
+                <span id="cs-money">$800</span>
+            </div>
+            <div class="cs-hud-item">
+                <span>🎯</span>
+                <span id="cs-kills">0 убийств</span>
+            </div>
+            <div class="cs-hud-item">
+                <span>🔫</span>
+                <span id="cs-ammo">30/90</span>
+            </div>
         </div>
+        <div class="cs-weapons">
+            <button class="cs-weapon" onclick="selectWeapon('ak47')">🔫 AK-47</button>
+            <button class="cs-weapon" onclick="selectWeapon('awp')">🎯 AWP</button>
+            <button class="cs-weapon" onclick="selectWeapon('m4a1')">🔫 M4A1</button>
+            <button class="cs-weapon" onclick="selectWeapon('deagle')">🔫 Deagle</button>
+        </div>
+        <button class="cs-exit" onclick="exitCS()">🚪 Выход</button>
     </div>
 
     <!-- My Talking Tom 2 -->
     <div id="talking-tom-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="font-size: 24px;">My Talking Tom 2</h2>
+                <h2 style="font-size: 28px; font-weight: 800;">😺 My Talking Tom 2</h2>
                 <button class="close-btn" onclick="closeModal('talking-tom-modal')">×</button>
             </div>
             
-            <div class="talking-tom">
+            <div class="tom-game">
                 <div class="tom-container">
-                    <div class="tom-body" onclick="petTom()">
-                        <div class="tom-face">
-                            <div class="tom-eye left"></div>
-                            <div class="tom-eye right"></div>
-                            <div class="tom-mouth"></div>
-                        </div>
+                    <div class="tom-pet" onclick="petTom()" id="tom-pet">
+                        <div class="tom-eye left"></div>
+                        <div class="tom-eye right"></div>
+                        <div class="tom-mouth"></div>
                     </div>
                 </div>
                 
                 <div class="tom-stats">
                     <div class="tom-stat">
                         <div style="font-weight: 700;">😊 Настроение</div>
-                        <div id="tom-happiness">100%</div>
+                        <div class="tom-stat-value" id="tom-happiness">100%</div>
                     </div>
                     <div class="tom-stat">
                         <div style="font-weight: 700;">🍖 Голод</div>
-                        <div id="tom-hunger">100%</div>
+                        <div class="tom-stat-value" id="tom-hunger">100%</div>
                     </div>
                     <div class="tom-stat">
                         <div style="font-weight: 700;">💰 Деньги</div>
-                        <div id="tom-money">$100</div>
+                        <div class="tom-stat-value" id="tom-money">$100</div>
+                    </div>
+                    <div class="tom-stat">
+                        <div style="font-weight: 700;">🎁 Кейсы</div>
+                        <div class="tom-stat-value" id="tom-cases">0</div>
                     </div>
                 </div>
                 
-                <div style="margin-top: 30px; text-align: center;">
-                    <button class="play-btn" onclick="feedTom()" style="margin-bottom: 10px;">🍖 Покормить ($10)</button>
-                    <button class="play-btn" onclick="playWithTom()" style="background: var(--secondary);">🎮 Поиграть</button>
+                <div style="margin: 30px 0; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                    <button class="voice-btn" onclick="feedTom()">
+                        <span style="margin-right: 8px;">🍖</span> Покормить ($10)
+                    </button>
+                    <button class="voice-btn" onclick="playWithTom()" style="background: var(--secondary);">
+                        <span style="margin-right: 8px;">🎮</span> Поиграть
+                    </button>
+                    <button class="voice-btn" onclick="buyTomCase()" style="background: var(--accent);">
+                        <span style="margin-right: 8px;">🎁</span> Купить кейс ($50)
+                    </button>
+                    <button class="voice-btn" onclick="openTomCase()" style="background: var(--warning);">
+                        <span style="margin-right: 8px;">🎯</span> Открыть кейс
+                    </button>
+                </div>
+                
+                <div class="tom-inventory">
+                    <h3 style="margin-bottom: 20px; font-size: 22px; font-weight: 700;">🎒 Инвентарь</h3>
+                    <div class="inventory-grid" id="tom-inventory">
+                        <!-- Инвентарь будет создан через JS -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -1122,131 +1740,188 @@
     <div id="tic-tac-toe-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="font-size: 24px;">Крестики-нолики</h2>
+                <h2 style="font-size: 28px; font-weight: 800;">❌⭕ Крестики-нолики</h2>
                 <button class="close-btn" onclick="closeModal('tic-tac-toe-modal')">×</button>
             </div>
             
-            <div class="tic-tac-toe">
-                <div style="margin-bottom: 20px; text-align: center;">
-                    <select id="tic-mode" style="background: var(--card); border: 2px solid var(--primary); color: var(--text); padding: 10px; border-radius: 10px; width: 200px;">
-                        <option value="bot">🤖 Против бота</option>
-                        <option value="player">👥 Против игрока</option>
+            <div class="tic-tac-toe-game">
+                <div class="tic-modes">
+                    <button class="mode-btn active" onclick="setTicMode('bot')">🤖 Против бота</button>
+                    <button class="mode-btn" onclick="setTicMode('friend')">👥 Вызвать друга</button>
+                </div>
+                
+                <div id="friend-selector" style="display: none; margin: 20px 0; text-align: center;">
+                    <select id="friend-select" style="background: var(--card); border: 2px solid var(--primary); color: var(--text); padding: 10px; border-radius: 10px; width: 250px; font-size: 16px;">
+                        <option value="">Выберите друга</option>
+                        <!-- Друзья будут добавлены через JS -->
                     </select>
+                    <button class="voice-btn" onclick="challengeFriend()" style="margin-left: 15px; padding: 10px 20px;">🎯 Вызвать на дуэль</button>
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <div id="tic-player" style="font-size: 20px; font-weight: 700; margin-bottom: 10px;">Игрок: Никита (❌)</div>
+                    <div id="tic-opponent" style="opacity: 0.8;">Противник: Бот (⭕)</div>
                 </div>
                 
                 <div class="tic-board" id="tic-board"></div>
                 
-                <div style="text-align: center; margin-top: 20px;">
-                    <div id="tic-status" style="margin-bottom: 15px; font-size: 18px; font-weight: 700;"></div>
-                    <button class="play-btn" onclick="resetTicTacToe()">Новая игра</button>
+                <div style="text-align: center; margin-top: 30px;">
+                    <div id="tic-status" style="margin-bottom: 20px; font-size: 22px; font-weight: 700; color: var(--accent);">Ход: ❌</div>
+                    <div style="display: flex; justify-content: center; gap: 15px;">
+                        <button class="voice-btn" onclick="resetTicTacToe()">🔄 Новая игра</button>
+                        <button class="voice-btn" onclick="closeModal('tic-tac-toe-modal')" style="background: var(--danger);">🚪 Выйти</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Кликер -->
+    <!-- Кликер Pro -->
     <div id="clicker-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="font-size: 24px;">Кликер игра</h2>
+                <h2 style="font-size: 28px; font-weight: 800;">💰 Кликер Pro</h2>
                 <button class="close-btn" onclick="closeModal('clicker-modal')">×</button>
             </div>
             
             <div class="clicker-game">
-                <div class="clicker-money" id="clicker-money">$0</div>
-                <button class="clicker-btn" onclick="clickMoney()">КЛИК!</button>
+                <div class="clicker-header">
+                    <div>
+                        <div style="font-size: 14px; opacity: 0.8;">Баланс</div>
+                        <div class="stat-value" id="clicker-money">$0</div>
+                    </div>
+                    <div class="clicker-stats">
+                        <div class="stat-box">
+                            <div style="font-size: 14px; opacity: 0.8;">Клик</div>
+                            <div class="stat-value" id="clicker-per-click">$1</div>
+                        </div>
+                        <div class="stat-box">
+                            <div style="font-size: 14px; opacity: 0.8;">Авто</div>
+                            <div class="stat-value" id="clicker-auto">$0/сек</div>
+                        </div>
+                        <div class="stat-box">
+                            <div style="font-size: 14px; opacity: 0.8;">Множитель</div>
+                            <div class="stat-value" id="clicker-multiplier">1.0x</div>
+                        </div>
+                    </div>
+                </div>
                 
-                <div class="clicker-upgrades">
-                    <div class="upgrade" onclick="buyUpgrade('click')">
-                        <div class="upgrade-title">
-                            <span>💪</span>
-                            <span>Сила клика</span>
-                        </div>
-                        <div style="opacity: 0.8; margin: 10px 0;">+$1 за клик</div>
-                        <div class="upgrade-price" id="click-price">Цена: $10</div>
+                <div class="clicker-main">
+                    <div style="text-align: center;">
+                        <h3 style="margin-bottom: 20px; font-size: 22px;">Кликай!</h3>
+                        <button class="clicker-button" onclick="clickMoney()" id="clicker-button">
+                            КЛИК!
+                        </button>
+                        <div style="margin-top: 20px; opacity: 0.8;">Нажми для заработка денег</div>
                     </div>
                     
-                    <div class="upgrade" onclick="buyUpgrade('auto')">
-                        <div class="upgrade-title">
-                            <span>⚡</span>
-                            <span>Автокликер</span>
+                    <div>
+                        <h3 style="margin-bottom: 20px; font-size: 22px;">Буст</h3>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <button class="voice-btn" onclick="activateBoost('2x')" style="background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);">
+                                <span>⚡</span> 2x на 30 сек ($500)
+                            </button>
+                            <button class="voice-btn" onclick="activateBoost('5x')" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                                <span>🚀</span> 5x на 20 сек ($2000)
+                            </button>
+                            <button class="voice-btn" onclick="activateBoost('10x')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                                <span>💥</span> 10x на 10 сек ($5000)
+                            </button>
                         </div>
-                        <div style="opacity: 0.8; margin: 10px 0;">+$0.5/сек</div>
-                        <div class="upgrade-price" id="auto-price">Цена: $100</div>
                     </div>
-                    
-                    <div class="upgrade" onclick="buyUpgrade('multiplier')">
-                        <div class="upgrade-title">
-                            <span>🚀</span>
-                            <span>Множитель</span>
+                </div>
+                
+                <div style="margin: 40px 0;">
+                    <h3 style="margin-bottom: 25px; font-size: 24px; text-align: center;">Улучшения</h3>
+                    <div class="upgrades-grid">
+                        <div class="upgrade-card" onclick="buyUpgrade('click')">
+                            <div class="upgrade-icon">💪</div>
+                            <div style="font-weight: 700; margin-bottom: 10px; font-size: 18px;">Сила клика</div>
+                            <div style="opacity: 0.8; margin-bottom: 15px;">+$1 за клик</div>
+                            <div class="upgrade-price" id="click-price">Цена: $10</div>
                         </div>
-                        <div style="opacity: 0.8; margin: 10px 0;">×1.2 ко всему</div>
-                        <div class="upgrade-price" id="multiplier-price">Цена: $1000</div>
-                    </div>
-                    
-                    <div class="upgrade" onclick="buyRebirth()">
-                        <div class="upgrade-title">
-                            <span>🔄</span>
-                            <span>Перерождение</span>
+                        
+                        <div class="upgrade-card" onclick="buyUpgrade('auto')">
+                            <div class="upgrade-icon">⚡</div>
+                            <div style="font-weight: 700; margin-bottom: 10px; font-size: 18px;">Автокликер</div>
+                            <div style="opacity: 0.8; margin-bottom: 15px;">+$0.5/сек</div>
+                            <div class="upgrade-price" id="auto-price">Цена: $100</div>
                         </div>
-                        <div style="opacity: 0.8; margin: 10px 0;">+0.5x множитель</div>
-                        <div class="upgrade-price" id="rebirth-price">Цена: $10000</div>
+                        
+                        <div class="upgrade-card" onclick="buyUpgrade('multiplier')">
+                            <div class="upgrade-icon">🚀</div>
+                            <div style="font-weight: 700; margin-bottom: 10px; font-size: 18px;">Множитель</div>
+                            <div style="opacity: 0.8; margin-bottom: 15px;">×1.2 ко всему</div>
+                            <div class="upgrade-price" id="multiplier-price">Цена: $1000</div>
+                        </div>
+                        
+                        <div class="upgrade-card" onclick="buyRebirth()">
+                            <div class="upgrade-icon">🔄</div>
+                            <div style="font-weight: 700; margin-bottom: 10px; font-size: 18px;">Перерождение</div>
+                            <div style="opacity: 0.8; margin-bottom: 15px;">+0.5x множитель</div>
+                            <div class="upgrade-price" id="rebirth-price">Цена: $10000</div>
+                        </div>
                     </div>
                 </div>
                 
                 <div style="margin-top: 30px; text-align: center;">
-                    <div id="rebirth-count" style="margin-bottom: 10px;">Перерождений: 0</div>
-                    <div id="multiplier" style="margin-bottom: 20px;">Множитель: 1x</div>
-                    <button class="play-btn" onclick="openShop()" style="background: var(--warning);">🛒 Магазин</button>
+                    <div id="rebirth-count" style="margin-bottom: 15px; font-size: 18px; font-weight: 700;">Перерождений: 0</div>
+                    <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 30px;">
+                        <button class="voice-btn" onclick="openShop()" style="background: var(--warning);">
+                            <span style="margin-right: 10px;">🛒</span> Магазин яиц
+                        </button>
+                        <button class="voice-btn" onclick="openPets()" style="background: var(--accent);">
+                            <span style="margin-right: 10px;">🐾</span> Мои питомцы
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Магазин кликера -->
+    <!-- Магазин яиц -->
     <div id="shop-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="font-size: 24px;">🛒 Магазин</h2>
+                <h2 style="font-size: 28px; font-weight: 800;">🛒 Магазин яиц</h2>
                 <button class="close-btn" onclick="closeModal('shop-modal')">×</button>
             </div>
             
-            <div style="margin: 20px 0;">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
-                    <div class="upgrade" onclick="buyEgg('common')">
-                        <div style="font-size: 40px; margin-bottom: 10px;">🥚</div>
-                        <div style="font-weight: 700; margin-bottom: 5px;">Обычное яйцо</div>
-                        <div style="opacity: 0.8; margin-bottom: 10px;">Шанс обычного питомца</div>
-                        <div style="color: var(--success); font-weight: 700;">$100</div>
+            <div style="margin: 30px 0;">
+                <div class="shop-grid">
+                    <div class="shop-item egg-animation" onclick="buyEgg('common')">
+                        <div class="shop-item-icon">🥚</div>
+                        <div style="font-weight: 800; margin-bottom: 10px; font-size: 20px;">Обычное яйцо</div>
+                        <div style="opacity: 0.8; margin-bottom: 15px; font-size: 14px;">70% обычный питомец<br>25% редкий<br>5% эпический</div>
+                        <div style="color: var(--success); font-weight: 800; font-size: 20px;">$100</div>
                     </div>
                     
-                    <div class="upgrade" onclick="buyEgg('rare')">
-                        <div style="font-size: 40px; margin-bottom: 10px;">🔵</div>
-                        <div style="font-weight: 700; margin-bottom: 5px;">Редкое яйцо</div>
-                        <div style="opacity: 0.8; margin-bottom: 10px;">Шанс редкого питомца</div>
-                        <div style="color: var(--success); font-weight: 700;">$500</div>
+                    <div class="shop-item egg-animation" onclick="buyEgg('rare')" style="border-color: #3b82f6;">
+                        <div class="shop-item-icon">🔵</div>
+                        <div style="font-weight: 800; margin-bottom: 10px; font-size: 20px;">Редкое яйцо</div>
+                        <div style="opacity: 0.8; margin-bottom: 15px; font-size: 14px;">50% редкий питомец<br>40% эпический<br>10% легендарный</div>
+                        <div style="color: #3b82f6; font-weight: 800; font-size: 20px;">$500</div>
                     </div>
                     
-                    <div class="upgrade" onclick="buyEgg('epic')">
-                        <div style="font-size: 40px; margin-bottom: 10px;">🟣</div>
-                        <div style="font-weight: 700; margin-bottom: 5px;">Эпическое яйцо</div>
-                        <div style="opacity: 0.8; margin-bottom: 10px;">Шанс эпического питомца</div>
-                        <div style="color: var(--success); font-weight: 700;">$2000</div>
+                    <div class="shop-item egg-animation" onclick="buyEgg('epic')" style="border-color: #8b5cf6;">
+                        <div class="shop-item-icon">🟣</div>
+                        <div style="font-weight: 800; margin-bottom: 10px; font-size: 20px;">Эпическое яйцо</div>
+                        <div style="opacity: 0.8; margin-bottom: 15px; font-size: 14px;">70% эпический питомец<br>25% легендарный<br>5% мифический</div>
+                        <div style="color: #8b5cf6; font-weight: 800; font-size: 20px;">$2000</div>
                     </div>
                     
-                    <div class="upgrade" onclick="buyBuff()">
-                        <div style="font-size: 40px; margin-bottom: 10px;">⚡</div>
-                        <div style="font-weight: 700; margin-bottom: 5px;">Буфф ×2</div>
-                        <div style="opacity: 0.8; margin-bottom: 10px;">×2 к кликам на 30 сек</div>
-                        <div style="color: var(--success); font-weight: 700;">$500</div>
+                    <div class="shop-item egg-animation" onclick="buyEgg('legendary')" style="border-color: #f59e0b;">
+                        <div class="shop-item-icon">⭐</div>
+                        <div style="font-weight: 800; margin-bottom: 10px; font-size: 20px;">Легендарное яйцо</div>
+                        <div style="opacity: 0.8; margin-bottom: 15px; font-size: 14px;">90% легендарный питомец<br>10% мифический</div>
+                        <div style="color: #f59e0b; font-weight: 800; font-size: 20px;">$5000</div>
                     </div>
                 </div>
                 
-                <div style="margin-top: 30px;">
-                    <h3 style="margin-bottom: 15px;">Ваши питомцы</h3>
-                    <div id="pets-list" style="display: flex; flex-wrap: wrap; gap: 10px;">
-                        <!-- Питомцы будут созданы через JS -->
-                    </div>
+                <div style="text-align: center; margin-top: 40px;">
+                    <button class="voice-btn" onclick="openEggs()" style="background: var(--accent); padding: 15px 30px;">
+                        <span style="margin-right: 10px;">🎁</span> Мои яйца
+                    </button>
                 </div>
             </div>
         </div>
@@ -1256,13 +1931,13 @@
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="font-size: 24px;">Настройки</h2>
+                <h2 style="font-size: 28px; font-weight: 800;">⚙️ Настройки</h2>
                 <button class="close-btn" onclick="closeModal('settings-modal')">×</button>
             </div>
             
             <div class="settings-grid">
-                <div class="setting">
-                    <h3 style="margin-bottom: 15px;">🎨 Тема</h3>
+                <div class="setting-card">
+                    <h3 style="margin-bottom: 20px; font-size: 22px;">🎨 Тема</h3>
                     <div class="theme-selector">
                         <button class="theme-btn theme-dark active" onclick="setTheme('dark')">Тёмная</button>
                         <button class="theme-btn theme-light" onclick="setTheme('light')">Светлая</button>
@@ -1270,25 +1945,33 @@
                     </div>
                 </div>
                 
-                <div class="setting">
-                    <h3 style="margin-bottom: 15px;">❄️ Снежинки</h3>
-                    <div class="toggle">
-                        <span>Включить снег</span>
+                <div class="setting-card">
+                    <h3 style="margin-bottom: 20px; font-size: 22px;">❄️ Снег</h3>
+                    <div class="toggle-group">
+                        <span>Включить снежинки</span>
                         <label class="toggle-switch">
                             <input type="checkbox" id="snow-toggle" checked>
                             <span class="slider"></span>
                         </label>
                     </div>
-                    <div style="opacity: 0.7; font-size: 14px; margin-top: 10px;">
-                        Снег работает только в тёмной и фиолетовой теме
+                    <div style="opacity: 0.7; font-size: 14px; margin-top: 15px;">
+                        Снежинки работают в тёмной и фиолетовой теме. Для работы требуется перезагрузка.
                     </div>
                 </div>
                 
-                <div class="setting">
-                    <h3 style="margin-bottom: 15px;">💾 Данные</h3>
-                    <button class="play-btn" onclick="exportData()" style="margin-bottom: 10px; width: 100%;">Экспорт данных</button>
-                    <button class="play-btn" onclick="importData()" style="margin-bottom: 10px; width: 100%; background: var(--secondary);">Импорт данных</button>
-                    <button class="play-btn" onclick="clearData()" style="width: 100%; background: var(--danger);">Очистить данные</button>
+                <div class="setting-card">
+                    <h3 style="margin-bottom: 20px; font-size: 22px;">💾 Данные</h3>
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <button class="voice-btn" onclick="exportData()" style="width: 100%; justify-content: center;">
+                            <span style="margin-right: 10px;">📤</span> Экспорт данных
+                        </button>
+                        <button class="voice-btn" onclick="importData()" style="width: 100%; justify-content: center; background: var(--secondary);">
+                            <span style="margin-right: 10px;">📥</span> Импорт данных
+                        </button>
+                        <button class="voice-btn" onclick="clearData()" style="width: 100%; justify-content: center; background: var(--danger);">
+                            <span style="margin-right: 10px;">🗑️</span> Очистить данные
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1305,22 +1988,31 @@ let appData = JSON.parse(localStorage.getItem('platform_data')) || {
     online: {},
     settings: { theme: 'dark', snow: true },
     chat: [],
-    cloud: []
+    cloud: [],
+    notifications: []
 };
 
-// Three.js для CS
-let csScene, csCamera, csRenderer, csPlayer, csBots = [], csBullets = [], csWalls = [];
+// Three.js для CS 1.6
+let csScene, csCamera, csRenderer, csPlayer, csBots = [];
 let csHealth = 100, csMoney = 800, csKills = 0, csAmmo = 30;
-let currentWeapon = 'akm';
+let currentWeapon = 'ak47';
 
-// Кликер
+// Кликер Pro
 let clickerMoney = 0;
 let clickerClickPower = 1;
 let clickerAutoClicker = 0;
 let clickerMultiplier = 1;
 let rebirths = 0;
 let pets = [];
-let activeBuff = false;
+let eggs = [];
+let activeBoost = null;
+
+// Talking Tom 2
+let tomHappiness = 100;
+let tomHunger = 100;
+let tomMoney = 100;
+let tomCases = 0;
+let tomInventory = [];
 
 // Чат
 let currentChat = 'general';
@@ -1333,6 +2025,12 @@ let chatMessages = {
     'Гость': []
 };
 
+// Уведомления
+let notifications = [];
+
+// Переводчик
+let translationCache = {};
+
 // ====================
 // НАВИГАЦИЯ
 // ====================
@@ -1342,19 +2040,51 @@ function setupNavigation() {
     
     tabs.forEach(tab => {
         tab.addEventListener('click', function() {
-            // Убираем активный класс у всех вкладок
             tabs.forEach(t => t.classList.remove('active'));
-            // Добавляем активный класс текущей вкладке
             this.classList.add('active');
             
-            // Скрываем все страницы
             pages.forEach(page => page.classList.remove('active'));
             
-            // Показываем выбранную страницу
             const pageId = this.getAttribute('data-page');
             document.getElementById(pageId).classList.add('active');
+            
+            // Особые действия при переключении
+            if (pageId === 'maps') loadMap();
         });
     });
+}
+
+// ====================
+// СНЕЖИНКИ
+// ====================
+function createSnowflakes() {
+    if (appData.settings.theme === 'light' || !appData.settings.snow) return;
+    
+    // Удаляем старые снежинки
+    document.querySelectorAll('.snowflake').forEach(s => s.remove());
+    
+    for (let i = 0; i < 80; i++) {
+        const snowflake = document.createElement('div');
+        snowflake.className = 'snowflake';
+        
+        const size = Math.random() * 15 + 5;
+        snowflake.style.width = `${size}px`;
+        snowflake.style.height = `${size}px`;
+        snowflake.style.left = `${Math.random() * 100}vw`;
+        snowflake.style.opacity = Math.random() * 0.6 + 0.2;
+        snowflake.style.animationDuration = `${Math.random() * 20 + 10}s`;
+        snowflake.style.animationDelay = `${Math.random() * 5}s`;
+        
+        document.body.appendChild(snowflake);
+        
+        setTimeout(() => {
+            if (snowflake.parentNode) {
+                snowflake.parentNode.removeChild(snowflake);
+            }
+        }, 30000);
+    }
+    
+    setTimeout(createSnowflakes, 15000);
 }
 
 // ====================
@@ -1368,7 +2098,7 @@ function initUserSelection() {
         const isOccupied = appData.online && appData.online[username];
         const btn = document.createElement('button');
         btn.className = `user-btn ${isOccupied ? 'occupied' : ''}`;
-        btn.textContent = username;
+        btn.innerHTML = `${username} ${isOccupied ? ' (🟢)' : ''}`;
         btn.onclick = () => selectUser(username, isOccupied);
         userList.appendChild(btn);
     });
@@ -1403,9 +2133,22 @@ function login() {
             balance: 1000,
             createdAt: Date.now(),
             games: {
-                cs: { kills: 0, deaths: 0 },
+                cs: { kills: 0, deaths: 0, money: 800 },
                 tic: { wins: 0, losses: 0 },
-                clicker: { money: 0, rebirths: 0 }
+                clicker: { 
+                    money: 0, 
+                    rebirths: 0,
+                    pets: [],
+                    eggs: [],
+                    upgrades: { click: 1, auto: 0, multiplier: 1 }
+                },
+                tom: {
+                    happiness: 100,
+                    hunger: 100,
+                    money: 100,
+                    cases: 0,
+                    inventory: []
+                }
             }
         };
     }
@@ -1430,7 +2173,7 @@ function initApp() {
     
     // Снежинки
     if (appData.settings.snow) {
-        createSnowflakes();
+        setTimeout(createSnowflakes, 1000);
     }
     
     // Обновляем интерфейс
@@ -1438,7 +2181,8 @@ function initApp() {
     loadCloudFiles();
     initWorldClocks();
     loadChat();
-    loadMap();
+    loadNotifications();
+    initChatBot();
     
     // Настройки
     setupEventListeners();
@@ -1454,41 +2198,74 @@ function updateUserInfo() {
 }
 
 function exitApp() {
-    if (confirm('Выйти с сайта?')) {
+    if (confirm('Выйти с платформы?')) {
+        // Удаляем из онлайн
+        if (appData.online && appData.online[currentUser]) {
+            delete appData.online[currentUser];
+            saveData();
+        }
         window.close();
     }
 }
 
 // ====================
-// СНЕЖИНКИ
+// УВЕДОМЛЕНИЯ
 // ====================
-function createSnowflakes() {
-    if (appData.settings.theme === 'light') return;
+function loadNotifications() {
+    const container = document.getElementById('notifications');
+    const userNotifications = appData.notifications.filter(n => n.to === currentUser);
     
-    for (let i = 0; i < 50; i++) {
-        const snowflake = document.createElement('div');
-        snowflake.className = 'snowflake';
-        
-        const size = Math.random() * 10 + 5;
-        snowflake.style.width = `${size}px`;
-        snowflake.style.height = `${size}px`;
-        snowflake.style.left = `${Math.random() * 100}vw`;
-        snowflake.style.opacity = Math.random() * 0.5 + 0.3;
-        snowflake.style.animationDuration = `${Math.random() * 10 + 10}s`;
-        snowflake.style.animationDelay = `${Math.random() * 5}s`;
-        
-        document.body.appendChild(snowflake);
-        
-        // Удаляем снежинку после анимации
-        setTimeout(() => {
-            if (snowflake.parentNode) {
-                snowflake.parentNode.removeChild(snowflake);
-            }
-        }, 15000);
-    }
+    container.innerHTML = '';
     
-    // Периодически создаем новые снежинки
-    setTimeout(createSnowflakes, 15000);
+    userNotifications.forEach((notification, index) => {
+        const div = document.createElement('div');
+        div.className = 'notification';
+        div.innerHTML = `
+            <div>
+                <div style="font-weight: 700; margin-bottom: 5px;">${notification.title}</div>
+                <div>${notification.message}</div>
+                ${notification.type === 'challenge' ? `
+                    <div class="notification-buttons">
+                        <button class="notification-btn accept" onclick="acceptChallenge(${index})">Принять</button>
+                        <button class="notification-btn decline" onclick="declineChallenge(${index})">Отклонить</button>
+                    </div>
+                ` : ''}
+            </div>
+            <button onclick="closeNotification(${index})" style="background: none; border: none; color: var(--text); cursor: pointer; font-size: 20px;">×</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function addNotification(to, title, message, type = 'info') {
+    appData.notifications.push({
+        to,
+        title,
+        message,
+        type,
+        timestamp: Date.now()
+    });
+    saveData();
+    loadNotifications();
+}
+
+function closeNotification(index) {
+    appData.notifications.splice(index, 1);
+    saveData();
+    loadNotifications();
+}
+
+function acceptChallenge(index) {
+    const notification = appData.notifications[index];
+    addNotification(notification.from, 'Вызов принят!', `${currentUser} принял ваш вызов!`, 'info');
+    closeNotification(index);
+    alert(`Вы приняли вызов от ${notification.from}!`);
+}
+
+function declineChallenge(index) {
+    const notification = appData.notifications[index];
+    addNotification(notification.from, 'Вызов отклонен', `${currentUser} отклонил ваш вызов`, 'info');
+    closeNotification(index);
 }
 
 // ====================
@@ -1499,7 +2276,13 @@ function loadCloudFiles() {
     const files = appData.cloud || [];
     
     if (files.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; opacity: 0.7;">Файлов пока нет. Добавьте первый файл!</div>';
+        grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px; opacity: 0.7; background: var(--card); border-radius: 20px; border: 2px dashed var(--border);">
+                <div style="font-size: 64px; margin-bottom: 20px;">☁️</div>
+                <div style="font-size: 20px; margin-bottom: 15px; font-weight: 700;">Файлов пока нет</div>
+                <div style="opacity: 0.8;">Добавьте первый файл!</div>
+            </div>
+        `;
         return;
     }
     
@@ -1518,6 +2301,10 @@ function getFileIcon(type) {
         'photo': '📷',
         'video': '🎬',
         'audio': '🎵',
+        'document': '📄',
+        'archive': '📦',
+        'code': '💻',
+        'pdf': '📕',
         'file': '📄'
     };
     return icons[type] || '📄';
@@ -1527,10 +2314,17 @@ function addFile() {
     const name = prompt('Введите название файла:');
     if (!name) return;
     
-    const type = prompt('Введите тип (photo, video, audio, file):') || 'file';
-    const size = Math.floor(Math.random() * 1000) + ' KB';
+    const types = ['photo', 'video', 'audio', 'document', 'archive', 'code', 'pdf'];
+    const type = prompt(`Введите тип (${types.join(', ')}):`) || 'file';
+    const size = `${Math.floor(Math.random() * 5000) + 100} KB`;
     
-    appData.cloud.push({ name, type, size, date: new Date().toLocaleString() });
+    appData.cloud.push({ 
+        name, 
+        type: types.includes(type) ? type : 'file', 
+        size, 
+        date: new Date().toLocaleString(),
+        owner: currentUser
+    });
     saveData();
     loadCloudFiles();
 }
@@ -1546,7 +2340,7 @@ function deleteFile(index) {
 // ====================
 // ИГРЫ
 // ====================
-// Counter-Strike 3D
+// Counter-Strike 1.6
 function startCS() {
     document.getElementById('cs-game').style.display = 'block';
     initCS();
@@ -1557,11 +2351,11 @@ function initCS() {
     
     // Сцена
     csScene = new THREE.Scene();
-    csScene.background = new THREE.Color(0x111122);
+    csScene.background = new THREE.Color(0x1a1a1a);
     
     // Камера
     csCamera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-    csCamera.position.set(0, 10, 20);
+    csCamera.position.set(0, 5, 10);
     
     // Рендерер
     csRenderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -1569,101 +2363,234 @@ function initCS() {
     csRenderer.shadowMap.enabled = true;
     
     // Освещение
-    const light = new THREE.AmbientLight(0x404040, 0.6);
-    csScene.add(light);
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+    csScene.add(ambientLight);
     
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    dirLight.position.set(10, 20, 10);
-    csScene.add(dirLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(10, 20, 10);
+    directionalLight.castShadow = true;
+    csScene.add(directionalLight);
     
-    // Пол
+    // Текстуры пола
     const floorGeometry = new THREE.PlaneGeometry(100, 100);
-    const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x2a2a2a });
+    const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x333333 });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
     csScene.add(floor);
     
-    // Игрок
-    createCSPlayer();
+    // Стены
+    const wallMaterial = new THREE.MeshPhongMaterial({ color: 0x666666 });
     
-    // Боты
-    createCSBots();
+    // Стена 1
+    const wall1 = new THREE.Mesh(
+        new THREE.BoxGeometry(80, 10, 2),
+        wallMaterial
+    );
+    wall1.position.set(0, 5, -40);
+    wall1.castShadow = true;
+    csScene.add(wall1);
+    
+    // Стена 2
+    const wall2 = new THREE.Mesh(
+        new THREE.BoxGeometry(2, 10, 80),
+        wallMaterial
+    );
+    wall2.position.set(-40, 5, 0);
+    wall2.castShadow = true;
+    csScene.add(wall2);
+    
+    // Стена 3
+    const wall3 = new THREE.Mesh(
+        new THREE.BoxGeometry(2, 10, 80),
+        wallMaterial
+    );
+    wall3.position.set(40, 5, 0);
+    wall3.castShadow = true;
+    csScene.add(wall3);
+    
+    // Игрок (CT модель)
+    createPlayer();
+    
+    // Боты (T модель)
+    createBots();
+    
+    // Оружие на земле
+    createWeapons();
     
     // Управление
     setupCSControls();
+    
+    // Анимация
+    animateCS();
 }
 
-function createCSPlayer() {
-    const geometry = new THREE.BoxGeometry(1, 2, 1);
-    const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
-    csPlayer = new THREE.Mesh(geometry, material);
-    csPlayer.position.y = 1;
+function createPlayer() {
+    // Голова
+    const headGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+    const headMaterial = new THREE.MeshPhongMaterial({ color: 0x4CAF50 }); // Зеленый для CT
+    const head = new THREE.Mesh(headGeometry, headMaterial);
+    head.position.y = 5.5;
+    
+    // Тело
+    const bodyGeometry = new THREE.BoxGeometry(1, 2, 1);
+    const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0x4CAF50 });
+    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    body.position.y = 4;
+    
+    csPlayer = new THREE.Group();
+    csPlayer.add(head);
+    csPlayer.add(body);
+    csPlayer.position.set(0, 0, 20);
+    csPlayer.castShadow = true;
+    
     csScene.add(csPlayer);
 }
 
-function createCSBots() {
-    for (let i = 0; i < 3; i++) {
-        const geometry = new THREE.BoxGeometry(1, 2, 1);
-        const material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
-        const bot = new THREE.Mesh(geometry, material);
+function createBots() {
+    const botColors = [0xFF5252, 0xFF4081, 0xE040FB]; // Красные для T
+    
+    for (let i = 0; i < 5; i++) {
+        const botGroup = new THREE.Group();
         
-        bot.position.set(
-            (Math.random() - 0.5) * 80,
-            1,
-            (Math.random() - 0.5) * 80
+        // Голова
+        const headGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+        const headMaterial = new THREE.MeshPhongMaterial({ 
+            color: botColors[i % botColors.length] 
+        });
+        const head = new THREE.Mesh(headGeometry, headMaterial);
+        head.position.y = 5.5;
+        
+        // Тело
+        const bodyGeometry = new THREE.BoxGeometry(1, 2, 1);
+        const bodyMaterial = new THREE.MeshPhongMaterial({ 
+            color: botColors[i % botColors.length] 
+        });
+        const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+        body.position.y = 4;
+        
+        botGroup.add(head);
+        botGroup.add(body);
+        
+        botGroup.position.set(
+            (Math.random() - 0.5) * 60,
+            0,
+            (Math.random() - 0.5) * 60 - 20
         );
         
-        csBots.push(bot);
-        csScene.add(bot);
+        botGroup.castShadow = true;
+        botGroup.userData.health = 100;
+        botGroup.userData.id = i;
+        
+        csScene.add(botGroup);
+        csBots.push(botGroup);
     }
+}
+
+function createWeapons() {
+    const weaponPositions = [
+        { x: -20, z: -20, type: 'ak47' },
+        { x: 20, z: -20, type: 'awp' },
+        { x: -20, z: 0, type: 'm4a1' },
+        { x: 20, z: 0, type: 'deagle' }
+    ];
+    
+    weaponPositions.forEach(pos => {
+        const weaponGeometry = new THREE.BoxGeometry(0.5, 0.5, 2);
+        const weaponMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+        const weapon = new THREE.Mesh(weaponGeometry, weaponMaterial);
+        weapon.position.set(pos.x, 1, pos.z);
+        weapon.rotation.x = Math.PI / 2;
+        weapon.castShadow = true;
+        weapon.userData.type = pos.type;
+        
+        csScene.add(weapon);
+    });
 }
 
 function setupCSControls() {
     const keys = {};
+    const mouse = { x: 0, y: 0 };
     
     window.addEventListener('keydown', (e) => {
         keys[e.key.toLowerCase()] = true;
         
         if (e.key === ' ') shoot();
         if (e.key === 'r') reload();
+        if (e.key === 'e') pickWeapon();
     });
     
     window.addEventListener('keyup', (e) => {
         keys[e.key.toLowerCase()] = false;
     });
     
-    function updateMovement() {
-        const speed = 0.2;
-        
-        if (keys['w']) csPlayer.position.z -= speed;
-        if (keys['s']) csPlayer.position.z += speed;
-        if (keys['a']) csPlayer.position.x -= speed;
-        if (keys['d']) csPlayer.position.x += speed;
-        
-        // Камера
-        csCamera.position.x = csPlayer.position.x;
-        csCamera.position.y = csPlayer.position.y + 5;
-        csCamera.position.z = csPlayer.position.z + 8;
-        csCamera.lookAt(csPlayer.position.x, csPlayer.position.y, csPlayer.position.z);
-    }
+    window.addEventListener('mousemove', (e) => {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
     
-    function animateCS() {
-        requestAnimationFrame(animateCS);
+    function updateMovement() {
+        const speed = 0.3;
+        const rotationSpeed = 0.03;
         
-        updateMovement();
+        // Поворот игрока
+        csPlayer.rotation.y -= mouse.x * rotationSpeed;
+        
+        // Движение
+        const direction = new THREE.Vector3();
+        csCamera.getWorldDirection(direction);
+        
+        if (keys['w']) {
+            csPlayer.position.x -= direction.x * speed;
+            csPlayer.position.z -= direction.z * speed;
+        }
+        if (keys['s']) {
+            csPlayer.position.x += direction.x * speed;
+            csPlayer.position.z += direction.z * speed;
+        }
+        if (keys['a']) {
+            csPlayer.position.x += direction.z * speed;
+            csPlayer.position.z -= direction.x * speed;
+        }
+        if (keys['d']) {
+            csPlayer.position.x -= direction.z * speed;
+            csPlayer.position.z += direction.x * speed;
+        }
+        
+        // Ограничение движения
+        csPlayer.position.x = Math.max(-38, Math.min(38, csPlayer.position.x));
+        csPlayer.position.z = Math.max(-38, Math.min(38, csPlayer.position.z));
+        
+        // Камера следует за игроком
+        csCamera.position.x = csPlayer.position.x;
+        csCamera.position.y = csPlayer.position.y + 8;
+        csCamera.position.z = csPlayer.position.z + 12;
+        csCamera.lookAt(csPlayer.position.x, csPlayer.position.y + 2, csPlayer.position.z);
         
         // Движение ботов
         csBots.forEach(bot => {
+            if (bot.userData.health <= 0) return;
+            
             const dx = csPlayer.position.x - bot.position.x;
             const dz = csPlayer.position.z - bot.position.z;
             const distance = Math.sqrt(dx * dx + dz * dz);
             
-            if (distance > 10) {
-                bot.position.x += (dx / distance) * 0.03;
-                bot.position.z += (dz / distance) * 0.03;
+            if (distance > 5) {
+                bot.position.x += (dx / distance) * 0.05;
+                bot.position.z += (dz / distance) * 0.05;
+                bot.lookAt(csPlayer.position);
+            }
+            
+            // Случайная стрельба бота
+            if (distance < 20 && Math.random() < 0.01) {
+                botShoot(bot);
             }
         });
-        
+    }
+    
+    function animateCS() {
+        requestAnimationFrame(animateCS);
+        updateMovement();
         csRenderer.render(csScene, csCamera);
     }
     
@@ -1676,82 +2603,173 @@ function shoot() {
     csAmmo--;
     updateCSHUD();
     
-    // Проверка попадания в ботов
-    csBots.forEach((bot, index) => {
-        const distance = csPlayer.position.distanceTo(bot.position);
-        if (distance < 5) {
+    // Создаем луч для проверки попадания
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(new THREE.Vector2(0, 0), csCamera);
+    
+    // Проверяем попадание в ботов
+    const intersects = raycaster.intersectObjects(csBots);
+    
+    if (intersects.length > 0) {
+        const bot = intersects[0].object.parent;
+        bot.userData.health -= 35;
+        
+        if (bot.userData.health <= 0) {
             csKills++;
             csMoney += 300;
             updateCSHUD();
             
-            // Удаляем бота
-            csScene.remove(bot);
-            csBots.splice(index, 1);
+            // Анимация смерти
+            bot.rotation.x = Math.PI / 2;
             
-            // Новый бот
-            setTimeout(createCSBots, 2000);
+            setTimeout(() => {
+                csScene.remove(bot);
+                csBots = csBots.filter(b => b !== bot);
+                
+                if (csBots.length < 3) {
+                    createBots();
+                }
+            }, 2000);
         }
-    });
+    }
+}
+
+function botShoot(bot) {
+    // Простой расчет попадания
+    const dx = csPlayer.position.x - bot.position.x;
+    const dz = csPlayer.position.z - bot.position.z;
+    const distance = Math.sqrt(dx * dx + dz * dz);
+    
+    if (distance < 15 && Math.random() < 0.3) {
+        csHealth -= 10;
+        updateCSHUD();
+        
+        if (csHealth <= 0) {
+            alert('Вы проиграли! Начинаем заново.');
+            resetCSGame();
+        }
+    }
+}
+
+function pickWeapon() {
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(new THREE.Vector2(0, 0), csCamera);
+    const intersects = raycaster.intersectObjects(csScene.children);
+    
+    for (const intersect of intersects) {
+        if (intersect.object.userData.type) {
+            currentWeapon = intersect.object.userData.type;
+            csAmmo = getWeaponAmmo(currentWeapon);
+            updateCSHUD();
+            csScene.remove(intersect.object);
+            alert(`Подобрали ${currentWeapon.toUpperCase()}!`);
+            break;
+        }
+    }
+}
+
+function getWeaponAmmo(weapon) {
+    const ammoMap = {
+        'ak47': 30,
+        'awp': 10,
+        'm4a1': 30,
+        'deagle': 7
+    };
+    return ammoMap[weapon] || 30;
 }
 
 function selectWeapon(weapon) {
     currentWeapon = weapon;
-    document.querySelectorAll('.weapon-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.cs-weapon').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
-    
-    switch(weapon) {
-        case 'akm': csAmmo = 30; break;
-        case 'awp': csAmmo = 10; break;
-        case 'glock': csAmmo = 20; break;
-        case 'deagle': csAmmo = 7; break;
-    }
-    
+    csAmmo = getWeaponAmmo(weapon);
     updateCSHUD();
 }
 
 function reload() {
-    csAmmo = currentWeapon === 'akm' ? 30 : 
-              currentWeapon === 'awp' ? 10 :
-              currentWeapon === 'glock' ? 20 : 7;
+    csAmmo = getWeaponAmmo(currentWeapon);
     updateCSHUD();
 }
 
 function updateCSHUD() {
-    document.getElementById('cs-health').textContent = `❤️ ${csHealth}`;
-    document.getElementById('cs-money').textContent = `💰 $${csMoney}`;
-    document.getElementById('cs-kills').textContent = `🎯 ${csKills} убийств`;
-    document.getElementById('cs-ammo').textContent = `🔫 ${csAmmo}`;
+    document.getElementById('cs-health').textContent = csHealth;
+    document.getElementById('cs-money').textContent = `$${csMoney}`;
+    document.getElementById('cs-kills').textContent = `${csKills} убийств`;
+    document.getElementById('cs-ammo').textContent = `${csAmmo}/${getWeaponAmmo(currentWeapon) * 3}`;
+}
+
+function resetCSGame() {
+    csHealth = 100;
+    csMoney = 800;
+    csKills = 0;
+    csAmmo = 30;
+    updateCSHUD();
+    
+    // Очищаем сцену и создаем заново
+    while(csScene.children.length > 0){ 
+        csScene.remove(csScene.children[0]); 
+    }
+    csBots = [];
+    initCS();
 }
 
 function exitCS() {
     document.getElementById('cs-game').style.display = 'none';
     csScene = null;
     csBots = [];
+    
+    // Сохраняем прогресс
+    if (appData.users[currentUser]) {
+        appData.users[currentUser].games.cs = {
+            kills: csKills,
+            money: csMoney,
+            health: csHealth
+        };
+        saveData();
+    }
 }
 
-// My Talking Tom 2
-let tomHappiness = 100;
-let tomHunger = 100;
-let tomMoney = 100;
-
+// My Talking Tom 2 - Улучшенная версия
 function startTalkingTom() {
     showModal('talking-tom-modal');
+    loadTomData();
+}
+
+function loadTomData() {
+    const userData = appData.users[currentUser];
+    const tomData = userData.games.tom || {
+        happiness: 100,
+        hunger: 100,
+        money: 100,
+        cases: 0,
+        inventory: []
+    };
+    
+    tomHappiness = tomData.happiness || 100;
+    tomHunger = tomData.hunger || 100;
+    tomMoney = tomData.money || 100;
+    tomCases = tomData.cases || 0;
+    tomInventory = tomData.inventory || [];
+    
     updateTomStats();
+    updateTomInventory();
 }
 
 function petTom() {
     tomHappiness = Math.min(100, tomHappiness + 10);
     tomMoney += 5;
+    animateTom();
     updateTomStats();
-    saveData();
+    saveTomData();
 }
 
 function feedTom() {
     if (tomMoney >= 10) {
         tomHunger = Math.min(100, tomHunger + 30);
         tomMoney -= 10;
+        tomHappiness = Math.min(100, tomHappiness + 5);
         updateTomStats();
-        saveData();
+        saveTomData();
     } else {
         alert('Недостаточно денег!');
     }
@@ -1761,24 +2779,168 @@ function playWithTom() {
     tomHappiness = Math.min(100, tomHappiness + 20);
     tomHunger = Math.max(0, tomHunger - 10);
     updateTomStats();
-    saveData();
+    saveTomData();
+}
+
+function buyTomCase() {
+    if (tomMoney >= 50) {
+        tomMoney -= 50;
+        tomCases++;
+        updateTomStats();
+        saveTomData();
+        alert('Кейс куплен! Откройте его в инвентаре.');
+    } else {
+        alert('Недостаточно денег! Нужно $50');
+    }
+}
+
+function openTomCase() {
+    if (tomCases <= 0) {
+        alert('Нет кейсов для открытия!');
+        return;
+    }
+    
+    tomCases--;
+    
+    // Случайная награда
+    const rewards = [
+        { name: '🍖 Еда', type: 'food', value: 20 },
+        { name: '💰 50$', type: 'money', value: 50 },
+        { name: '🎮 Игрушка', type: 'toy', value: 15 },
+        { name: '👕 Одежда', type: 'clothes', value: 30 },
+        { name: '💎 Драгоценность', type: 'jewelry', value: 100 }
+    ];
+    
+    const reward = rewards[Math.floor(Math.random() * rewards.length)];
+    
+    // Применяем награду
+    if (reward.type === 'food') {
+        tomHunger = Math.min(100, tomHunger + reward.value);
+    } else if (reward.type === 'money') {
+        tomMoney += reward.value;
+    } else if (reward.type === 'toy') {
+        tomHappiness = Math.min(100, tomHappiness + reward.value);
+    }
+    
+    // Добавляем в инвентарь
+    tomInventory.push(reward);
+    
+    updateTomStats();
+    updateTomInventory();
+    saveTomData();
+    
+    alert(`Вы открыли кейс и получили: ${reward.name} (+${reward.value})!`);
+}
+
+function animateTom() {
+    const tomPet = document.getElementById('tom-pet');
+    tomPet.style.transform = 'scale(1.1)';
+    setTimeout(() => {
+        tomPet.style.transform = 'scale(1)';
+    }, 300);
 }
 
 function updateTomStats() {
     document.getElementById('tom-happiness').textContent = `${tomHappiness}%`;
     document.getElementById('tom-hunger').textContent = `${tomHunger}%`;
     document.getElementById('tom-money').textContent = `$${tomMoney}`;
+    document.getElementById('tom-cases').textContent = tomCases;
 }
 
-// Крестики-нолики
+function updateTomInventory() {
+    const inventoryGrid = document.getElementById('tom-inventory');
+    
+    if (tomInventory.length === 0) {
+        inventoryGrid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px; opacity: 0.7;">
+                <div style="font-size: 48px; margin-bottom: 20px;">🎒</div>
+                <div>Инвентарь пуст</div>
+                <div style="font-size: 14px; margin-top: 10px;">Купите кейсы, чтобы получить предметы</div>
+            </div>
+        `;
+        return;
+    }
+    
+    inventoryGrid.innerHTML = tomInventory.map((item, index) => `
+        <div class="inventory-item">
+            <div style="font-size: 32px; margin-bottom: 10px;">${item.name.split(' ')[0]}</div>
+            <div style="font-size: 14px; opacity: 0.8;">${item.type}</div>
+            <div style="font-size: 12px; margin-top: 5px; color: var(--accent);">+${item.value}</div>
+        </div>
+    `).join('');
+}
+
+function saveTomData() {
+    appData.users[currentUser].games.tom = {
+        happiness: tomHappiness,
+        hunger: tomHunger,
+        money: tomMoney,
+        cases: tomCases,
+        inventory: tomInventory
+    };
+    saveData();
+}
+
+// Крестики-нолики с вызовом друзей
 let ticBoard = ['', '', '', '', '', '', '', '', ''];
 let ticCurrentPlayer = 'X';
 let ticGameActive = true;
 let ticMode = 'bot';
+let ticPlayerSymbol = 'X';
+let ticOpponent = 'bot';
 
 function startTicTacToe() {
     showModal('tic-tac-toe-modal');
     initTicTacToe();
+}
+
+function setTicMode(mode) {
+    ticMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    const friendSelector = document.getElementById('friend-selector');
+    if (mode === 'friend') {
+        friendSelector.style.display = 'block';
+        loadFriendsList();
+    } else {
+        friendSelector.style.display = 'none';
+        ticOpponent = 'bot';
+        document.getElementById('tic-opponent').textContent = 'Противник: Бот (⭕)';
+    }
+}
+
+function loadFriendsList() {
+    const select = document.getElementById('friend-select');
+    select.innerHTML = '<option value="">Выберите друга</option>';
+    
+    USERS.forEach(user => {
+        if (user !== currentUser) {
+            const isOnline = appData.online[user];
+            const option = document.createElement('option');
+            option.value = user;
+            option.textContent = `${user} ${isOnline ? '🟢' : '⚫'}`;
+            option.disabled = !isOnline;
+            select.appendChild(option);
+        }
+    });
+}
+
+function challengeFriend() {
+    const friend = document.getElementById('friend-select').value;
+    if (!friend) {
+        alert('Выберите друга!');
+        return;
+    }
+    
+    if (!appData.online[friend]) {
+        alert('Этот пользователь оффлайн!');
+        return;
+    }
+    
+    addNotification(friend, 'Вызов на дуэль!', `${currentUser} вызывает вас на игру в крестики-нолики!`, 'challenge');
+    alert(`Вызов отправлен ${friend}! Ожидайте ответа.`);
+    closeModal('tic-tac-toe-modal');
 }
 
 function initTicTacToe() {
@@ -1793,19 +2955,32 @@ function initTicTacToe() {
         board.appendChild(cell);
     }
     
-    ticMode = document.getElementById('tic-mode').value;
-    document.getElementById('tic-status').textContent = `Ход: ${ticCurrentPlayer}`;
+    document.getElementById('tic-player').textContent = `Игрок: ${currentUser} (❌)`;
+    document.getElementById('tic-status').textContent = 'Ход: ❌';
 }
 
 function makeMove(index) {
     if (!ticGameActive || ticBoard[index] !== '') return;
     
     ticBoard[index] = ticCurrentPlayer;
-    document.querySelector(`.tic-cell[data-index="${index}"]`).textContent = ticCurrentPlayer;
+    const cell = document.querySelector(`.tic-cell[data-index="${index}"]`);
+    cell.textContent = ticCurrentPlayer;
+    cell.classList.add(ticCurrentPlayer.toLowerCase());
     
     if (checkWin()) {
-        document.getElementById('tic-status').textContent = `Победил ${ticCurrentPlayer}!`;
+        document.getElementById('tic-status').textContent = `Победил ${ticCurrentPlayer === 'X' ? currentUser : ticOpponent}!`;
         ticGameActive = false;
+        
+        // Сохраняем статистику
+        if (appData.users[currentUser]) {
+            if (ticCurrentPlayer === 'X') {
+                appData.users[currentUser].games.tic.wins++;
+            } else {
+                appData.users[currentUser].games.tic.losses++;
+            }
+            saveData();
+        }
+        
         return;
     }
     
@@ -1816,7 +2991,7 @@ function makeMove(index) {
     }
     
     ticCurrentPlayer = ticCurrentPlayer === 'X' ? 'O' : 'X';
-    document.getElementById('tic-status').textContent = `Ход: ${ticCurrentPlayer}`;
+    document.getElementById('tic-status').textContent = `Ход: ${ticCurrentPlayer === 'X' ? '❌' : '⭕'}`;
     
     if (ticMode === 'bot' && ticCurrentPlayer === 'O') {
         setTimeout(makeBotMove, 500);
@@ -1826,9 +3001,42 @@ function makeMove(index) {
 function makeBotMove() {
     const availableMoves = ticBoard.map((cell, index) => cell === '' ? index : -1).filter(i => i !== -1);
     if (availableMoves.length > 0) {
-        const randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
-        makeMove(randomMove);
+        // Простой ИИ: сначала пытаемся выиграть, потом блокировать, потом случайный ход
+        let move = -1;
+        
+        // Проверяем выигрышный ход
+        move = findWinningMove('O');
+        if (move === -1) {
+            // Блокируем выигрыш соперника
+            move = findWinningMove('X');
+        }
+        if (move === -1) {
+            // Случайный ход
+            move = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+        }
+        
+        makeMove(move);
     }
+}
+
+function findWinningMove(player) {
+    const lines = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+    ];
+    
+    for (const line of lines) {
+        const [a,b,c] = line;
+        const cells = [ticBoard[a], ticBoard[b], ticBoard[c]];
+        const emptyIndex = line[cells.indexOf('')];
+        
+        if (cells.filter(c => c === player).length === 2 && cells.includes('')) {
+            return emptyIndex;
+        }
+    }
+    
+    return -1;
 }
 
 function checkWin() {
@@ -1855,7 +3063,7 @@ function resetTicTacToe() {
     initTicTacToe();
 }
 
-// Кликер
+// Кликер Pro
 function startClicker() {
     showModal('clicker-modal');
     loadClickerData();
@@ -1863,12 +3071,21 @@ function startClicker() {
 
 function loadClickerData() {
     const userData = appData.users[currentUser];
-    clickerMoney = userData.games.clicker.money || 0;
-    clickerClickPower = userData.games.clicker.clickPower || 1;
-    clickerAutoClicker = userData.games.clicker.autoClicker || 0;
-    clickerMultiplier = userData.games.clicker.multiplier || 1;
-    rebirths = userData.games.clicker.rebirths || 0;
-    pets = userData.games.clicker.pets || [];
+    const clickerData = userData.games.clicker || {
+        money: 0,
+        rebirths: 0,
+        pets: [],
+        eggs: [],
+        upgrades: { click: 1, auto: 0, multiplier: 1 }
+    };
+    
+    clickerMoney = clickerData.money || 0;
+    clickerClickPower = clickerData.upgrades.click || 1;
+    clickerAutoClicker = clickerData.upgrades.auto || 0;
+    clickerMultiplier = clickerData.upgrades.multiplier || 1;
+    rebirths = clickerData.rebirths || 0;
+    pets = clickerData.pets || [];
+    eggs = clickerData.eggs || [];
     
     updateClickerUI();
     
@@ -1880,9 +3097,19 @@ function loadClickerData() {
 
 function clickMoney() {
     let gain = clickerClickPower * clickerMultiplier;
-    if (activeBuff) gain *= 2;
+    if (activeBoost) {
+        gain *= activeBoost.multiplier;
+    }
     
     clickerMoney += gain;
+    
+    // Анимация кнопки
+    const button = document.getElementById('clicker-button');
+    button.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        button.style.transform = 'scale(1)';
+    }, 100);
+    
     updateClickerUI();
     saveClickerData();
 }
@@ -1921,7 +3148,36 @@ function buyUpgrade(type) {
         updateClickerUI();
         saveClickerData();
     } else {
-        alert('Недостаточно денег!');
+        alert(`Недостаточно денег! Нужно: $${cost}`);
+    }
+}
+
+function activateBoost(type) {
+    const boosts = {
+        '2x': { multiplier: 2, duration: 30, cost: 500 },
+        '5x': { multiplier: 5, duration: 20, cost: 2000 },
+        '10x': { multiplier: 10, duration: 10, cost: 5000 }
+    };
+    
+    const boost = boosts[type];
+    if (clickerMoney >= boost.cost) {
+        clickerMoney -= boost.cost;
+        activeBoost = { ...boost, endTime: Date.now() + boost.duration * 1000 };
+        
+        updateClickerUI();
+        saveClickerData();
+        
+        alert(`Буст ${type} активирован на ${boost.duration} секунд!`);
+        
+        // Таймер буста
+        setTimeout(() => {
+            if (activeBoost && activeBoost.multiplier === boost.multiplier) {
+                activeBoost = null;
+                updateClickerUI();
+            }
+        }, boost.duration * 1000);
+    } else {
+        alert(`Недостаточно денег! Нужно: $${boost.cost}`);
     }
 }
 
@@ -1929,20 +3185,25 @@ function buyRebirth() {
     const cost = 10000 * Math.pow(2, rebirths);
     
     if (clickerMoney >= cost) {
-        if (confirm(`Переродиться за $${cost}?\n+0.5x к множителю навсегда!`)) {
+        if (confirm(`Переродиться за $${cost}?\nВы получите:\n+0.5x к множителю\nНовый питомец\nВсе улучшения сбросятся`)) {
             clickerMoney = 0;
             rebirths++;
             clickerMultiplier += 0.5;
             clickerClickPower = 1;
             clickerAutoClicker = 0;
-            activeBuff = false;
+            activeBoost = null;
+            
+            // Даем случайного питомца за перерождение
+            const petTypes = ['🐉 Дракон', '🦄 Единорог', '🧌 Огр', '🧜 Русалка', '👻 Призрак'];
+            const pet = petTypes[Math.floor(Math.random() * petTypes.length)];
+            pets.push({ name: pet, rarity: 'legendary', level: 1 });
             
             updateClickerUI();
             saveClickerData();
-            alert(`Перерождение #${rebirths} завершено!`);
+            alert(`Перерождение #${rebirths} завершено!\nВы получили: ${pet}`);
         }
     } else {
-        alert('Недостаточно денег!');
+        alert(`Недостаточно денег! Нужно: $${cost}`);
     }
 }
 
@@ -1953,7 +3214,9 @@ function startAutoClicker() {
     
     window.autoClickerInterval = setInterval(() => {
         let gain = clickerAutoClicker * 0.5 * clickerMultiplier;
-        if (activeBuff) gain *= 2;
+        if (activeBoost) {
+            gain *= activeBoost.multiplier;
+        }
         
         clickerMoney += gain;
         updateClickerUI();
@@ -1964,149 +3227,163 @@ function startAutoClicker() {
 function openShop() {
     closeModal('clicker-modal');
     showModal('shop-modal');
-    updateShop();
 }
 
 function buyEgg(type) {
     const prices = {
         'common': 100,
         'rare': 500,
-        'epic': 2000
+        'epic': 2000,
+        'legendary': 5000
     };
     
     const price = prices[type];
     if (clickerMoney >= price) {
         clickerMoney -= price;
         
-        // Случайный питомец
-        const petTypes = {
-            'common': ['🐱 Кот', '🐶 Собака', '🐰 Кролик', '🐦 Птица'],
-            'rare': ['🐲 Дракон', '🦄 Единорог', '🐺 Волк', '🦅 Орёл'],
-            'epic': ['👻 Призрак', '🧚 Фея', '🧌 Огр', '🧜 Русалка']
-        };
-        
-        const pet = petTypes[type][Math.floor(Math.random() * petTypes[type].length)];
-        pets.push({ name: pet, type: type });
+        // Добавляем яйцо
+        eggs.push({
+            type: type,
+            id: Date.now(),
+            progress: 0
+        });
         
         updateClickerUI();
-        updateShop();
         saveClickerData();
         
-        alert(`Вы получили питомца: ${pet}`);
+        alert(`Вы купили ${type} яйцо! Откройте его в инвентаре.`);
     } else {
-        alert('Недостаточно денег!');
+        alert(`Недостаточно денег! Нужно: $${price}`);
     }
 }
 
-function buyBuff() {
-    if (clickerMoney >= 500) {
-        clickerMoney -= 500;
-        activeBuff = true;
-        
-        updateClickerUI();
-        saveClickerData();
-        
-        setTimeout(() => {
-            activeBuff = false;
-            updateClickerUI();
-        }, 30000);
-        
-        alert('Буфф ×2 активирован на 30 секунд!');
-    } else {
-        alert('Недостаточно денег!');
+function openEggs() {
+    alert('Инвентарь яиц будет в следующем обновлении!');
+}
+
+function openPets() {
+    if (pets.length === 0) {
+        alert('У вас пока нет питомцев. Купите яйца в магазине!');
+        return;
     }
+    
+    let message = 'Ваши питомцы:\n\n';
+    pets.forEach((pet, index) => {
+        message += `${index + 1}. ${pet.name} (${pet.rarity}) Ур. ${pet.level}\n`;
+    });
+    
+    alert(message);
 }
 
 function updateClickerUI() {
     document.getElementById('clicker-money').textContent = `$${Math.floor(clickerMoney)}`;
+    document.getElementById('clicker-per-click').textContent = `$${(clickerClickPower * clickerMultiplier * (activeBoost ? activeBoost.multiplier : 1)).toFixed(1)}`;
+    document.getElementById('clicker-auto').textContent = `$${(clickerAutoClicker * 0.5 * clickerMultiplier * (activeBoost ? activeBoost.multiplier : 1)).toFixed(1)}/сек`;
+    document.getElementById('clicker-multiplier').textContent = `${clickerMultiplier.toFixed(1)}x${activeBoost ? ` +${activeBoost.multiplier}x` : ''}`;
+    
     document.getElementById('click-price').textContent = `Цена: $${10 * Math.pow(2, clickerClickPower - 1)}`;
     document.getElementById('auto-price').textContent = `Цена: $${100 * Math.pow(2, clickerAutoClicker)}`;
     document.getElementById('multiplier-price').textContent = `Цена: $${1000 * Math.pow(2, clickerMultiplier - 1)}`;
     document.getElementById('rebirth-price').textContent = `Цена: $${10000 * Math.pow(2, rebirths)}`;
     document.getElementById('rebirth-count').textContent = `Перерождений: ${rebirths}`;
-    document.getElementById('multiplier').textContent = `Множитель: ${clickerMultiplier.toFixed(1)}x ${activeBuff ? '(×2 БУФФ)' : ''}`;
-}
-
-function updateShop() {
-    const petsList = document.getElementById('pets-list');
-    petsList.innerHTML = pets.length === 0 ? 
-        '<div style="opacity: 0.7;">Питомцев пока нет</div>' :
-        pets.map(pet => `
-            <div style="background: var(--card); padding: 10px; border-radius: 10px; border: 2px solid var(--primary);">
-                <div style="font-size: 24px;">${pet.name.split(' ')[0]}</div>
-                <div style="font-size: 12px; opacity: 0.8;">${pet.type}</div>
-            </div>
-        `).join('');
 }
 
 function saveClickerData() {
     appData.users[currentUser].games.clicker = {
         money: clickerMoney,
-        clickPower: clickerClickPower,
-        autoClicker: clickerAutoClicker,
-        multiplier: clickerMultiplier,
         rebirths: rebirths,
-        pets: pets
+        pets: pets,
+        eggs: eggs,
+        upgrades: {
+            click: clickerClickPower,
+            auto: clickerAutoClicker,
+            multiplier: clickerMultiplier
+        }
     };
     saveData();
 }
 
 // ====================
-// ПЕРЕВОДЧИК
+// ПЕРЕВОДЧИК (Google Translate style)
 // ====================
-const translations = {
-    'ru-en': {
-        'привет': 'hello',
-        'здравствуйте': 'hello',
-        'как дела': 'how are you',
-        'спасибо': 'thank you',
-        'пожалуйста': 'you are welcome',
-        'да': 'yes',
-        'нет': 'no',
-        'хорошо': 'good',
-        'плохо': 'bad',
-        'я': 'i',
-        'ты': 'you',
-        'мы': 'we'
-    },
-    'en-ru': {
-        'hello': 'привет',
-        'hi': 'привет',
-        'how are you': 'как дела',
-        'thank you': 'спасибо',
-        'yes': 'да',
-        'no': 'нет',
-        'good': 'хорошо',
-        'bad': 'плохо',
-        'i': 'я',
-        'you': 'ты',
-        'we': 'мы'
-    },
-    'ru-zh': {
-        'привет': '你好',
-        'спасибо': '谢谢',
-        'да': '是',
-        'нет': '不'
-    },
-    'zh-ru': {
-        '你好': 'привет',
-        '谢谢': 'спасибо',
-        '是': 'да',
-        '不': 'нет'
-    },
-    'ru-ar': {
-        'привет': 'مرحبا',
-        'спасибо': 'شكرا',
-        'да': 'نعم',
-        'нет': 'لا'
-    },
-    'ar-ru': {
-        'مرحبا': 'привет',
-        'شكرا': 'спасибо',
-        'نعم': 'да',
-        'لا': 'нет'
+async function translateText() {
+    const text = document.getElementById('input-text').value;
+    const from = document.getElementById('lang-from').value;
+    const to = document.getElementById('lang-to').value;
+    
+    // Обновляем счетчик символов
+    document.getElementById('char-count').textContent = text.length;
+    
+    if (!text.trim()) {
+        document.getElementById('output-text').value = '';
+        return;
     }
-};
+    
+    // Проверяем кэш
+    const cacheKey = `${from}-${to}-${text}`;
+    if (translationCache[cacheKey]) {
+        document.getElementById('output-text').value = translationCache[cacheKey];
+        return;
+    }
+    
+    try {
+        // Используем бесплатный API перевода (MyMemory)
+        const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`);
+        const data = await response.json();
+        
+        if (data.responseData) {
+            const translated = data.responseData.translatedText;
+            translationCache[cacheKey] = translated;
+            document.getElementById('output-text').value = translated;
+        } else {
+            // Fallback на локальный словарь
+            localTranslate(text, from, to);
+        }
+    } catch (error) {
+        console.error('Translation error:', error);
+        localTranslate(text, from, to);
+    }
+}
+
+function localTranslate(text, from, to) {
+    const dictionaries = {
+        'ru-en': {
+            'привет': 'hello',
+            'как дела': 'how are you',
+            'спасибо': 'thank you',
+            'пожалуйста': 'you are welcome',
+            'да': 'yes',
+            'нет': 'no',
+            'хорошо': 'good',
+            'плохо': 'bad'
+        },
+        'en-ru': {
+            'hello': 'привет',
+            'how are you': 'как дела',
+            'thank you': 'спасибо',
+            'yes': 'да',
+            'no': 'нет',
+            'good': 'хорошо',
+            'bad': 'плохо'
+        }
+    };
+    
+    const key = `${from}-${to}`;
+    const dict = dictionaries[key];
+    let result = text;
+    
+    if (dict) {
+        for (const [word, translation] of Object.entries(dict)) {
+            const regex = new RegExp(`\\b${word}\\b`, 'gi');
+            result = result.replace(regex, translation);
+        }
+    } else {
+        // Простой псевдоперевод для других языков
+        result = `[Перевод ${from} → ${to}]: ${text}`;
+    }
+    
+    document.getElementById('output-text').value = result;
+}
 
 function swapLanguages() {
     const from = document.getElementById('lang-from');
@@ -2114,38 +3391,7 @@ function swapLanguages() {
     const temp = from.value;
     from.value = to.value;
     to.value = temp;
-    translate();
-}
-
-function translate() {
-    const text = document.getElementById('input-text').value.toLowerCase();
-    const from = document.getElementById('lang-from').value;
-    const to = document.getElementById('lang-to').value;
-    
-    if (!text.trim()) {
-        document.getElementById('output-text').value = '';
-        return;
-    }
-    
-    const key = `${from}-${to}`;
-    const dict = translations[key];
-    
-    if (dict) {
-        let result = text;
-        for (const [key, value] of Object.entries(dict)) {
-            if (text.includes(key)) {
-                result = result.replace(new RegExp(key, 'gi'), value);
-            }
-        }
-        document.getElementById('output-text').value = result.charAt(0).toUpperCase() + result.slice(1);
-    } else {
-        // Псевдоперевод
-        const translated = text.split(' ').map(word => {
-            if (Math.random() > 0.5) return word + '...';
-            return word;
-        }).join(' ');
-        document.getElementById('output-text').value = `[ПЕРЕВОД]: ${translated}`;
-    }
+    translateText();
 }
 
 function speakTranslation() {
@@ -2155,6 +3401,7 @@ function speakTranslation() {
     if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = document.getElementById('lang-to').value;
+        utterance.rate = 0.9;
         speechSynthesis.speak(utterance);
     }
 }
@@ -2164,15 +3411,33 @@ function startVoiceInput() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
         recognition.lang = document.getElementById('lang-from').value;
+        recognition.interimResults = false;
         
         recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
             document.getElementById('input-text').value = transcript;
-            translate();
+            translateText();
         };
         
         recognition.start();
+    } else {
+        alert('Голосовой ввод не поддерживается вашим браузером');
     }
+}
+
+function clearTranslation() {
+    document.getElementById('input-text').value = '';
+    document.getElementById('output-text').value = '';
+    document.getElementById('char-count').textContent = '0';
+}
+
+function copyTranslation() {
+    const text = document.getElementById('output-text').value;
+    if (!text.trim()) return;
+    
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Перевод скопирован в буфер обмена!');
+    });
 }
 
 // ====================
@@ -2180,14 +3445,15 @@ function startVoiceInput() {
 // ====================
 const timezones = {
     'Москва': 'Europe/Moscow',
+    'Лондон': 'Europe/London',
+    'Нью-Йорк': 'America/New_York',
+    'Токио': 'Asia/Tokyo',
     'Дубай': 'Asia/Dubai',
-    'Киев': 'Europe/Kiev',
+    'Сидней': 'Australia/Sydney',
+    'Пекин': 'Asia/Shanghai',
     'Париж': 'Europe/Paris',
     'Берлин': 'Europe/Berlin',
-    'Токио': 'Asia/Tokyo',
-    'Пекин': 'Asia/Shanghai',
-    'Сеул': 'Asia/Seoul',
-    'Ташкент': 'Asia/Tashkent'
+    'Торонто': 'America/Toronto'
 };
 
 function initWorldClocks() {
@@ -2214,7 +3480,11 @@ function updateClocks() {
     
     Object.keys(timezones).forEach(city => {
         try {
-            const timeString = now.toLocaleTimeString('ru-RU', { timeZone: timezones[city] });
+            const timeString = now.toLocaleTimeString('ru-RU', { 
+                timeZone: timezones[city],
+                hour12: false 
+            });
+            
             const dateString = now.toLocaleDateString('ru-RU', { 
                 timeZone: timezones[city],
                 weekday: 'long',
@@ -2240,18 +3510,23 @@ function loadChat() {
     usersList.innerHTML = `
         <div class="chat-user active" onclick="switchChat('general')">
             <div style="font-weight: 700;">💬 Общий чат</div>
-            <div style="font-size: 12px; opacity: 0.7;">Все пользователи</div>
+            <div style="font-size: 13px; opacity: 0.7;">Все пользователи</div>
         </div>
     `;
     
     USERS.forEach(user => {
         if (user !== currentUser) {
+            const isOnline = appData.online[user];
             const userDiv = document.createElement('div');
             userDiv.className = 'chat-user';
             userDiv.onclick = () => switchChat(user);
             userDiv.innerHTML = `
-                <div style="font-weight: 700;">👤 ${user}</div>
-                <div style="font-size: 12px; opacity: 0.7;">${appData.online[user] ? '🟢 Онлайн' : '⚫ Офлайн'}</div>
+                <div style="font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                    <span>👤</span>
+                    <span>${user}</span>
+                    <span style="font-size: 10px; color: ${isOnline ? '#10b981' : '#ef4444'}">●</span>
+                </div>
+                <div style="font-size: 12px; opacity: 0.7;">${isOnline ? '🟢 Онлайн' : '⚫ Офлайн'}</div>
             `;
             usersList.appendChild(userDiv);
         }
@@ -2275,11 +3550,24 @@ function showMessages() {
     const list = document.getElementById('messages-list');
     const messages = chatMessages[currentChat] || [];
     
+    if (messages.length === 0) {
+        list.innerHTML = `
+            <div style="text-align: center; padding: 40px; opacity: 0.7;">
+                <div style="font-size: 48px; margin-bottom: 20px;">💬</div>
+                <div style="font-size: 18px; margin-bottom: 10px;">Нет сообщений</div>
+                <div>Напишите первое сообщение!</div>
+            </div>
+        `;
+        return;
+    }
+    
     list.innerHTML = messages.map(msg => `
         <div class="message ${msg.sender === currentUser ? 'sent' : 'received'}">
-            <div style="font-weight: 700; margin-bottom: 5px;">${msg.sender}</div>
-            <div>${msg.text}</div>
-            <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">${msg.time}</div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <div style="font-weight: 700;">${msg.sender}</div>
+                <div style="font-size: 12px; opacity: 0.7;">${msg.time}</div>
+            </div>
+            <div style="line-height: 1.5;">${msg.text}</div>
         </div>
     `).join('');
     
@@ -2299,15 +3587,14 @@ function sendMessage() {
     };
     
     // Сохраняем сообщение
+    if (!chatMessages[currentChat]) {
+        chatMessages[currentChat] = [];
+    }
     chatMessages[currentChat].push(message);
     
-    // Если личное сообщение, сохраняем и у получателя
+    // Если личное сообщение, отправляем уведомление
     if (currentChat !== 'general' && appData.online[currentChat]) {
-        chatMessages[currentUser].push({
-            sender: currentUser,
-            text: text,
-            time: message.time
-        });
+        addNotification(currentChat, 'Новое сообщение', `${currentUser}: ${text}`, 'message');
     }
     
     // Общий чат сохраняем для всех
@@ -2325,25 +3612,206 @@ function sendMessage() {
 // ====================
 function loadMap() {
     const container = document.getElementById('map-container');
+    
+    // Используем OpenStreetMap без API ключа
     container.innerHTML = `
-        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-            <div style="font-size: 48px; margin-bottom: 20px;">🗺️</div>
-            <h3 style="font-size: 24px; margin-bottom: 10px;">Карты</h3>
-            <p style="opacity: 0.8; margin-bottom: 30px; text-align: center;">
-                Для работы карт требуется интернет.<br>
-                Рекомендуем использовать Google Maps.
+        <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center;">
+            <div style="font-size: 64px; margin-bottom: 30px;">🗺️</div>
+            <h3 style="font-size: 28px; margin-bottom: 20px; font-weight: 800;">Интерактивные карты</h3>
+            <p style="opacity: 0.8; margin-bottom: 40px; font-size: 18px; line-height: 1.6;">
+                Для отображения карт требуется интернет-соединение.<br>
+                Вы можете использовать координаты для навигации.
             </p>
+            
             <div class="map-controls">
-                <button class="voice-btn" onclick="showLocation('Москва')">📍 Москва</button>
-                <button class="voice-btn" onclick="showLocation('Дубай')">📍 Дубай</button>
-                <button class="voice-btn" onclick="showLocation('Париж')">📍 Париж</button>
+                <button class="map-btn" onclick="showCoordinates('Москва', 55.7558, 37.6173)">📍 Москва</button>
+                <button class="map-btn" onclick="showCoordinates('Дубай', 25.2048, 55.2708)">📍 Дубай</button>
+                <button class="map-btn" onclick="showCoordinates('Париж', 48.8566, 2.3522)">📍 Париж</button>
+                <button class="map-btn" onclick="showCoordinates('Токио', 35.6762, 139.6503)">📍 Токио</button>
+            </div>
+            
+            <div style="margin-top: 40px; padding: 25px; background: var(--card); border-radius: 15px; max-width: 600px;">
+                <h4 style="margin-bottom: 15px; font-size: 20px; font-weight: 700;">Быстрая навигация</h4>
+                <p style="opacity: 0.8; margin-bottom: 20px;">
+                    Скопируйте координаты и вставьте в Google Maps или Яндекс.Карты
+                </p>
+                <div id="coordinates-display" style="font-family: 'Courier New', monospace; padding: 15px; background: var(--bg); border-radius: 10px; font-size: 16px;">
+                    Выберите город для отображения координат
+                </div>
             </div>
         </div>
     `;
 }
 
-function showLocation(city) {
-    alert(`📍 ${city}\n\nШирота: 55.7558\nДолгота: 37.6173\n\nДля навигации используйте Google Maps с координатами.`);
+function showCoordinates(city, lat, lon) {
+    const display = document.getElementById('coordinates-display');
+    display.innerHTML = `
+        <div style="font-weight: 700; margin-bottom: 10px;">📍 ${city}</div>
+        <div>Широта: <span style="color: var(--accent);">${lat.toFixed(4)}°</span></div>
+        <div>Долгота: <span style="color: var(--accent);">${lon.toFixed(4)}°</span></div>
+        <div style="margin-top: 15px; display: flex; gap: 10px;">
+            <button class="voice-btn" onclick="copyToClipboard('${lat}, ${lon}')" style="padding: 8px 15px; font-size: 14px;">
+                📋 Копировать
+            </button>
+            <button class="voice-btn" onclick="openInMaps(${lat}, ${lon})" style="padding: 8px 15px; font-size: 14px; background: var(--success);">
+                🗺️ Открыть в картах
+            </button>
+        </div>
+    `;
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Координаты скопированы: ' + text);
+    });
+}
+
+function openInMaps(lat, lon) {
+    // Открываем в новой вкладке с координатами
+    window.open(`https://www.google.com/maps?q=${lat},${lon}`, '_blank');
+}
+
+// ====================
+// ЧАТ-БОТ
+// ====================
+function initChatBot() {
+    // Загружаем историю сообщений
+    const messages = JSON.parse(localStorage.getItem(`chat_bot_${currentUser}`)) || [];
+    if (messages.length > 0) {
+        const container = document.getElementById('chat-bot-messages');
+        container.innerHTML = messages.map(msg => `
+            <div class="bot-message ${msg.sender === 'user' ? 'user' : ''}">
+                <div style="font-weight: 700; margin-bottom: 5px;">${msg.sender === 'user' ? 'Вы' : '🤖 Помощник'}:</div>
+                <div>${msg.text}</div>
+            </div>
+        `).join('');
+    }
+}
+
+function toggleChatBot() {
+    const modal = document.getElementById('chat-bot-modal');
+    modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+}
+
+function sendBotMessage() {
+    const input = document.getElementById('bot-input');
+    const text = input.value.trim();
+    
+    if (!text) return;
+    
+    // Добавляем сообщение пользователя
+    addBotMessage(text, 'user');
+    input.value = '';
+    
+    // ИИ ответ
+    setTimeout(() => {
+        const response = generateBotResponse(text);
+        addBotMessage(response, 'bot');
+    }, 500);
+}
+
+function addBotMessage(text, sender) {
+    const container = document.getElementById('chat-bot-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `bot-message ${sender === 'user' ? 'user' : ''}`;
+    messageDiv.innerHTML = `
+        <div style="font-weight: 700; margin-bottom: 5px;">${sender === 'user' ? 'Вы' : '🤖 Помощник'}:</div>
+        <div>${text}</div>
+    `;
+    
+    container.appendChild(messageDiv);
+    container.scrollTop = container.scrollHeight;
+    
+    // Сохраняем в историю
+    const history = JSON.parse(localStorage.getItem(`chat_bot_${currentUser}`)) || [];
+    history.push({ text, sender, time: new Date().toISOString() });
+    localStorage.setItem(`chat_bot_${currentUser}`, JSON.stringify(history));
+}
+
+function generateBotResponse(text) {
+    const lowerText = text.toLowerCase();
+    
+    // Приветствие
+    if (lowerText.includes('привет') || lowerText.includes('здравствуй') || lowerText.includes('хай')) {
+        return `Привет, ${currentUser}! Чем могу помочь?`;
+    }
+    
+    // Игры
+    if (lowerText.includes('игра') || lowerText.includes('game')) {
+        return 'На платформе доступны игры: Counter-Strike 1.6, My Talking Tom 2, Крестики-нолики и Кликер Pro. Выберите игру в разделе "Игры".';
+    }
+    
+    if (lowerText.includes('кс') || lowerText.includes('counter') || lowerText.includes('стрелялка')) {
+        return 'Counter-Strike 1.6 - классический шутер с ботами. Управление: WASD - движение, Пробел - стрельба, R - перезарядка, E - подобрать оружие.';
+    }
+    
+    if (lowerText.includes('том') || lowerText.includes('питомец') || lowerText.includes('котик')) {
+        return 'My Talking Tom 2 - виртуальный питомец. Кормите его, играйте, покупайте кейсы с наградами. Нажмите на Тома, чтобы погладить.';
+    }
+    
+    if (lowerText.includes('крестик') || lowerText.includes('нолик') || lowerText.includes('tic')) {
+        return 'Крестики-нолики - классическая игра. Можно играть против ИИ или вызвать друга на дуэль через уведомления.';
+    }
+    
+    if (lowerText.includes('кликер') || lowerText.includes('clicker') || lowerText.includes('деньги')) {
+        return 'Кликер Pro - зарабатывайте кликами, покупайте улучшения, яйца с питомцами, используйте бусты. Перерождайтесь для множителя.';
+    }
+    
+    // Переводчик
+    if (lowerText.includes('перевод') || lowerText.includes('translate') || lowerText.includes('язык')) {
+        return 'Переводчик поддерживает 9 языков. Введите текст, выберите языки, используйте голосовой ввод/вывод. Работает через онлайн API.';
+    }
+    
+    // Часы
+    if (lowerText.includes('время') || lowerText.includes('часы') || lowerText.includes('time')) {
+        return 'Часы мира показывают время в 10 городах мира в реальном времени. Обновляются каждую секунду.';
+    }
+    
+    // Чат
+    if (lowerText.includes('чат') || lowerText.includes('сообщен') || lowerText.includes('message')) {
+        return 'В чате можно общаться в общем канале или отправлять личные сообщения. Пользователи онлайн отображаются зеленым.';
+    }
+    
+    // Карты
+    if (lowerText.includes('карт') || lowerText.includes('map') || lowerText.includes('координат')) {
+        return 'В разделе Карты выберите город для получения координат. Используйте их в Google Maps или Яндекс.Картах.';
+    }
+    
+    // Помощь
+    if (lowerText.includes('помощь') || lowerText.includes('help') || lowerText.includes('как')) {
+        return 'Я могу помочь с: играми, переводчиком, часами, чатом, картами. Спросите о конкретной функции или напишите "что ты умеешь".';
+    }
+    
+    // Что умеет
+    if (lowerText.includes('что ты умеешь') || lowerText.includes('возможности')) {
+        return 'Я умею:\n🎮 Рассказать об играх\n🔤 Помочь с переводчиком\n🕐 Показать время в разных городах\n💬 Объяснить работу чата\n🗺️ Помочь с картами\n⚙️ Рассказать о настройках';
+    }
+    
+    // Настройки
+    if (lowerText.includes('настройк') || lowerText.includes('settings') || lowerText.includes('тема')) {
+        return 'В настройках можно сменить тему (тёмная, светлая, фиолетовая), включить/выключить снег, экспортировать/импортировать данные.';
+    }
+    
+    // Прощание
+    if (lowerText.includes('пока') || lowerText.includes('до свидан') || lowerText.includes('bye')) {
+        return `До свидания, ${currentUser}! Возвращайтесь ещё.`;
+    }
+    
+    // Спасибо
+    if (lowerText.includes('спасибо') || lowerText.includes('благодарю')) {
+        return 'Пожалуйста! Рад был помочь. Есть ещё вопросы?';
+    }
+    
+    // Дефолтный ответ
+    const responses = [
+        'Интересный вопрос! Могу ли я помочь вам с играми или другими функциями платформы?',
+        'Попробуйте спросить о играх, переводчике или других функциях платформы.',
+        'Не совсем понял вопрос. Вы можете спросить о: играх, переводчике, часах, чате, картах или настройках.',
+        `Я ваш помощник на игровой платформе, ${currentUser}. Чем могу быть полезен?`,
+        'Если нужна помощь, напишите "помощь" или "что ты умеешь".'
+    ];
+    
+    return responses[Math.floor(Math.random() * responses.length)];
 }
 
 // ====================
@@ -2361,11 +3829,12 @@ function setTheme(theme) {
     document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
     
-    // Включаем/выключаем снежинки
+    // Обновляем снежинки
     const snowToggle = document.getElementById('snow-toggle');
     if (theme === 'light') {
         snowToggle.checked = false;
         snowToggle.disabled = true;
+        document.querySelectorAll('.snowflake').forEach(s => s.remove());
     } else {
         snowToggle.disabled = false;
         if (snowToggle.checked) {
@@ -2375,16 +3844,16 @@ function setTheme(theme) {
 }
 
 function exportData() {
-    const data = JSON.stringify(appData);
+    const data = JSON.stringify(appData, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'platform_backup.json';
+    a.download = `platform_backup_${currentUser}_${Date.now()}.json`;
     a.click();
     
-    alert('Данные экспортированы!');
+    alert('Данные экспортированы в файл!');
 }
 
 function importData() {
@@ -2401,7 +3870,7 @@ function importData() {
                 const data = JSON.parse(e.target.result);
                 Object.assign(appData, data);
                 saveData();
-                alert('Данные импортированы!');
+                alert('Данные импортированы! Перезагрузите страницу.');
                 location.reload();
             } catch (error) {
                 alert('Ошибка при импорте: ' + error.message);
@@ -2415,9 +3884,9 @@ function importData() {
 }
 
 function clearData() {
-    if (confirm('УДАЛИТЬ ВСЕ ДАННЫЕ?')) {
+    if (confirm('ВНИМАНИЕ! Это удалит ВСЕ ваши данные безвозвратно. Продолжить?')) {
         localStorage.clear();
-        alert('Данные удалены!');
+        alert('Все данные удалены! Страница перезагрузится.');
         location.reload();
     }
 }
@@ -2445,6 +3914,8 @@ function setupEventListeners() {
         
         if (e.target.checked) {
             createSnowflakes();
+        } else {
+            document.querySelectorAll('.snowflake').forEach(s => s.remove());
         }
     });
     
@@ -2453,8 +3924,13 @@ function setupEventListeners() {
         if (e.key === 'Enter') sendMessage();
     });
     
+    // Чат-бот
+    document.getElementById('bot-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendBotMessage();
+    });
+    
     // Переводчик
-    document.getElementById('input-text').addEventListener('input', translate);
+    document.getElementById('input-text').addEventListener('input', translateText);
 }
 
 // ====================
@@ -2463,14 +3939,23 @@ function setupEventListeners() {
 window.addEventListener('load', () => {
     initUserSelection();
     
-    // Очищаем неактивные сессии
+    // Очищаем старые уведомления (старше 1 дня)
     const now = Date.now();
+    appData.notifications = (appData.notifications || []).filter(n => 
+        now - n.timestamp < 24 * 60 * 60 * 1000
+    );
+    
+    // Очищаем неактивные сессии (старше 10 минут)
     Object.keys(appData.online || {}).forEach(user => {
-        if (now - appData.online[user] > 5 * 60 * 1000) {
+        if (now - appData.online[user] > 10 * 60 * 1000) {
             delete appData.online[user];
         }
     });
+    
     saveData();
+    
+    // Автосохранение каждые 30 секунд
+    setInterval(saveData, 30000);
 });
 </script>
 </body>
