@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ULTRA PLATFORM</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         * {
             margin: 0;
@@ -13,35 +14,35 @@
         }
 
         :root {
-            --primary: #8B5CF6;
-            --primary-dark: #7C3AED;
-            --secondary: #EC4899;
-            --success: #10B981;
-            --danger: #EF4444;
-            --warning: #F59E0B;
-            --dark: #111827;
-            --light: #F3F4F6;
-            --gray: #6B7280;
-            --background: #0F172A;
-            --card: #1E293B;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --gray: #6b7280;
+            --background: #0f172a;
+            --card: #1e293b;
             --border: #374151;
-            --text: #E5E7EB;
+            --text: #e5e7eb;
         }
 
         [data-theme="light"] {
-            --background: #F9FAFB;
-            --card: #FFFFFF;
-            --border: #E5E7EB;
+            --background: #ffffff;
+            --card: #f9fafb;
+            --border: #e5e7eb;
             --text: #111827;
-            --dark: #F3F4F6;
+            --dark: #f3f4f6;
         }
 
         [data-theme="purple"] {
-            --primary: #A855F7;
-            --primary-dark: #9333EA;
-            --secondary: #D946EF;
-            --background: #1E1B4B;
-            --card: #312E81;
+            --primary: #a855f7;
+            --primary-dark: #9333ea;
+            --secondary: #d946ef;
+            --background: #1e1b4b;
+            --card: #312e81;
         }
 
         body {
@@ -53,25 +54,8 @@
             transition: all 0.3s ease;
         }
 
-        /* Снежинки */
-        .snowflake {
-            position: fixed;
-            background: white;
-            border-radius: 50%;
-            pointer-events: none;
-            opacity: 0.7;
-            animation: fall linear forwards;
-            z-index: 1000;
-        }
-
-        @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
-            }
-        }
-
         /* Выбор пользователя */
-        #user-select-screen {
+        #user-select {
             position: fixed;
             top: 0;
             left: 0;
@@ -81,18 +65,34 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
+            z-index: 1000;
+            padding: 20px;
         }
 
-        .user-select-container {
+        .user-select-box {
             background: rgba(30, 41, 59, 0.95);
             padding: 3rem;
-            border-radius: 24px;
-            width: 90%;
-            max-width: 600px;
+            border-radius: 20px;
             border: 2px solid var(--primary);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(20px);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-subtitle {
+            opacity: 0.8;
+            margin-bottom: 2rem;
         }
 
         .user-grid {
@@ -107,33 +107,34 @@
             border: 2px solid var(--primary);
             color: var(--text);
             padding: 1.25rem;
-            border-radius: 16px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s;
             font-size: 1.1rem;
-            font-weight: 500;
-            position: relative;
-            overflow: hidden;
+            font-weight: 600;
         }
 
         .user-btn:hover {
-            transform: translateY(-4px);
-            border-color: var(--secondary);
-            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
         }
 
         .user-btn.selected {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
-            box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+            animation: pulse 2s infinite;
         }
 
         .user-btn.occupied {
             border-color: var(--danger);
             color: var(--danger);
             cursor: not-allowed;
-            opacity: 0.6;
+            opacity: 0.7;
+            position: relative;
         }
 
         .user-btn.occupied::after {
@@ -146,7 +147,12 @@
             padding: 4px 12px;
             border-radius: 12px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.8); }
         }
 
         .action-buttons {
@@ -160,24 +166,20 @@
             padding: 1rem 2rem;
             border: none;
             border-radius: 12px;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
         }
 
         .enter-btn {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
             color: white;
         }
 
         .enter-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
         }
 
         .exit-btn {
@@ -192,13 +194,13 @@
         }
 
         /* Основной интерфейс */
-        #main-interface {
+        #main-app {
             display: none;
             min-height: 100vh;
         }
 
-        /* Навигация */
-        .navbar {
+        /* Шапка */
+        .header {
             background: rgba(30, 41, 59, 0.95);
             backdrop-filter: blur(20px);
             padding: 1rem 2rem;
@@ -208,39 +210,19 @@
             border-bottom: 2px solid var(--primary);
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 100;
         }
 
-        .nav-tabs {
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
             display: flex;
+            align-items: center;
             gap: 0.5rem;
-            overflow-x: auto;
-            padding: 0.5rem 0;
-        }
-
-        .nav-tab {
-            background: transparent;
-            border: 2px solid transparent;
-            color: var(--text);
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
-            white-space: nowrap;
-            opacity: 0.7;
-        }
-
-        .nav-tab:hover {
-            opacity: 1;
-            background: rgba(139, 92, 246, 0.1);
-        }
-
-        .nav-tab.active {
-            background: var(--primary);
-            color: white;
-            opacity: 1;
-            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .user-info {
@@ -253,55 +235,103 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .user-name {
             font-weight: 600;
-            font-size: 1.1rem;
+        }
+
+        .user-balance {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .settings-btn {
-            background: rgba(139, 92, 246, 0.1);
+            background: rgba(99, 102, 241, 0.1);
             border: 2px solid var(--primary);
             color: var(--primary);
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 1.2rem;
         }
 
         .settings-btn:hover {
             background: var(--primary);
             color: white;
-            transform: rotate(90deg);
+            transform: rotate(180deg);
         }
 
-        /* Секции */
-        .section {
-            display: none;
+        /* Навигация */
+        .nav-tabs {
+            display: flex;
+            background: var(--card);
+            padding: 1rem;
+            gap: 0.5rem;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-tab {
+            background: transparent;
+            border: 2px solid transparent;
+            color: var(--text);
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0.7;
+        }
+
+        .nav-tab:hover {
+            opacity: 1;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+            opacity: 1;
+        }
+
+        /* Содержимое */
+        .content {
             padding: 2rem;
+            min-height: calc(100vh - 140px);
+        }
+
+        .page {
+            display: none;
             animation: fadeIn 0.5s ease;
         }
 
-        .section.active {
+        .page.active {
             display: block;
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Облако */
@@ -309,8 +339,6 @@
             display: flex;
             gap: 0.5rem;
             margin-bottom: 2rem;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 1rem;
         }
 
         .cloud-subtab {
@@ -320,7 +348,7 @@
             padding: 0.75rem 1.5rem;
             border-radius: 10px;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             opacity: 0.7;
             transition: all 0.3s;
         }
@@ -331,40 +359,37 @@
             opacity: 1;
         }
 
-        .cloud-content {
-            background: var(--card);
-            border-radius: 20px;
-            padding: 2rem;
-            min-height: 400px;
-            border: 1px solid var(--border);
-        }
-
         .files-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 1.5rem;
         }
 
-        .file-item {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 16px;
+        .file-card {
+            background: var(--card);
+            border-radius: 15px;
             padding: 1.5rem;
             text-align: center;
-            cursor: pointer;
+            border: 1px solid var(--border);
             transition: all 0.3s;
-            border: 2px solid transparent;
+            cursor: pointer;
         }
 
-        .file-item:hover {
+        .file-card:hover {
             transform: translateY(-5px);
             border-color: var(--primary);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
+        .file-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
         /* Игры */
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 2rem;
         }
 
@@ -372,8 +397,8 @@
             background: var(--card);
             border-radius: 20px;
             overflow: hidden;
+            border: 1px solid var(--border);
             transition: all 0.3s;
-            border: 2px solid transparent;
         }
 
         .game-card:hover {
@@ -383,10 +408,15 @@
         }
 
         .game-header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
             padding: 2rem;
             text-align: center;
             color: white;
+        }
+
+        .game-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
         }
 
         .game-body {
@@ -398,7 +428,7 @@
             justify-content: space-between;
             margin-bottom: 1rem;
             font-size: 0.9rem;
-            color: var(--gray);
+            opacity: 0.8;
         }
 
         .play-btn {
@@ -407,29 +437,27 @@
             background: var(--primary);
             color: white;
             border: none;
-            border-radius: 12px;
-            font-weight: 600;
+            border-radius: 10px;
             cursor: pointer;
+            font-weight: 600;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
         }
 
         .play-btn:hover {
             background: var(--primary-dark);
-            transform: scale(1.02);
+            transform: scale(1.05);
         }
 
-        /* 3D игра CS */
-        .cs-game-container {
+        /* CS 3D игра */
+        .cs-container {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 600px;
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            border: 3px solid var(--primary);
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            display: none;
         }
 
         #cs-canvas {
@@ -448,32 +476,44 @@
         .cs-stats {
             background: rgba(0, 0, 0, 0.8);
             padding: 1rem 1.5rem;
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             justify-content: space-between;
             backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
+            border: 1px solid var(--primary);
         }
 
-        .cs-tabs {
+        .cs-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            justify-content: space-between;
         }
 
-        .cs-tab {
-            background: transparent;
+        .cs-weapon-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .cs-weapon-btn {
+            background: rgba(0, 0, 0, 0.8);
             border: 2px solid var(--primary);
-            color: var(--text);
-            padding: 0.75rem 1.5rem;
-            border-radius: 10px;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        .cs-tab.active {
+        .cs-weapon-btn:hover {
             background: var(--primary);
-            color: white;
+        }
+
+        .cs-weapon-btn.active {
+            background: var(--primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
         }
 
         /* Крестики-нолики */
@@ -481,15 +521,15 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            margin: 2rem auto;
             max-width: 400px;
+            margin: 2rem auto;
         }
 
         .tic-cell {
             aspect-ratio: 1;
             background: var(--card);
             border: 2px solid var(--primary);
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -500,62 +540,80 @@
         }
 
         .tic-cell:hover {
-            background: rgba(139, 92, 246, 0.1);
+            background: rgba(99, 102, 241, 0.1);
         }
+
+        .tic-cell.x { color: var(--primary); }
+        .tic-cell.o { color: var(--secondary); }
 
         /* Кликер */
         .clicker-game {
-            text-align: center;
             max-width: 600px;
             margin: 0 auto;
+            text-align: center;
         }
 
-        .clicker-display {
-            font-size: 3.5rem;
+        .clicker-money {
+            font-size: 4rem;
+            font-weight: 800;
             color: var(--success);
             margin: 2rem 0;
-            font-weight: 700;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
         }
 
-        .clicker-btn {
-            width: 180px;
-            height: 180px;
+        .clicker-button {
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
             border: none;
             color: white;
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
             margin: 2rem auto;
             display: block;
-            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
         }
 
-        .clicker-btn:active {
+        .clicker-button:active {
             transform: scale(0.95);
         }
 
-        .upgrades-grid {
+        .clicker-upgrades {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1rem;
             margin-top: 2rem;
         }
 
-        .upgrade-item {
+        .upgrade-card {
             background: var(--card);
-            border-radius: 12px;
-            padding: 1.25rem;
+            border-radius: 15px;
+            padding: 1.5rem;
             border: 1px solid var(--border);
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        .upgrade-item:hover {
+        .upgrade-card:hover {
             border-color: var(--primary);
             transform: translateY(-3px);
+        }
+
+        /* Карты */
+        #map {
+            height: 600px;
+            border-radius: 20px;
+            border: 2px solid var(--primary);
+            overflow: hidden;
+        }
+
+        .map-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
         }
 
         /* Переводчик */
@@ -577,7 +635,7 @@
             border: 2px solid var(--primary);
             color: var(--text);
             padding: 1rem;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 1rem;
         }
 
@@ -585,19 +643,20 @@
             background: var(--primary);
             color: white;
             border: none;
-            width: 48px;
-            height: 48px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 1.2rem;
         }
 
         .swap-btn:hover {
-            transform: rotate(180deg);
             background: var(--secondary);
+            transform: rotate(180deg);
         }
 
-        .text-areas {
+        .text-boxes {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
@@ -609,14 +668,14 @@
             border: 2px solid var(--primary);
             color: var(--text);
             padding: 1.25rem;
-            border-radius: 12px;
-            min-height: 180px;
+            border-radius: 10px;
+            min-height: 200px;
             font-size: 1rem;
             resize: vertical;
             font-family: inherit;
         }
 
-        .voice-controls {
+        .translate-controls {
             display: flex;
             gap: 1rem;
             justify-content: center;
@@ -633,8 +692,8 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            font-weight: 600;
             transition: all 0.3s;
-            font-weight: 500;
         }
 
         .voice-btn:hover {
@@ -663,11 +722,22 @@
             transform: translateY(-5px);
         }
 
+        .clock-city {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
         .clock-time {
             font-size: 2.5rem;
-            font-weight: 700;
+            font-weight: 800;
             margin: 1rem 0;
-            color: var(--primary);
+        }
+
+        .clock-date {
+            opacity: 0.8;
+            font-size: 1rem;
         }
 
         /* Настройки */
@@ -693,20 +763,20 @@
 
         .theme-btn {
             padding: 1rem;
-            border-radius: 12px;
+            border-radius: 10px;
             border: 2px solid transparent;
             cursor: pointer;
+            font-weight: 600;
             transition: all 0.3s;
-            font-weight: 500;
         }
 
         .theme-btn.active {
             border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
         }
 
         .theme-dark {
-            background: #111827;
+            background: #1f2937;
             color: white;
         }
 
@@ -716,53 +786,8 @@
         }
 
         .theme-purple {
-            background: linear-gradient(135deg, #1E1B4B, #312E81);
+            background: linear-gradient(45deg, #1e1b4b, #312e81);
             color: white;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 30px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--border);
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: var(--primary);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(30px);
         }
 
         /* Чат-бот */
@@ -787,25 +812,25 @@
             gap: 1rem;
         }
 
-        .message {
+        .chat-message {
             max-width: 70%;
             padding: 1rem 1.25rem;
             border-radius: 18px;
             animation: fadeIn 0.3s ease;
         }
 
-        .message.user {
+        .chat-message.user {
             background: var(--primary);
             color: white;
             align-self: flex-end;
         }
 
-        .message.bot {
+        .chat-message.bot {
             background: rgba(255, 255, 255, 0.05);
             align-self: flex-start;
         }
 
-        .chat-input-container {
+        .chat-input-area {
             display: flex;
             gap: 1rem;
             padding: 1.5rem;
@@ -821,10 +846,9 @@
             padding: 1rem 1.25rem;
             border-radius: 25px;
             font-size: 1rem;
-            font-family: inherit;
         }
 
-        .chat-send-btn {
+        .chat-send {
             background: var(--primary);
             color: white;
             border: none;
@@ -833,22 +857,14 @@
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .chat-send-btn:hover {
+        .chat-send:hover {
             background: var(--secondary);
             transform: scale(1.05);
         }
 
-        /* Лидерборд */
-        .leaderboard-container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
+        /* Лидеры */
         .leaderboard-table {
             background: var(--card);
             border-radius: 20px;
@@ -866,13 +882,13 @@
         }
 
         .leaderboard-row:hover {
-            background: rgba(139, 92, 246, 0.05);
+            background: rgba(99, 102, 241, 0.05);
         }
 
         .leaderboard-header {
             background: var(--primary);
             color: white;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .rank-badge {
@@ -882,26 +898,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
+            font-weight: 700;
+            color: white;
         }
 
         .rank-1 { background: gold; color: #000; }
         .rank-2 { background: silver; color: #000; }
-        .rank-3 { background: #CD7F32; color: #000; }
-        .rank-other { background: var(--primary); color: white; }
-
-        /* Адаптивность */
-        @media (max-width: 768px) {
-            .section { padding: 1rem; }
-            .navbar { padding: 1rem; flex-direction: column; gap: 1rem; }
-            .nav-tabs { width: 100%; justify-content: flex-start; }
-            .games-grid { grid-template-columns: 1fr; }
-            .text-areas { grid-template-columns: 1fr; }
-            .lang-selectors { grid-template-columns: 1fr; }
-            .clocks-grid { grid-template-columns: 1fr; }
-            .leaderboard-row { grid-template-columns: 40px 1fr 80px 80px; padding: 0.75rem 1rem; }
-            .user-grid { grid-template-columns: repeat(2, 1fr); }
-        }
+        .rank-3 { background: #cd7f32; color: #000; }
+        .rank-other { background: var(--primary); }
 
         /* Модальные окна */
         .modal {
@@ -912,9 +916,10 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
-            z-index: 3000;
+            z-index: 1000;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
 
         .modal-content {
@@ -922,7 +927,7 @@
             border-radius: 20px;
             padding: 2.5rem;
             max-width: 500px;
-            width: 90%;
+            width: 100%;
             border: 2px solid var(--primary);
             animation: modalIn 0.3s ease;
         }
@@ -938,78 +943,35 @@
             }
         }
 
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .content { padding: 1rem; }
+            .header { padding: 1rem; flex-direction: column; gap: 1rem; }
+            .nav-tabs { overflow-x: scroll; }
+            .user-grid { grid-template-columns: repeat(2, 1fr); }
+            .text-boxes { grid-template-columns: 1fr; }
+            .lang-selectors { grid-template-columns: 1fr; }
+            .games-grid { grid-template-columns: 1fr; }
+            .clocks-grid { grid-template-columns: 1fr; }
+            .leaderboard-row { grid-template-columns: 50px 1fr 80px 80px; padding: 0.75rem 1rem; }
+            .cs-controls { flex-direction: column; gap: 1rem; }
+        }
+
         /* Утилиты */
-        .text-gradient {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .card {
-            background: var(--card);
-            border-radius: 16px;
-            padding: 1.5rem;
-            border: 1px solid var(--border);
-        }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-secondary:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* Загрузчик */
-        .loader {
-            width: 48px;
-            height: 48px;
-            border: 3px solid var(--border);
-            border-bottom-color: var(--primary);
-            border-radius: 50%;
-            animation: rotation 1s linear infinite;
-            margin: 2rem auto;
-        }
-
-        @keyframes rotation {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 2rem; }
+        .mb-2 { margin-bottom: 2rem; }
+        .p-2 { padding: 2rem; }
+        .cursor-pointer { cursor: pointer; }
     </style>
 </head>
 <body>
     <!-- Выбор пользователя -->
-    <div id="user-select-screen">
-        <div class="user-select-container">
-            <h1 style="text-align: center; margin-bottom: 1rem; font-size: 2.5rem;" class="text-gradient">ULTRA PLATFORM</h1>
-            <p style="text-align: center; margin-bottom: 2rem; opacity: 0.8;">Выберите пользователя</p>
+    <div id="user-select">
+        <div class="user-select-box">
+            <h1 class="user-title">ULTRA PLATFORM</h1>
+            <p class="user-subtitle">Выберите пользователя для входа</p>
             
             <div class="user-grid" id="user-grid">
                 <!-- Кнопки пользователей будут созданы через JS -->
@@ -1017,72 +979,79 @@
             
             <div class="action-buttons">
                 <button class="action-btn enter-btn" onclick="enterPlatform()">
-                    <span>Войти в платформу</span>
+                    Войти в платформу
                 </button>
                 <button class="action-btn exit-btn" onclick="exitPlatform()">
-                    <span>Выйти с сайта</span>
+                    Выйти с сайта
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Основной интерфейс -->
-    <div id="main-interface">
-        <!-- Навигация -->
-        <nav class="navbar">
-            <div style="display: flex; align-items: center; gap: 1rem;">
+    <!-- Основное приложение -->
+    <div id="main-app">
+        <!-- Шапка -->
+        <header class="header">
+            <div class="logo">
+                <span>🎮</span>
+                <span>ULTRA PLATFORM</span>
+            </div>
+            
+            <div class="user-info">
                 <div class="user-avatar" id="user-avatar">U</div>
                 <div>
-                    <div style="font-weight: 600;" id="current-username">Гость</div>
-                    <div style="font-size: 0.9rem; opacity: 0.8;" id="user-balance">$0</div>
+                    <div class="user-name" id="current-user">Гость</div>
+                    <div class="user-balance">
+                        <span>💰</span>
+                        <span id="user-balance">$1000</span>
+                    </div>
                 </div>
+                <button class="settings-btn" onclick="openSettings()">⚙️</button>
             </div>
-            
-            <div class="nav-tabs">
-                <button class="nav-tab active" data-tab="cloud">☁️ Облако</button>
-                <button class="nav-tab" data-tab="games">🎮 Игры</button>
-                <button class="nav-tab" data-tab="maps">🗺️ Карты</button>
-                <button class="nav-tab" data-tab="translator">🔤 Переводчик</button>
-                <button class="nav-tab" data-tab="clocks">⏰ Время</button>
-                <button class="nav-tab" data-tab="chatbot">🤖 Чат-бот</button>
-                <button class="nav-tab" data-tab="leaderboard">🏆 Лидеры</button>
-            </div>
-            
-            <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+        </header>
+
+        <!-- Навигация -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-page="cloud">☁️ Облако</button>
+            <button class="nav-tab" data-page="games">🎮 Игры</button>
+            <button class="nav-tab" data-page="maps">🗺️ Карты</button>
+            <button class="nav-tab" data-page="translator">🔤 Переводчик</button>
+            <button class="nav-tab" data-page="clocks">⏰ Часы</button>
+            <button class="nav-tab" data-page="chatbot">🤖 Чат-бот</button>
+            <button class="nav-tab" data-page="leaders">🏆 Лидеры</button>
         </nav>
 
         <!-- Содержимое -->
-        <main>
+        <main class="content">
             <!-- Облако -->
-            <section id="cloud" class="section active">
+            <section id="cloud" class="page active">
                 <div class="cloud-subtabs">
                     <button class="cloud-subtab active" data-subtab="photos">📷 Фото</button>
                     <button class="cloud-subtab" data-subtab="videos">🎬 Видео</button>
                     <button class="cloud-subtab" data-subtab="files">📁 Файлы</button>
                 </div>
-                <div class="cloud-content" id="cloud-content">
-                    <div class="files-grid" id="cloud-files">
-                        <!-- Файлы будут загружены через JS -->
-                    </div>
+                
+                <div class="files-grid" id="cloud-files">
+                    <!-- Файлы будут загружены через JS -->
                 </div>
             </section>
 
             <!-- Игры -->
-            <section id="games" class="section">
+            <section id="games" class="page">
                 <div class="games-grid">
                     <!-- Counter-Strike -->
                     <div class="game-card">
                         <div class="game-header">
-                            <div style="font-size: 2.5rem;">🔫</div>
-                            <h3 style="font-size: 1.5rem; font-weight: 600;">Counter-Strike 2</h3>
+                            <div class="game-icon">🔫</div>
+                            <h3>Counter-Strike 2</h3>
                         </div>
                         <div class="game-body">
                             <div class="game-stats">
-                                <span>👥 Игроки: 0/24</span>
-                                <span>🎯 K/D: 0.00</span>
+                                <span>👥 0/24</span>
+                                <span>🎯 0.00 K/D</span>
                             </div>
                             <button class="play-btn" onclick="startCSGame()">
-                                <span>Играть</span>
+                                Играть
                             </button>
                         </div>
                     </div>
@@ -1090,16 +1059,16 @@
                     <!-- Крестики-нолики -->
                     <div class="game-card">
                         <div class="game-header">
-                            <div style="font-size: 2.5rem;">❌⭕</div>
-                            <h3 style="font-size: 1.5rem; font-weight: 600;">Крестики-нолики</h3>
+                            <div class="game-icon">❌⭕</div>
+                            <h3>Крестики-нолики</h3>
                         </div>
                         <div class="game-body">
                             <div class="game-stats">
-                                <span>🎮 Сложность: Средняя</span>
-                                <span>🏆 Побед: 0</span>
+                                <span>🎮 Средняя</span>
+                                <span>🏆 0 побед</span>
                             </div>
                             <button class="play-btn" onclick="startTicTacToe()">
-                                <span>Играть</span>
+                                Играть
                             </button>
                         </div>
                     </div>
@@ -1107,118 +1076,37 @@
                     <!-- Кликер -->
                     <div class="game-card">
                         <div class="game-header">
-                            <div style="font-size: 2.5rem;">💰</div>
-                            <h3 style="font-size: 1.5rem; font-weight: 600;">Кликер</h3>
+                            <div class="game-icon">💰</div>
+                            <h3>Кликер</h3>
                         </div>
                         <div class="game-body">
                             <div class="game-stats">
-                                <span>🔄 Перерождений: 0</span>
-                                <span>🐾 Питомцев: 0</span>
+                                <span>🔄 0 ур.</span>
+                                <span>🐾 0 питомцев</span>
                             </div>
                             <button class="play-btn" onclick="startClicker()">
-                                <span>Играть</span>
+                                Играть
                             </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Игровые модальные окна -->
-                <div id="cs-game-modal" class="modal">
-                    <div class="modal-content">
-                        <div style="margin-bottom: 1.5rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                                <h3 style="font-size: 1.5rem; font-weight: 600;">Counter-Strike 2</h3>
-                                <button onclick="closeModal('cs-game-modal')" style="background: none; border: none; color: var(--text); cursor: pointer; font-size: 1.5rem;">×</button>
-                            </div>
-                            
-                            <div class="cs-tabs">
-                                <button class="cs-tab active" data-cs-tab="play">🎮 Играть</button>
-                                <button class="cs-tab" data-cs-tab="cases">🎁 Кейсы</button>
-                                <button class="cs-tab" data-cs-tab="inventory">🎒 Инвентарь</button>
-                            </div>
-                        </div>
-                        
-                        <div id="cs-play-tab">
-                            <div class="cs-game-container">
-                                <canvas id="cs-canvas"></canvas>
-                                <div class="cs-hud">
-                                    <div class="cs-stats">
-                                        <span>❤️ 100/100</span>
-                                        <span>🎯 0 убийств</span>
-                                        <span>💰 $800</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tic-tac-toe-modal" class="modal">
-                    <div class="modal-content">
-                        <div style="margin-bottom: 1.5rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <h3 style="font-size: 1.5rem; font-weight: 600;">Крестики-нолики</h3>
-                                <button onclick="closeModal('tic-tac-toe-modal')" style="background: none; border: none; color: var(--text); cursor: pointer; font-size: 1.5rem;">×</button>
-                            </div>
-                        </div>
-                        
-                        <div class="tic-tac-toe-board" id="tic-board">
-                            <!-- Клетки будут созданы через JS -->
-                        </div>
-                        
-                        <div style="text-align: center; margin-top: 2rem;">
-                            <div style="margin-bottom: 1rem; font-size: 1.1rem;" id="tic-status">Ваш ход (X)</div>
-                            <button class="btn" onclick="resetTicTacToe()">Новая игра</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="clicker-modal" class="modal">
-                    <div class="modal-content">
-                        <div style="margin-bottom: 1.5rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <h3 style="font-size: 1.5rem; font-weight: 600;">Кликер</h3>
-                                <button onclick="closeModal('clicker-modal')" style="background: none; border: none; color: var(--text); cursor: pointer; font-size: 1.5rem;">×</button>
-                            </div>
-                        </div>
-                        
-                        <div class="clicker-game">
-                            <div class="clicker-display" id="clicker-money">$0</div>
-                            <button class="clicker-btn" onclick="clickMoney()">КЛИК!</button>
-                            
-                            <div class="upgrades-grid">
-                                <div class="upgrade-item" onclick="buyUpgrade('click')">
-                                    <div style="font-weight: 600; margin-bottom: 0.5rem;">💪 Сила клика</div>
-                                    <div style="font-size: 0.9rem; opacity: 0.8;">+$1 за клик</div>
-                                    <div style="color: var(--primary); margin-top: 0.5rem;">Цена: $10</div>
-                                </div>
-                                <div class="upgrade-item" onclick="buyUpgrade('auto')">
-                                    <div style="font-weight: 600; margin-bottom: 0.5rem;">⚡ Автокликер</div>
-                                    <div style="font-size: 0.9rem; opacity: 0.8;">+$0.1/сек</div>
-                                    <div style="color: var(--primary); margin-top: 0.5rem;">Цена: $100</div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
             <!-- Карты -->
-            <section id="maps" class="section">
-                <div class="card">
-                    <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem;">Карты и навигатор</h3>
-                    <div style="text-align: center; padding: 4rem 2rem;">
-                        <div style="font-size: 5rem; margin-bottom: 1rem;">🗺️</div>
-                        <p style="margin-bottom: 1.5rem; opacity: 0.8;">Для использования карт требуется интернет-соединение</p>
-                        <button class="btn" onclick="showMap()">
-                            <span>Открыть карты</span>
-                        </button>
-                    </div>
+            <section id="maps" class="page">
+                <div id="map"></div>
+                <div class="map-controls mt-2">
+                    <button class="voice-btn" onclick="findMyLocation()">
+                        📍 Моё местоположение
+                    </button>
+                    <button class="voice-btn" onclick="searchLocation()">
+                        🔍 Поиск места
+                    </button>
                 </div>
             </section>
 
             <!-- Переводчик -->
-            <section id="translator" class="section">
+            <section id="translator" class="page">
                 <div class="translator-container">
                     <div class="lang-selectors">
                         <select class="lang-select" id="lang-from">
@@ -1238,149 +1126,163 @@
                         </select>
                     </div>
                     
-                    <div class="text-areas">
-                        <textarea class="text-area" id="text-input" placeholder="Введите текст для перевода..."></textarea>
-                        <textarea class="text-area" id="text-output" placeholder="Перевод..." readonly></textarea>
+                    <div class="text-boxes">
+                        <textarea class="text-area" id="input-text" placeholder="Введите текст для перевода..." oninput="translateText()"></textarea>
+                        <textarea class="text-area" id="output-text" placeholder="Перевод..." readonly></textarea>
                     </div>
                     
-                    <div class="voice-controls">
+                    <div class="translate-controls">
                         <button class="voice-btn" onclick="speakTranslation()">
-                            <span>🔊</span>
-                            <span>Произнести</span>
+                            🔊 Произнести перевод
                         </button>
                         <button class="voice-btn" onclick="startVoiceInput()">
-                            <span>🎤</span>
-                            <span>Голосовой ввод</span>
+                            🎤 Голосовой ввод
                         </button>
                     </div>
                 </div>
             </section>
 
-            <!-- Время -->
-            <section id="clocks" class="section">
-                <div class="clocks-grid" id="clocks-grid">
+            <!-- Часы -->
+            <section id="clocks" class="page">
+                <div class="clocks-grid" id="clocks-container">
                     <!-- Часы будут созданы через JS -->
                 </div>
             </section>
 
             <!-- Чат-бот -->
-            <section id="chatbot" class="section">
+            <section id="chatbot" class="page">
                 <div class="chat-container">
                     <div class="chat-messages" id="chat-messages">
-                        <div class="message bot">
-                            Привет! Я ваш AI-ассистент. Чем могу помочь?
+                        <div class="chat-message bot">
+                            Привет! Я ваш AI-ассистент. Могу ответить на вопросы, помочь с переводом или просто поболтать. Чем могу помочь?
                         </div>
                     </div>
-                    <div class="chat-input-container">
-                        <input type="text" class="chat-input" id="chat-input" placeholder="Введите сообщение...">
-                        <button class="chat-send-btn" onclick="sendChatMessage()">
-                            →
-                        </button>
+                    <div class="chat-input-area">
+                        <input type="text" class="chat-input" id="chat-input" placeholder="Введите сообщение..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                        <button class="chat-send" onclick="sendChatMessage()">➤</button>
                     </div>
                 </div>
             </section>
 
             <!-- Лидеры -->
-            <section id="leaderboard" class="section">
-                <div class="leaderboard-container">
-                    <div style="margin-bottom: 2rem;">
-                        <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Лидеры игр</h3>
-                        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                            <select class="lang-select" id="leaderboard-game" style="flex: 1;">
-                                <option value="all">Все игры</option>
-                                <option value="cs">Counter-Strike</option>
-                                <option value="tic">Крестики-нолики</option>
-                                <option value="clicker">Кликер</option>
-                            </select>
-                        </div>
+            <section id="leaders" class="page">
+                <div class="leaderboard-table">
+                    <div class="leaderboard-row leaderboard-header">
+                        <div>#</div>
+                        <div>Игрок</div>
+                        <div>Очки</div>
+                        <div>Игра</div>
                     </div>
-                    
-                    <div class="leaderboard-table">
-                        <div class="leaderboard-row leaderboard-header">
-                            <div>Ранг</div>
-                            <div>Игрок</div>
-                            <div>Очки</div>
-                            <div>Игра</div>
-                        </div>
-                        <div id="leaderboard-content">
-                            <!-- Лидеры будут загружены через JS -->
-                        </div>
+                    <div id="leaderboard-content">
+                        <!-- Лидеры будут загружены через JS -->
                     </div>
                 </div>
             </section>
         </main>
     </div>
 
+    <!-- CS 3D Игра -->
+    <div class="cs-container" id="cs-game">
+        <canvas id="cs-canvas"></canvas>
+        <div class="cs-hud">
+            <div class="cs-stats">
+                <span id="cs-health">❤️ 100</span>
+                <span id="cs-money">💰 $800</span>
+                <span id="cs-kills">🎯 0 убийств</span>
+                <span id="cs-ammo">🔫 30/90</span>
+            </div>
+        </div>
+        <div class="cs-controls">
+            <div class="cs-weapon-selector">
+                <button class="cs-weapon-btn" onclick="selectWeapon('akm')">🔫 AKM</button>
+                <button class="cs-weapon-btn" onclick="selectWeapon('awp')">🎯 AWP</button>
+                <button class="cs-weapon-btn" onclick="selectWeapon('glock')">🔫 GLOCK</button>
+                <button class="cs-weapon-btn" onclick="selectWeapon('deagle')">🔫 DEAGLE</button>
+            </div>
+            <button class="cs-weapon-btn" onclick="exitCSGame()" style="background: var(--danger);">🚪 Выход</button>
+        </div>
+    </div>
+
+    <!-- Крестики-нолики -->
+    <div id="tic-modal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 1.5rem; text-align: center;">❌⭕ Крестики-нолики</h2>
+            
+            <div class="tic-tac-toe-board" id="tic-board"></div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <div id="tic-status" style="margin-bottom: 1rem; font-size: 1.2rem; font-weight: 600;"></div>
+                <button class="play-btn" onclick="resetTicTacToe()">Новая игра</button>
+                <button class="play-btn" onclick="closeModal('tic-modal')" style="background: var(--gray); margin-top: 0.5rem;">Выход</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Кликер -->
+    <div id="clicker-modal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 1.5rem; text-align: center;">💰 Кликер игра</h2>
+            
+            <div class="clicker-game">
+                <div class="clicker-money" id="clicker-money">$0</div>
+                <button class="clicker-button" onclick="clickMoney()">КЛИК!</button>
+                
+                <div class="clicker-upgrades">
+                    <div class="upgrade-card" onclick="buyUpgrade('click')">
+                        <div style="font-weight: 700; margin-bottom: 0.5rem;">💪 Сила клика</div>
+                        <div style="opacity: 0.8; font-size: 0.9rem;">+$1 за клик</div>
+                        <div style="color: var(--primary); margin-top: 0.5rem; font-weight: 600;">Цена: $10</div>
+                    </div>
+                    <div class="upgrade-card" onclick="buyUpgrade('auto')">
+                        <div style="font-weight: 700; margin-bottom: 0.5rem;">⚡ Автокликер</div>
+                        <div style="opacity: 0.8; font-size: 0.9rem;">+$0.5/сек</div>
+                        <div style="color: var(--primary); margin-top: 0.5rem; font-weight: 600;">Цена: $100</div>
+                    </div>
+                </div>
+                
+                <button class="play-btn" onclick="closeModal('clicker-modal')" style="margin-top: 2rem; background: var(--gray);">Выход</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Настройки -->
     <div id="settings-modal" class="modal">
         <div class="modal-content">
-            <div style="margin-bottom: 2rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="font-size: 1.5rem; font-weight: 600;">Настройки</h3>
-                    <button onclick="closeModal('settings-modal')" style="background: none; border: none; color: var(--text); cursor: pointer; font-size: 1.5rem;">×</button>
+            <h2 style="margin-bottom: 1.5rem; text-align: center;">⚙️ Настройки</h2>
+            
+            <div class="settings-grid">
+                <div class="setting-card">
+                    <h3 style="margin-bottom: 1rem;">🎨 Тема</h3>
+                    <div class="theme-selector">
+                        <button class="theme-btn theme-dark active" onclick="setTheme('dark')">Тёмная</button>
+                        <button class="theme-btn theme-light" onclick="setTheme('light')">Светлая</button>
+                        <button class="theme-btn theme-purple" onclick="setTheme('purple')">Фиолетовая</button>
+                    </div>
                 </div>
                 
-                <div class="settings-grid">
-                    <div class="setting-card">
-                        <h4 style="font-weight: 600; margin-bottom: 1rem;">🎨 Тема</h4>
-                        <div class="theme-selector">
-                            <button class="theme-btn theme-dark active" onclick="setTheme('dark')">
-                                Тёмная
-                            </button>
-                            <button class="theme-btn theme-light" onclick="setTheme('light')">
-                                Светлая
-                            </button>
-                            <button class="theme-btn theme-purple" onclick="setTheme('purple')">
-                                Фиолетовая
-                            </button>
-                        </div>
+                <div class="setting-card">
+                    <h3 style="margin-bottom: 1rem;">🔊 Звуки</h3>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span>Включить звуки игры</span>
+                        <label style="position: relative; display: inline-block; width: 60px; height: 30px;">
+                            <input type="checkbox" id="sound-toggle" checked style="opacity: 0; width: 0; height: 0;">
+                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--gray); transition: .4s; border-radius: 34px;"></span>
+                            <span style="position: absolute; content: ''; height: 22px; width: 22px; left: 4px; bottom: 4px; background: white; transition: .4s; border-radius: 50%;"></span>
+                        </label>
                     </div>
-                    
-                    <div class="setting-card">
-                        <h4 style="font-weight: 600; margin-bottom: 1rem;">❄️ Снежинки</h4>
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <span>Включить снег</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="snow-toggle" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="setting-card">
-                        <h4 style="font-weight: 600; margin-bottom: 1rem;">🔔 Уведомления</h4>
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
-                            <span>Звуки</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="sound-toggle" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <span>Оповещения</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="notifications-toggle">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="setting-card">
-                        <h4 style="font-weight: 600; margin-bottom: 1rem;">💾 Данные</h4>
-                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                            <button class="btn" onclick="exportData()">
-                                <span>Экспорт данных</span>
-                            </button>
-                            <button class="btn-secondary" onclick="importData()">
-                                <span>Импорт данных</span>
-                            </button>
-                            <button class="btn-secondary" style="background: var(--danger); color: white;" onclick="clearData()">
-                                <span>Очистить данные</span>
-                            </button>
-                        </div>
+                </div>
+                
+                <div class="setting-card">
+                    <h3 style="margin-bottom: 1rem;">💾 Данные</h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <button class="play-btn" onclick="exportData()">Экспорт данных</button>
+                        <button class="play-btn" onclick="importData()" style="background: var(--secondary);">Импорт данных</button>
+                        <button class="play-btn" onclick="clearData()" style="background: var(--danger);">Сбросить данные</button>
                     </div>
                 </div>
             </div>
+            
+            <button class="play-btn" onclick="closeModal('settings-modal')" style="margin-top: 2rem; width: 100%; background: var(--gray);">Закрыть</button>
         </div>
     </div>
 
@@ -1390,20 +1292,24 @@
 // ====================
 const USERS = ["Никита", "Алена", "Саша", "Алиса", "Гость"];
 let currentUser = null;
-let isMobile = false;
-let gameData = JSON.parse(localStorage.getItem('ultra_platform')) || {
+let platformData = JSON.parse(localStorage.getItem('ultra_platform_v2')) || {
     users: {},
     online: {},
-    settings: {
-        theme: 'dark',
-        snow: true,
-        sounds: true,
-        notifications: false
+    settings: { theme: 'dark', sounds: true },
+    games: {
+        cs: { kills: 0, deaths: 0, wins: 0 },
+        tic: { wins: 0, losses: 0 },
+        clicker: { money: 0, clickPower: 1, autoClicker: 0 }
     }
 };
 
 // Three.js переменные для CS
-let csScene, csCamera, csRenderer, csPlayer, csBots = [];
+let csScene, csCamera, csRenderer, csPlayer, csBots = [], csBullets = [], csWalls = [];
+let csHealth = 100, csMoney = 800, csKills = 0, csAmmo = 30;
+let currentWeapon = 'akm';
+
+// Карта
+let map = null;
 
 // ====================
 // ВЫБОР ПОЛЬЗОВАТЕЛЯ
@@ -1413,24 +1319,22 @@ function initUserSelection() {
     userGrid.innerHTML = '';
     
     USERS.forEach(username => {
-        const isOccupied = gameData.online && gameData.online[username];
-        const userBtn = document.createElement('button');
-        userBtn.className = `user-btn ${isOccupied ? 'occupied' : ''}`;
-        userBtn.textContent = username;
-        userBtn.onclick = () => selectUser(username, isOccupied);
-        userGrid.appendChild(userBtn);
+        const isOccupied = platformData.online && platformData.online[username];
+        const btn = document.createElement('button');
+        btn.className = `user-btn ${isOccupied ? 'occupied' : ''}`;
+        btn.textContent = username;
+        btn.onclick = () => selectUser(username, isOccupied);
+        userGrid.appendChild(btn);
     });
 }
 
 function selectUser(username, isOccupied) {
     if (isOccupied) {
-        alert(`Пользователь "${username}" уже в игре!`);
+        alert(`❌ Пользователь "${username}" уже в игре!`);
         return;
     }
     
-    document.querySelectorAll('.user-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
+    document.querySelectorAll('.user-btn').forEach(btn => btn.classList.remove('selected'));
     event.target.classList.add('selected');
     currentUser = username;
 }
@@ -1441,32 +1345,22 @@ function enterPlatform() {
         return;
     }
     
-    // Проверяем не занят ли пользователь
-    if (gameData.online && gameData.online[currentUser]) {
-        alert(`Пользователь "${currentUser}" только что вошел в игру!`);
+    if (platformData.online && platformData.online[currentUser]) {
+        alert(`❌ Пользователь "${currentUser}" только что вошел в игру!`);
         initUserSelection();
         return;
     }
     
-    // Определяем устройство
-    isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
     // Создаем пользователя если нет
-    if (!gameData.users[currentUser]) {
-        gameData.users[currentUser] = {
+    if (!platformData.users[currentUser]) {
+        platformData.users[currentUser] = {
             balance: 1000,
-            stats: {
-                cs: { kills: 0, deaths: 0, wins: 0 },
-                tic: { wins: 0, losses: 0, draws: 0 },
-                clicker: { money: 0, rebirths: 0, pets: [] }
-            },
-            inventory: [],
-            created: Date.now()
+            joinDate: new Date().toISOString()
         };
     }
     
     // Помечаем как онлайн
-    gameData.online[currentUser] = Date.now();
+    platformData.online[currentUser] = Date.now();
     saveData();
     
     // Инициализируем платформу
@@ -1474,21 +1368,16 @@ function enterPlatform() {
 }
 
 function initPlatform() {
-    // Скрываем выбор пользователя
-    document.getElementById('user-select-screen').style.display = 'none';
-    document.getElementById('main-interface').style.display = 'block';
+    document.getElementById('user-select').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
     
     // Устанавливаем тему
-    setTheme(gameData.settings.theme);
-    
-    // Настраиваем снежинки
-    if (gameData.settings.snow && (gameData.settings.theme === 'dark' || gameData.settings.theme === 'purple')) {
-        createSnowflakes();
-    }
+    setTheme(platformData.settings.theme);
     
     // Обновляем интерфейс
     updateUserInfo();
     loadCloudFiles();
+    initMap();
     initWorldClocks();
     initLeaderboard();
     
@@ -1497,16 +1386,20 @@ function initPlatform() {
 }
 
 function updateUserInfo() {
-    const userData = gameData.users[currentUser];
+    const userData = platformData.users[currentUser];
     const firstLetter = currentUser.charAt(0).toUpperCase();
     
     document.getElementById('user-avatar').textContent = firstLetter;
-    document.getElementById('current-username').textContent = currentUser;
-    document.getElementById('user-balance').textContent = `$${userData.balance}`;
+    document.getElementById('current-user').textContent = currentUser;
+    document.getElementById('user-balance').textContent = `$${userData.balance || 1000}`;
 }
 
 function exitPlatform() {
     if (confirm('Выйти с сайта?')) {
+        if (currentUser && platformData.online) {
+            delete platformData.online[currentUser];
+            saveData();
+        }
         window.close();
     }
 }
@@ -1517,17 +1410,17 @@ function exitPlatform() {
 function loadCloudFiles() {
     const files = [
         { name: 'Фото 1.jpg', type: 'photo', size: '2.4 MB', icon: '📷' },
+        { name: 'Пейзаж.png', type: 'photo', size: '3.1 MB', icon: '🏞️' },
         { name: 'Видео 1.mp4', type: 'video', size: '45.2 MB', icon: '🎬' },
         { name: 'Документ.pdf', type: 'file', size: '1.1 MB', icon: '📄' },
         { name: 'Презентация.pptx', type: 'file', size: '8.7 MB', icon: '📊' },
-        { name: 'Музыка.mp3', type: 'audio', size: '5.3 MB', icon: '🎵' },
-        { name: 'Архив.zip', type: 'file', size: '12.4 MB', icon: '📦' }
+        { name: 'Музыка.mp3', type: 'audio', size: '5.3 MB', icon: '🎵' }
     ];
     
-    const filesGrid = document.getElementById('cloud-files');
-    filesGrid.innerHTML = files.map(file => `
-        <div class="file-item">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">${file.icon}</div>
+    const grid = document.getElementById('cloud-files');
+    grid.innerHTML = files.map(file => `
+        <div class="file-card">
+            <div class="file-icon">${file.icon}</div>
             <div style="font-weight: 600; margin-bottom: 0.5rem;">${file.name}</div>
             <div style="font-size: 0.9rem; opacity: 0.7;">${file.size}</div>
         </div>
@@ -1537,72 +1430,453 @@ function loadCloudFiles() {
 // ====================
 // ИГРЫ
 // ====================
-// Counter-Strike
+// Counter-Strike 3D
 function startCSGame() {
-    showModal('cs-game-modal');
+    document.getElementById('cs-game').style.display = 'block';
     initCSGame();
 }
 
 function initCSGame() {
     const canvas = document.getElementById('cs-canvas');
-    if (!canvas) return;
     
-    // Инициализация Three.js
+    // Сцена
     csScene = new THREE.Scene();
+    csScene.background = new THREE.Color(0x111122);
+    
+    // Камера
     csCamera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+    csCamera.position.set(0, 10, 20);
+    csCamera.lookAt(0, 0, 0);
+    
+    // Рендерер
     csRenderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     csRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    csRenderer.shadowMap.enabled = true;
     
-    // Свет
-    const light = new THREE.AmbientLight(0x404040);
-    csScene.add(light);
+    // Освещение
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+    csScene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(10, 20, 10);
+    directionalLight.castShadow = true;
+    csScene.add(directionalLight);
+    
+    // Пол (карта Dust 2)
+    createMapDust2();
     
     // Игрок
-    const geometry = new THREE.BoxGeometry(1, 2, 1);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    csPlayer = new THREE.Mesh(geometry, material);
-    csScene.add(csPlayer);
-    
-    // Пол
-    const floorGeometry = new THREE.PlaneGeometry(50, 50);
-    const floorMaterial = new THREE.MeshBasicMaterial({ color: 0x444444 });
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2;
-    csScene.add(floor);
+    createPlayer();
     
     // Боты
-    createCSBots();
+    createBots();
+    
+    // Управление
+    setupCSControls();
     
     // Анимация
     animateCS();
+    
+    // Обновляем HUD
+    updateCSHUD();
 }
 
-function createCSBots() {
-    for (let i = 0; i < 5; i++) {
+function createMapDust2() {
+    // Пол
+    const floorGeometry = new THREE.PlaneGeometry(100, 100);
+    const floorTexture = createGridTexture(100, 100);
+    const floorMaterial = new THREE.MeshPhongMaterial({ map: floorTexture });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    csScene.add(floor);
+    
+    // Стены карты Dust 2
+    const wallMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+    
+    // Внешние стены
+    const wallPositions = [
+        { x: 0, z: -40, width: 80, height: 10, depth: 2 }, // Север
+        { x: 0, z: 40, width: 80, height: 10, depth: 2 }, // Юг
+        { x: -40, z: 0, width: 2, height: 10, depth: 80 }, // Запад
+        { x: 40, z: 0, width: 2, height: 10, depth: 80 } // Восток
+    ];
+    
+    wallPositions.forEach(pos => {
+        const geometry = new THREE.BoxGeometry(pos.width, pos.height, pos.depth);
+        const wall = new THREE.Mesh(geometry, wallMaterial);
+        wall.position.set(pos.x, pos.height/2, pos.z);
+        wall.castShadow = true;
+        wall.receiveShadow = true;
+        csWalls.push(wall);
+        csScene.add(wall);
+    });
+    
+    // Здания и препятствия
+    const obstacles = [
+        { x: -20, z: -20, size: [8, 6, 8] }, // Бомба A
+        { x: 20, z: 20, size: [8, 6, 8] }, // Бомба B
+        { x: -10, z: 10, size: [4, 4, 4] },
+        { x: 10, z: -10, size: [4, 4, 4] }
+    ];
+    
+    obstacles.forEach(obs => {
+        const geometry = new THREE.BoxGeometry(...obs.size);
+        const material = new THREE.MeshPhongMaterial({ color: 0xA0522D });
+        const obstacle = new THREE.Mesh(geometry, material);
+        obstacle.position.set(obs.x, obs.size[1]/2, obs.z);
+        obstacle.castShadow = true;
+        obstacle.receiveShadow = true;
+        csWalls.push(obstacle);
+        csScene.add(obstacle);
+    });
+    
+    // Ящики (как в CS)
+    for (let i = 0; i < 10; i++) {
+        const geometry = new THREE.BoxGeometry(2, 2, 2);
+        const material = new THREE.MeshPhongMaterial({ 
+            color: Math.random() > 0.5 ? 0x8B4513 : 0xA0522D 
+        });
+        const box = new THREE.Mesh(geometry, material);
+        box.position.set(
+            (Math.random() - 0.5) * 70,
+            1,
+            (Math.random() - 0.5) * 70
+        );
+        box.castShadow = true;
+        box.receiveShadow = true;
+        csWalls.push(box);
+        csScene.add(box);
+    }
+}
+
+function createGridTexture(width, height) {
+    const canvas = document.createElement('canvas');
+    canvas.width = width * 10;
+    canvas.height = height * 10;
+    const ctx = canvas.getContext('2d');
+    
+    // Текстура земли
+    ctx.fillStyle = '#8B7355';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Сетка
+    ctx.strokeStyle = '#6B5B45';
+    ctx.lineWidth = 2;
+    
+    for (let i = 0; i <= canvas.width; i += 100) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+    }
+    
+    for (let i = 0; i <= canvas.height; i += 100) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(canvas.width, i);
+        ctx.stroke();
+    }
+    
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(10, 10);
+    return texture;
+}
+
+function createPlayer() {
+    // Тело игрока
+    const bodyGeometry = new THREE.BoxGeometry(1, 2, 1);
+    const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+    csPlayer = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    csPlayer.position.y = 1;
+    csPlayer.castShadow = true;
+    csScene.add(csPlayer);
+    
+    // Голова
+    const headGeometry = new THREE.SphereGeometry(0.5);
+    const headMaterial = new THREE.MeshPhongMaterial({ color: 0x00cc00 });
+    const head = new THREE.Mesh(headGeometry, headMaterial);
+    head.position.y = 2.5;
+    csPlayer.add(head);
+}
+
+function createBots() {
+    for (let i = 0; i < 3; i++) {
         const geometry = new THREE.BoxGeometry(1, 2, 1);
-        const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
         const bot = new THREE.Mesh(geometry, material);
         
         bot.position.set(
-            (Math.random() - 0.5) * 40,
+            (Math.random() - 0.5) * 60,
             1,
-            (Math.random() - 0.5) * 40
+            (Math.random() - 0.5) * 60
         );
         
+        bot.userData = {
+            health: 100,
+            type: 'bot',
+            speed: 0.03 + Math.random() * 0.02
+        };
+        
+        bot.castShadow = true;
         csScene.add(bot);
         csBots.push(bot);
     }
 }
 
-function animateCS() {
-    requestAnimationFrame(animateCS);
+function setupCSControls() {
+    const keys = {};
     
-    // Вращение ботов для демонстрации
-    csBots.forEach(bot => {
-        bot.rotation.y += 0.01;
+    window.addEventListener('keydown', (e) => {
+        keys[e.key.toLowerCase()] = true;
+        
+        // Выстрел
+        if (e.key === ' ' || e.key === 'f') {
+            shoot();
+        }
+        
+        // Выход
+        if (e.key === 'Escape') {
+            exitCSGame();
+        }
+        
+        // Перезарядка
+        if (e.key === 'r') {
+            reload();
+        }
     });
     
-    csRenderer.render(csScene, csCamera);
+    window.addEventListener('keyup', (e) => {
+        keys[e.key.toLowerCase()] = false;
+    });
+    
+    // Движение
+    function updateMovement() {
+        const speed = 0.2;
+        
+        if (keys['w']) csPlayer.position.z -= speed;
+        if (keys['s']) csPlayer.position.z += speed;
+        if (keys['a']) csPlayer.position.x -= speed;
+        if (keys['d']) csPlayer.position.x += speed;
+        
+        // Ограничение движения
+        csPlayer.position.x = Math.max(-38, Math.min(38, csPlayer.position.x));
+        csPlayer.position.z = Math.max(-38, Math.min(38, csPlayer.position.z));
+        
+        // Камера следует за игроком
+        csCamera.position.x = csPlayer.position.x;
+        csCamera.position.y = csPlayer.position.y + 5;
+        csCamera.position.z = csPlayer.position.z + 10;
+        csCamera.lookAt(csPlayer.position.x, csPlayer.position.y, csPlayer.position.z);
+    }
+    
+    // Анимация
+    function animateCS() {
+        requestAnimationFrame(animateCS);
+        
+        updateMovement();
+        updateBots();
+        updateBullets();
+        
+        csRenderer.render(csScene, csCamera);
+    }
+    
+    window.csAnimation = animateCS;
+}
+
+function updateBots() {
+    csBots.forEach((bot, index) => {
+        if (!bot.userData || bot.userData.health <= 0) return;
+        
+        // Движение к игроку
+        const dx = csPlayer.position.x - bot.position.x;
+        const dz = csPlayer.position.z - bot.position.z;
+        const distance = Math.sqrt(dx * dx + dz * dz);
+        
+        if (distance > 5) {
+            bot.position.x += (dx / distance) * bot.userData.speed;
+            bot.position.z += (dz / distance) * bot.userData.speed;
+        }
+        
+        // Поворот к игроку
+        bot.lookAt(csPlayer.position);
+        
+        // Случайная стрельба
+        if (distance < 15 && Math.random() < 0.01) {
+            botShoot(bot);
+        }
+    });
+}
+
+function shoot() {
+    if (csAmmo <= 0) return;
+    
+    csAmmo--;
+    updateCSHUD();
+    
+    // Создание пули
+    const geometry = new THREE.SphereGeometry(0.1);
+    const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    const bullet = new THREE.Mesh(geometry, material);
+    
+    // Направление от камеры
+    const direction = new THREE.Vector3();
+    csCamera.getWorldDirection(direction);
+    
+    bullet.position.copy(csCamera.position);
+    bullet.userData = {
+        velocity: direction.multiplyScalar(1),
+        damage: 34,
+        owner: 'player'
+    };
+    
+    csBullets.push(bullet);
+    csScene.add(bullet);
+}
+
+function botShoot(bot) {
+    const geometry = new THREE.SphereGeometry(0.1);
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const bullet = new THREE.Mesh(geometry, material);
+    
+    const direction = new THREE.Vector3();
+    direction.subVectors(csPlayer.position, bot.position).normalize();
+    
+    bullet.position.copy(bot.position);
+    bullet.position.y += 1.5;
+    
+    bullet.userData = {
+        velocity: direction.multiplyScalar(0.8),
+        damage: 10,
+        owner: 'bot'
+    };
+    
+    csBullets.push(bullet);
+    csScene.add(bullet);
+}
+
+function updateBullets() {
+    for (let i = csBullets.length - 1; i >= 0; i--) {
+        const bullet = csBullets[i];
+        bullet.position.add(bullet.userData.velocity);
+        
+        // Проверка попадания
+        let hit = false;
+        
+        // В ботов (от игрока)
+        if (bullet.userData.owner === 'player') {
+            csBots.forEach((bot, botIndex) => {
+                const distance = bullet.position.distanceTo(bot.position);
+                if (distance < 1.5) {
+                    bot.userData.health -= bullet.userData.damage;
+                    
+                    if (bot.userData.health <= 0) {
+                        // Убийство
+                        csKills++;
+                        csMoney += 300;
+                        platformData.games.cs.kills = (platformData.games.cs.kills || 0) + 1;
+                        saveData();
+                        
+                        // Удаляем бота
+                        csScene.remove(bot);
+                        csBots.splice(botIndex, 1);
+                        
+                        // Создаем нового бота через 2 секунды
+                        setTimeout(() => {
+                            if (csBots.length < 5) {
+                                createBots();
+                            }
+                        }, 2000);
+                    }
+                    hit = true;
+                }
+            });
+        }
+        
+        // В игрока (от ботов)
+        if (bullet.userData.owner === 'bot') {
+            const distance = bullet.position.distanceTo(csPlayer.position);
+            if (distance < 1.5) {
+                csHealth -= bullet.userData.damage;
+                updateCSHUD();
+                
+                if (csHealth <= 0) {
+                    csHealth = 0;
+                    platformData.games.cs.deaths = (platformData.games.cs.deaths || 0) + 1;
+                    saveData();
+                    alert('💀 Вы умерли! Нажмите OK для возрождения.');
+                    csHealth = 100;
+                    csPlayer.position.set(0, 1, 0);
+                }
+                hit = true;
+            }
+        }
+        
+        // В стены
+        csWalls.forEach(wall => {
+            const distance = bullet.position.distanceTo(wall.position);
+            if (distance < 3) {
+                hit = true;
+            }
+        });
+        
+        // Удаление при попадании или далеко
+        if (hit || bullet.position.distanceTo(csPlayer.position) > 100) {
+            csScene.remove(bullet);
+            csBullets.splice(i, 1);
+        }
+    }
+}
+
+function selectWeapon(weapon) {
+    currentWeapon = weapon;
+    document.querySelectorAll('.cs-weapon-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Обновляем патроны
+    switch(weapon) {
+        case 'akm': csAmmo = 30; break;
+        case 'awp': csAmmo = 10; break;
+        case 'glock': csAmmo = 20; break;
+        case 'deagle': csAmmo = 7; break;
+    }
+    updateCSHUD();
+}
+
+function reload() {
+    csAmmo = currentWeapon === 'akm' ? 30 : 
+              currentWeapon === 'awp' ? 10 :
+              currentWeapon === 'glock' ? 20 : 7;
+    updateCSHUD();
+}
+
+function updateCSHUD() {
+    document.getElementById('cs-health').textContent = `❤️ ${csHealth}`;
+    document.getElementById('cs-money').textContent = `💰 $${csMoney}`;
+    document.getElementById('cs-kills').textContent = `🎯 ${csKills} убийств`;
+    document.getElementById('cs-ammo').textContent = `🔫 ${csAmmo}`;
+}
+
+function exitCSGame() {
+    document.getElementById('cs-game').style.display = 'none';
+    
+    // Очищаем сцену
+    if (csScene) {
+        while(csScene.children.length > 0) {
+            csScene.remove(csScene.children[0]);
+        }
+    }
+    csBots = [];
+    csBullets = [];
+    csWalls = [];
+    
+    // Сбрасываем статистику
+    csHealth = 100;
+    csMoney = 800;
+    csKills = 0;
+    csAmmo = 30;
 }
 
 // Крестики-нолики
@@ -1611,7 +1885,7 @@ let ticCurrentPlayer = 'X';
 let ticGameActive = true;
 
 function startTicTacToe() {
-    showModal('tic-tac-toe-modal');
+    showModal('tic-modal');
     initTicTacToe();
 }
 
@@ -1627,53 +1901,73 @@ function initTicTacToe() {
         board.appendChild(cell);
     }
     
-    updateTicStatus();
+    document.getElementById('tic-status').textContent = `Ход игрока: ${ticCurrentPlayer}`;
 }
 
 function makeMove(index) {
     if (!ticGameActive || ticBoard[index] !== '') return;
     
     ticBoard[index] = ticCurrentPlayer;
-    document.querySelector(`.tic-cell[data-index="${index}"]`).textContent = ticCurrentPlayer;
+    const cell = document.querySelector(`.tic-cell[data-index="${index}"]`);
+    cell.textContent = ticCurrentPlayer;
+    cell.classList.add(ticCurrentPlayer.toLowerCase());
     
     if (checkWin()) {
-        document.getElementById('tic-status').textContent = `Победил ${ticCurrentPlayer}!`;
+        document.getElementById('tic-status').textContent = `🏆 Победил ${ticCurrentPlayer}!`;
         ticGameActive = false;
-        
-        // Обновляем статистику
         if (ticCurrentPlayer === 'X') {
-            gameData.users[currentUser].stats.tic.wins++;
+            platformData.games.tic.wins = (platformData.games.tic.wins || 0) + 1;
         }
         saveData();
         return;
     }
     
     if (isBoardFull()) {
-        document.getElementById('tic-status').textContent = 'Ничья!';
+        document.getElementById('tic-status').textContent = '🤝 Ничья!';
         ticGameActive = false;
-        gameData.users[currentUser].stats.tic.draws++;
-        saveData();
         return;
     }
     
     ticCurrentPlayer = ticCurrentPlayer === 'X' ? 'O' : 'X';
-    updateTicStatus();
+    document.getElementById('tic-status').textContent = `Ход игрока: ${ticCurrentPlayer}`;
     
-    // Ход бота если нужно
+    // Ход бота
     if (ticCurrentPlayer === 'O') {
         setTimeout(makeBotMove, 500);
     }
 }
 
 function makeBotMove() {
-    const availableMoves = ticBoard.map((cell, index) => cell === '' ? index : -1).filter(i => i !== -1);
-    if (availableMoves.length === 0) return;
+    // Простой AI: сначала попробуем выиграть, потом заблокировать, потом случайный ход
     
-    const randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
-    makeMove(randomMove);
+    // 1. Проверка на выигрыш
+    for (let i = 0; i < 9; i++) {
+        if (ticBoard[i] === '' && checkMoveWin('O', i)) {
+            makeMove(i);
+            return;
+        }
+    }
+    
+    // 2. Блокировка игрока
+    for (let i = 0; i < 9; i++) {
+        if (ticBoard[i] === '' && checkMoveWin('X', i)) {
+            makeMove(i);
+            return;
+        }
+    }
+    
+    // 3. Случайный ход
+    const availableMoves = ticBoard.map((cell, index) => cell === '' ? index : -1).filter(i => i !== -1);
+    if (availableMoves.length > 0) {
+        const randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+        makeMove(randomMove);
+    }
 }
 
-function checkWin() {
+function checkMoveWin(player, move) {
+    const tempBoard = [...ticBoard];
+    tempBoard[move] = player;
+    
     const winPatterns = [
         [0,1,2], [3,4,5], [6,7,8], // rows
         [0,3,6], [1,4,7], [2,5,8], // columns
@@ -1682,16 +1976,16 @@ function checkWin() {
     
     return winPatterns.some(pattern => {
         const [a,b,c] = pattern;
-        return ticBoard[a] && ticBoard[a] === ticBoard[b] && ticBoard[a] === ticBoard[c];
+        return tempBoard[a] === player && tempBoard[b] === player && tempBoard[c] === player;
     });
+}
+
+function checkWin() {
+    return checkMoveWin(ticCurrentPlayer, -1);
 }
 
 function isBoardFull() {
     return ticBoard.every(cell => cell !== '');
-}
-
-function updateTicStatus() {
-    document.getElementById('tic-status').textContent = `Ход игрока: ${ticCurrentPlayer}`;
 }
 
 function resetTicTacToe() {
@@ -1712,7 +2006,7 @@ function startClicker() {
 }
 
 function loadClickerData() {
-    const data = gameData.users[currentUser].stats.clicker;
+    const data = platformData.games.clicker;
     clickerMoney = data.money || 0;
     clickerClickPower = data.clickPower || 1;
     clickerAutoClicker = data.autoClicker || 0;
@@ -1721,11 +2015,7 @@ function loadClickerData() {
     
     // Автокликер
     if (clickerAutoClicker > 0 && !window.autoClickerInterval) {
-        window.autoClickerInterval = setInterval(() => {
-            clickerMoney += clickerAutoClicker * 0.1;
-            updateClickerDisplay();
-            saveClickerData();
-        }, 1000);
+        startAutoClicker();
     }
 }
 
@@ -1736,42 +2026,42 @@ function clickMoney() {
 }
 
 function buyUpgrade(type) {
-    let cost = 0;
+    const costs = {
+        click: 10 * Math.pow(2, clickerClickPower - 1),
+        auto: 100 * Math.pow(2, clickerAutoClicker)
+    };
     
-    switch(type) {
-        case 'click':
-            cost = 10 * Math.pow(2, clickerClickPower - 1);
-            if (clickerMoney >= cost) {
-                clickerMoney -= cost;
-                clickerClickPower++;
-                updateClickerDisplay();
-                saveClickerData();
-            } else {
-                alert('Недостаточно денег!');
+    const cost = costs[type];
+    
+    if (clickerMoney >= cost) {
+        clickerMoney -= cost;
+        
+        if (type === 'click') {
+            clickerClickPower++;
+        } else if (type === 'auto') {
+            clickerAutoClicker++;
+            if (!window.autoClickerInterval) {
+                startAutoClicker();
             }
-            break;
-            
-        case 'auto':
-            cost = 100 * Math.pow(2, clickerAutoClicker);
-            if (clickerMoney >= cost) {
-                clickerMoney -= cost;
-                clickerAutoClicker++;
-                updateClickerDisplay();
-                saveClickerData();
-                
-                // Запускаем автокликер если еще не запущен
-                if (!window.autoClickerInterval) {
-                    window.autoClickerInterval = setInterval(() => {
-                        clickerMoney += clickerAutoClicker * 0.1;
-                        updateClickerDisplay();
-                        saveClickerData();
-                    }, 1000);
-                }
-            } else {
-                alert('Недостаточно денег!');
-            }
-            break;
+        }
+        
+        updateClickerDisplay();
+        saveClickerData();
+    } else {
+        alert('Недостаточно денег!');
     }
+}
+
+function startAutoClicker() {
+    if (window.autoClickerInterval) {
+        clearInterval(window.autoClickerInterval);
+    }
+    
+    window.autoClickerInterval = setInterval(() => {
+        clickerMoney += clickerAutoClicker * 0.5;
+        updateClickerDisplay();
+        saveClickerData();
+    }, 1000);
 }
 
 function updateClickerDisplay() {
@@ -1779,7 +2069,7 @@ function updateClickerDisplay() {
 }
 
 function saveClickerData() {
-    gameData.users[currentUser].stats.clicker = {
+    platformData.games.clicker = {
         money: clickerMoney,
         clickPower: clickerClickPower,
         autoClicker: clickerAutoClicker
@@ -1788,70 +2078,213 @@ function saveClickerData() {
 }
 
 // ====================
-// ПЕРЕВОДЧИК
+// КАРТЫ (Leaflet OpenStreetMap)
 // ====================
-const translations = {
-    'ru': {
-        'hello': 'привет',
-        'goodbye': 'до свидания',
-        'thank you': 'спасибо',
-        'yes': 'да',
-        'no': 'нет'
-    },
-    'en': {
+function initMap() {
+    map = L.map('map').setView([55.7558, 37.6173], 13); // Москва
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+    }).addTo(map);
+    
+    // Добавляем маркер
+    L.marker([55.7558, 37.6173]).addTo(map)
+        .bindPopup('Москва, Россия')
+        .openPopup();
+}
+
+function findMyLocation() {
+    if (!navigator.geolocation) {
+        alert('Геолокация не поддерживается вашим браузером');
+        return;
+    }
+    
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            
+            map.setView([lat, lng], 15);
+            
+            L.marker([lat, lng]).addTo(map)
+                .bindPopup('Ваше местоположение')
+                .openPopup();
+        },
+        () => {
+            alert('Не удалось получить местоположение');
+        }
+    );
+}
+
+function searchLocation() {
+    const query = prompt('Введите название места для поиска:');
+    if (!query) return;
+    
+    // Простой поиск по популярным местам
+    const locations = {
+        'москва': [55.7558, 37.6173],
+        'дубай': [25.2048, 55.2708],
+        'киев': [50.4501, 30.5234],
+        'париж': [48.8566, 2.3522],
+        'берлин': [52.5200, 13.4050],
+        'токио': [35.6762, 139.6503],
+        'пекин': [39.9042, 116.4074]
+    };
+    
+    const loc = locations[query.toLowerCase()];
+    if (loc) {
+        map.setView(loc, 13);
+        L.marker(loc).addTo(map)
+            .bindPopup(query.charAt(0).toUpperCase() + query.slice(1))
+            .openPopup();
+    } else {
+        alert('Место не найдено в базе');
+    }
+}
+
+// ====================
+// ПЕРЕВОДЧИК (улучшенный)
+// ====================
+const translationDictionary = {
+    // Русский -> Английский
+    'ru-en': {
         'привет': 'hello',
-        'до свидания': 'goodbye',
+        'здравствуйте': 'hello',
+        'как дела': 'how are you',
         'спасибо': 'thank you',
+        'пожалуйста': 'you are welcome',
         'да': 'yes',
-        'нет': 'no'
+        'нет': 'no',
+        'хорошо': 'good',
+        'плохо': 'bad',
+        'я': 'i',
+        'ты': 'you',
+        'мы': 'we',
+        'они': 'they',
+        'дом': 'house',
+        'машина': 'car',
+        'компьютер': 'computer',
+        'игра': 'game',
+        'деньги': 'money',
+        'работа': 'work',
+        'любовь': 'love',
+        'семья': 'family',
+        'друг': 'friend'
+    },
+    // Английский -> Русский
+    'en-ru': {
+        'hello': 'привет',
+        'hi': 'привет',
+        'how are you': 'как дела',
+        'thank you': 'спасибо',
+        'thanks': 'спасибо',
+        'you are welcome': 'пожалуйста',
+        'yes': 'да',
+        'no': 'нет',
+        'good': 'хорошо',
+        'bad': 'плохо',
+        'i': 'я',
+        'you': 'ты',
+        'we': 'мы',
+        'they': 'они',
+        'house': 'дом',
+        'car': 'машина',
+        'computer': 'компьютер',
+        'game': 'игра',
+        'money': 'деньги',
+        'work': 'работа',
+        'love': 'любовь',
+        'family': 'семья',
+        'friend': 'друг'
+    },
+    // Русский -> Китайский
+    'ru-zh': {
+        'привет': '你好',
+        'спасибо': '谢谢',
+        'да': '是',
+        'нет': '没有',
+        'я': '我',
+        'ты': '你',
+        'деньги': '钱'
+    },
+    // Китайский -> Русский
+    'zh-ru': {
+        '你好': 'привет',
+        '谢谢': 'спасибо',
+        '是': 'да',
+        '没有': 'нет',
+        '我': 'я',
+        '你': 'ты',
+        '钱': 'деньги'
     }
 };
 
 function swapLanguages() {
-    const fromSelect = document.getElementById('lang-from');
-    const toSelect = document.getElementById('lang-to');
-    const temp = fromSelect.value;
-    fromSelect.value = toSelect.value;
-    toSelect.value = temp;
+    const from = document.getElementById('lang-from');
+    const to = document.getElementById('lang-to');
+    const temp = from.value;
+    from.value = to.value;
+    to.value = temp;
     translateText();
 }
 
 function translateText() {
-    const text = document.getElementById('text-input').value.toLowerCase();
-    const fromLang = document.getElementById('lang-from').value;
-    const toLang = document.getElementById('lang-to').value;
+    const text = document.getElementById('input-text').value.trim();
+    const from = document.getElementById('lang-from').value;
+    const to = document.getElementById('lang-to').value;
     
-    if (!text.trim()) {
-        document.getElementById('text-output').value = '';
+    if (!text) {
+        document.getElementById('output-text').value = '';
         return;
     }
     
-    // Простой перевод на основе словаря
-    const fromDict = translations[fromLang];
-    const toDict = translations[toLang];
+    const key = `${from}-${to}`;
+    const dict = translationDictionary[key];
     
-    let result = text;
-    if (fromDict && toDict) {
-        Object.keys(fromDict).forEach(key => {
-            if (text.includes(key)) {
-                result = result.replace(new RegExp(key, 'gi'), fromDict[key]);
+    if (dict) {
+        // Простой по-словный перевод
+        const words = text.toLowerCase().split(' ');
+        const translatedWords = words.map(word => {
+            // Ищем точное совпадение
+            if (dict[word]) return dict[word];
+            
+            // Ищем частичное совпадение
+            for (const [key, value] of Object.entries(dict)) {
+                if (key.includes(word) || word.includes(key)) {
+                    return value;
+                }
             }
+            
+            return word; // Если не нашли, оставляем как есть
         });
+        
+        document.getElementById('output-text').value = translatedWords.join(' ');
+    } else {
+        // Если нет словаря для этой пары языков, используем псевдоперевод
+        const pseudoTranslated = text.split('').map((char, i) => {
+            if (Math.random() > 0.7 && i > 0) {
+                return char.toUpperCase();
+            }
+            return char;
+        }).join('');
+        
+        document.getElementById('output-text').value = `[ПЕРЕВОД]: ${pseudoTranslated}`;
     }
-    
-    document.getElementById('text-output').value = result.charAt(0).toUpperCase() + result.slice(1);
 }
 
 function speakTranslation() {
-    const text = document.getElementById('text-output').value;
-    if (!text.trim()) return;
+    const text = document.getElementById('output-text').value;
+    if (!text) return;
     
     if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = document.getElementById('lang-to').value;
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
         speechSynthesis.speak(utterance);
     } else {
-        alert('Ваш браузер не поддерживает синтез речи');
+        alert('Браузер не поддерживает синтез речи');
     }
 }
 
@@ -1860,21 +2293,27 @@ function startVoiceInput() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
         recognition.lang = document.getElementById('lang-from').value;
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
         
-        recognition.onresult = function(event) {
+        recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
-            document.getElementById('text-input').value = transcript;
+            document.getElementById('input-text').value = transcript;
             translateText();
+        };
+        
+        recognition.onerror = (event) => {
+            console.error('Ошибка распознавания:', event.error);
         };
         
         recognition.start();
     } else {
-        alert('Ваш браузер не поддерживает распознавание речи');
+        alert('Браузер не поддерживает распознавание речи');
     }
 }
 
 // ====================
-// ЧАСЫ
+// ЧАСЫ МИРА
 // ====================
 const timezones = {
     'Москва': 'Europe/Moscow',
@@ -1885,22 +2324,22 @@ const timezones = {
     'Токио': 'Asia/Tokyo',
     'Пекин': 'Asia/Shanghai',
     'Сеул': 'Asia/Seoul',
-    'Пусан': 'Asia/Seoul',
     'Ташкент': 'Asia/Tashkent'
 };
 
 function initWorldClocks() {
-    const clocksGrid = document.getElementById('clocks-grid');
+    const container = document.getElementById('clocks-container');
+    container.innerHTML = '';
     
     Object.keys(timezones).forEach(city => {
-        const clockCard = document.createElement('div');
-        clockCard.className = 'clock-card';
-        clockCard.innerHTML = `
-            <div style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">${city}</div>
+        const card = document.createElement('div');
+        card.className = 'clock-card';
+        card.innerHTML = `
+            <div class="clock-city">${city}</div>
             <div class="clock-time" id="clock-${city}">00:00:00</div>
-            <div style="font-size: 0.9rem; opacity: 0.7;" id="date-${city}">1 января 2024</div>
+            <div class="clock-date" id="date-${city}">1 января 2024</div>
         `;
-        clocksGrid.appendChild(clockCard);
+        container.appendChild(card);
     });
     
     updateClocks();
@@ -1912,7 +2351,7 @@ function updateClocks() {
     
     Object.keys(timezones).forEach(city => {
         try {
-            const timeString = now.toLocaleTimeString('ru-RU', { timeZone: timezones[city] });
+            const timeString = now.toLocaleTimeString('ru-RU', { timeZone: timezones[city], hour12: false });
             const dateString = now.toLocaleDateString('ru-RU', { 
                 timeZone: timezones[city],
                 weekday: 'long',
@@ -1924,7 +2363,7 @@ function updateClocks() {
             document.getElementById(`clock-${city}`).textContent = timeString;
             document.getElementById(`date-${city}`).textContent = dateString;
         } catch (e) {
-            // Если часовой пояс не поддерживается, используем локальное время
+            console.log(`Ошибка часового пояса для ${city}:`, e);
             document.getElementById(`clock-${city}`).textContent = now.toLocaleTimeString();
             document.getElementById(`date-${city}`).textContent = now.toLocaleDateString();
         }
@@ -1932,14 +2371,22 @@ function updateClocks() {
 }
 
 // ====================
-// ЧАТ-БОТ
+// ЧАТ-БОТ AI
 // ====================
 const botResponses = {
-    'привет': 'Привет! Как ваши дела?',
-    'как дела': 'У меня всё отлично! А у вас?',
-    'что ты умеешь': 'Я могу отвечать на вопросы, переводить текст и помогать с играми!',
-    'спасибо': 'Пожалуйста! Всегда рад помочь!',
-    'пока': 'До свидания! Заходите ещё!'
+    'привет': ['Привет! 😊', 'Здравствуйте!', 'Приветствую!'],
+    'как дела': ['Отлично, спасибо! А у вас?', 'Хорошо, работаю над ответами!', 'Всё прекрасно!'],
+    'что ты умеешь': [
+        'Я могу: переводить текст, показывать карты, играть с вами в игры, отвечать на вопросы!',
+        'Мои функции: Переводчик, Карты, Игры (CS, крестики-нолики, кликер), Часы мира, Чат с ИИ!',
+        'Я ваш универсальный помощник: перевод, карты, игры и многое другое!'
+    ],
+    'спасибо': ['Пожалуйста! 😊', 'Всегда рад помочь!', 'Обращайтесь!'],
+    'пока': ['До свидания! 👋', 'Всего хорошего!', 'Возвращайтесь!'],
+    'игра': ['У нас есть: Counter-Strike 3D, Крестики-нолики, Кликер! В какую хотите?', 'Игры: CS 3D, Крестики-нолики, Кликер с питомцами!'],
+    'перевод': ['Я перевожу с русского, английского, китайского и арабского. Что перевести?', 'Переводчик поддерживает 4 языка. Введите текст!'],
+    'карта': ['Карты на основе OpenStreetMap. Можно найти любое место!', 'Используйте карту для навигации или поиска мест!'],
+    'время': ['Показываю время в 9 городах мира!', 'Часы мира: Москва, Дубай, Киев, Париж, Берлин, Токио, Пекин, Сеул, Ташкент']
 };
 
 function sendChatMessage() {
@@ -1948,27 +2395,40 @@ function sendChatMessage() {
     
     if (!message) return;
     
-    addMessage(message, 'user');
+    addChatMessage(message, 'user');
     input.value = '';
     
     // Ответ бота
     setTimeout(() => {
-        let response = 'Извините, я не понял ваш вопрос. Можете перефразировать?';
-        
-        Object.keys(botResponses).forEach(key => {
-            if (message.toLowerCase().includes(key)) {
-                response = botResponses[key];
-            }
-        });
-        
-        addMessage(response, 'bot');
-    }, 1000);
+        const response = getBotResponse(message.toLowerCase());
+        addChatMessage(response, 'bot');
+    }, 500);
 }
 
-function addMessage(text, sender) {
+function getBotResponse(message) {
+    // Ищем точное совпадение
+    for (const [key, responses] of Object.entries(botResponses)) {
+        if (message.includes(key)) {
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+    }
+    
+    // Если нет точного совпадения, используем общие ответы
+    const genericResponses = [
+        'Интересный вопрос! Уточните, пожалуйста.',
+        'Я еще учусь. Спросите что-то другое!',
+        'Попробуйте задать вопрос по-другому.',
+        'К сожалению, я не знаю ответ на этот вопрос. Но я учусь!',
+        'Можете спросить о переводе, картах или играх!'
+    ];
+    
+    return genericResponses[Math.floor(Math.random() * genericResponses.length)];
+}
+
+function addChatMessage(text, sender) {
     const messages = document.getElementById('chat-messages');
     const message = document.createElement('div');
-    message.className = `message ${sender}`;
+    message.className = `chat-message ${sender}`;
     message.textContent = text;
     messages.appendChild(message);
     messages.scrollTop = messages.scrollHeight;
@@ -1979,146 +2439,80 @@ function addMessage(text, sender) {
 // ====================
 function initLeaderboard() {
     updateLeaderboard();
-    document.getElementById('leaderboard-game').addEventListener('change', updateLeaderboard);
 }
 
 function updateLeaderboard() {
-    const game = document.getElementById('leaderboard-game').value;
-    const leaderboardContent = document.getElementById('leaderboard-content');
+    const leaderboard = document.getElementById('leaderboard-content');
+    leaderboard.innerHTML = '';
     
     // Собираем данные всех игроков
-    const allPlayers = Object.entries(gameData.users).map(([username, data]) => {
-        let score = 0;
-        let gameName = '';
+    const players = Object.entries(platformData.users).map(([username, data]) => {
+        const csScore = platformData.games.cs?.kills || 0;
+        const ticScore = platformData.games.tic?.wins || 0;
+        const clickerScore = platformData.games.clicker?.money || 0;
         
-        switch(game) {
-            case 'cs':
-                score = data.stats.cs.kills;
-                gameName = 'CS';
-                break;
-            case 'tic':
-                score = data.stats.tic.wins;
-                gameName = 'Крестики';
-                break;
-            case 'clicker':
-                score = data.stats.clicker.money || 0;
-                gameName = 'Кликер';
-                break;
-            case 'all':
-            default:
-                score = data.stats.cs.kills + data.stats.tic.wins * 10 + (data.stats.clicker.money || 0) / 100;
-                gameName = 'Все игры';
-                break;
-        }
+        const totalScore = csScore * 10 + ticScore * 100 + clickerScore / 1000;
         
-        return { username, score, gameName };
+        return {
+            username,
+            score: Math.round(totalScore),
+            cs: csScore,
+            tic: ticScore,
+            clicker: clickerScore
+        };
     });
     
     // Сортируем по очкам
-    allPlayers.sort((a, b) => b.score - a.score);
+    players.sort((a, b) => b.score - a.score);
     
     // Отображаем топ-10
-    leaderboardContent.innerHTML = allPlayers.slice(0, 10).map((player, index) => {
-        const rank = index + 1;
-        return `
-            <div class="leaderboard-row">
-                <div>
-                    <div class="rank-badge rank-${rank <= 3 ? rank : 'other'}">
-                        ${rank}
-                    </div>
-                </div>
-                <div>${player.username}</div>
-                <div>${Math.round(player.score)}</div>
-                <div>${game === 'all' ? player.gameName : ''}</div>
+    players.slice(0, 10).forEach((player, index) => {
+        const row = document.createElement('div');
+        row.className = 'leaderboard-row';
+        
+        const rankClass = index < 3 ? `rank-${index + 1}` : 'rank-other';
+        
+        row.innerHTML = `
+            <div>
+                <div class="rank-badge ${rankClass}">${index + 1}</div>
             </div>
+            <div>${player.username}</div>
+            <div>${player.score}</div>
+            <div>CS:${player.cs} T:${player.tic} C:$${Math.round(player.clicker)}</div>
         `;
-    }).join('');
+        
+        leaderboard.appendChild(row);
+    });
 }
 
 // ====================
 // НАСТРОЙКИ
 // ====================
-function toggleSettings() {
+function openSettings() {
     showModal('settings-modal');
 }
 
 function setTheme(theme) {
     document.body.setAttribute('data-theme', theme);
-    gameData.settings.theme = theme;
+    platformData.settings.theme = theme;
     saveData();
     
-    // Обновляем активную кнопку темы
-    document.querySelectorAll('.theme-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.querySelector(`.theme-btn[onclick="setTheme('${theme}')"]`).classList.add('active');
-    
-    // Включаем/выключаем снежинки
-    const snowToggle = document.getElementById('snow-toggle');
-    if (theme === 'light') {
-        snowToggle.checked = false;
-        snowToggle.disabled = true;
-        removeSnowflakes();
-    } else {
-        snowToggle.disabled = false;
-        if (snowToggle.checked) {
-            createSnowflakes();
-        }
-    }
-}
-
-function createSnowflakes() {
-    removeSnowflakes();
-    
-    if (!gameData.settings.snow) return;
-    
-    for (let i = 0; i < 50; i++) {
-        const snowflake = document.createElement('div');
-        snowflake.className = 'snowflake';
-        
-        const size = Math.random() * 10 + 5;
-        snowflake.style.width = `${size}px`;
-        snowflake.style.height = `${size}px`;
-        snowflake.style.left = `${Math.random() * 100}vw`;
-        snowflake.style.opacity = Math.random() * 0.5 + 0.3;
-        snowflake.style.animationDuration = `${Math.random() * 10 + 10}s`;
-        snowflake.style.animationDelay = `${Math.random() * 5}s`;
-        
-        document.body.appendChild(snowflake);
-        
-        // Удаляем снежинку после завершения анимации
-        setTimeout(() => {
-            if (snowflake.parentNode) {
-                snowflake.parentNode.removeChild(snowflake);
-            }
-        }, 15000);
-    }
-    
-    // Создаем новые снежинки каждые 15 секунд
-    window.snowInterval = setInterval(createSnowflakes, 15000);
-}
-
-function removeSnowflakes() {
-    document.querySelectorAll('.snowflake').forEach(snowflake => {
-        snowflake.remove();
-    });
-    if (window.snowInterval) {
-        clearInterval(window.snowInterval);
-    }
+    document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+    event?.target.classList.add('active');
 }
 
 function exportData() {
-    const dataStr = JSON.stringify(gameData);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const dataStr = JSON.stringify(platformData);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
     
-    const exportFileDefaultName = 'ultra-platform-backup.json';
+    const link = document.createElement('a');
+    link.setAttribute('href', dataUri);
+    link.setAttribute('download', 'ultra-platform-backup.json');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-    
-    alert('Данные успешно экспортированы!');
+    alert('Данные экспортированы!');
 }
 
 function importData() {
@@ -2126,19 +2520,19 @@ function importData() {
     input.type = 'file';
     input.accept = 'application/json';
     
-    input.onchange = function(e) {
+    input.onchange = e => {
         const file = e.target.files[0];
         const reader = new FileReader();
         
-        reader.onload = function(event) {
+        reader.onload = e => {
             try {
-                const importedData = JSON.parse(event.target.result);
-                Object.assign(gameData, importedData);
+                const data = JSON.parse(e.target.result);
+                Object.assign(platformData, data);
                 saveData();
-                alert('Данные успешно импортированы!');
+                alert('Данные импортированы! Страница будет перезагружена.');
                 location.reload();
             } catch (error) {
-                alert('Ошибка при импорте данных: ' + error.message);
+                alert('Ошибка при импорте: ' + error.message);
             }
         };
         
@@ -2149,9 +2543,9 @@ function importData() {
 }
 
 function clearData() {
-    if (confirm('ВНИМАНИЕ! Это удалит все ваши данные. Продолжить?')) {
+    if (confirm('ВНИМАНИЕ! Все данные будут удалены. Продолжить?')) {
         localStorage.clear();
-        alert('Данные очищены. Страница будет перезагружена.');
+        alert('Данные удалены. Страница перезагрузится.');
         location.reload();
     }
 }
@@ -2167,23 +2561,21 @@ function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
 
-function showMap() {
-    alert('Для использования карт требуется интернет-соединение.\nРекомендуем использовать Google Maps или Яндекс.Карты.');
+function saveData() {
+    localStorage.setItem('ultra_platform_v2', JSON.stringify(platformData));
 }
 
 function setupEventListeners() {
     // Навигация по вкладкам
     document.querySelectorAll('.nav-tab').forEach(tab => {
         tab.addEventListener('click', () => {
-            const tabId = tab.dataset.tab;
+            const pageId = tab.dataset.page;
             
-            // Убираем активный класс у всех вкладок
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             
-            // Добавляем активный класс текущей вкладке
             tab.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+            document.getElementById(pageId).classList.add('active');
         });
     });
     
@@ -2195,53 +2587,29 @@ function setupEventListeners() {
         });
     });
     
-    // Вкладки CS
-    document.querySelectorAll('.cs-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.cs-tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            
-            const tabId = tab.dataset.csTab;
-            document.querySelectorAll('[id$="-tab"]').forEach(t => t.style.display = 'none');
-            document.getElementById(`cs-${tabId}-tab`).style.display = 'block';
-        });
-    });
-    
     // Переводчик
-    document.getElementById('text-input').addEventListener('input', translateText);
+    document.getElementById('input-text').addEventListener('input', translateText);
     
-    // Чат-бот (Enter для отправки)
-    document.getElementById('chat-input').addEventListener('keypress', (e) => {
+    // Чат (Enter для отправки)
+    document.getElementById('chat-input').addEventListener('keypress', e => {
         if (e.key === 'Enter') sendChatMessage();
     });
     
-    // Настройки снежинок
-    document.getElementById('snow-toggle').addEventListener('change', (e) => {
-        gameData.settings.snow = e.target.checked;
-        saveData();
+    // Обновление карты при изменении размера
+    window.addEventListener('resize', () => {
+        if (map) {
+            map.invalidateSize();
+        }
         
-        if (e.target.checked && (gameData.settings.theme === 'dark' || gameData.settings.theme === 'purple')) {
-            createSnowflakes();
-        } else {
-            removeSnowflakes();
+        if (csRenderer && csCamera) {
+            const canvas = document.getElementById('cs-canvas');
+            if (canvas) {
+                csCamera.aspect = canvas.clientWidth / canvas.clientHeight;
+                csCamera.updateProjectionMatrix();
+                csRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            }
         }
     });
-    
-    // Настройки звуков
-    document.getElementById('sound-toggle').addEventListener('change', (e) => {
-        gameData.settings.sounds = e.target.checked;
-        saveData();
-    });
-    
-    // Настройки уведомлений
-    document.getElementById('notifications-toggle').addEventListener('change', (e) => {
-        gameData.settings.notifications = e.target.checked;
-        saveData();
-    });
-}
-
-function saveData() {
-    localStorage.setItem('ultra_platform', JSON.stringify(gameData));
 }
 
 // ====================
@@ -2250,32 +2618,14 @@ function saveData() {
 window.addEventListener('load', () => {
     initUserSelection();
     
-    // Проверяем активные сессии (удаляем тех, кто неактивен более 5 минут)
+    // Очищаем неактивные сессии (старше 5 минут)
     const now = Date.now();
-    Object.keys(gameData.online || {}).forEach(user => {
-        if (now - gameData.online[user] > 5 * 60 * 1000) {
-            delete gameData.online[user];
+    Object.keys(platformData.online || {}).forEach(user => {
+        if (now - platformData.online[user] > 5 * 60 * 1000) {
+            delete platformData.online[user];
         }
     });
     saveData();
-    
-    // Автовход для теста
-    if (localStorage.getItem('auto_login') === 'true') {
-        currentUser = 'Гость';
-        enterPlatform();
-    }
-});
-
-// Ресайз канваса
-window.addEventListener('resize', () => {
-    if (csRenderer && csCamera) {
-        const canvas = document.getElementById('cs-canvas');
-        if (canvas) {
-            csCamera.aspect = canvas.clientWidth / canvas.clientHeight;
-            csCamera.updateProjectionMatrix();
-            csRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
-        }
-    }
 });
 </script>
 </body>
