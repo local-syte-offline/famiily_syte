@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ULTRA HUB: EVOLUTION 2.1</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <title>ULTRA HUB: EVOLUTION</title>
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
         
         :root {
@@ -20,135 +19,147 @@
             --text: #fff;
             --border: rgba(0, 242, 255, 0.3);
         }
+        
         body {
             background: var(--bg);
             color: var(--text);
             font-family: 'Segoe UI', sans-serif;
             height: 100vh;
             overflow: hidden;
-            transition: background 0.5s;
         }
+        
         body.mobile { font-size: 18px; }
 
-        /* Аутентификация */
+        /* Аутентификация - ИСПРАВЛЕНО */
         #auth-overlay {
-            position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: linear-gradient(135deg, #000 0%, #0a0a2a 100%);
             z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(10px);
+            padding: 20px;
         }
+        
         .auth-card {
-            background: var(--card);
+            background: rgba(0, 0, 0, 0.8);
             padding: 30px;
             border-radius: 20px;
             border: 2px solid var(--p);
             text-align: center;
-            width: 90%;
+            width: 100%;
             max-width: 400px;
             box-shadow: 0 0 30px var(--p);
         }
         
-        .auth-card select,
-        .auth-card input,
-        .auth-btn {
+        .auth-card h2 {
+            color: var(--p);
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+        
+        .auth-input {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             margin: 10px 0;
-            border-radius: 12px;
-            border: 2px solid var(--p);
-            background: rgba(0,0,0,0.7);
-            color: var(--text);
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-        
-        .auth-btn {
-            background: linear-gradient(45deg, var(--p), var(--s));
-            color: #000;
-            cursor: pointer;
-            margin-top: 20px;
-            border: none;
-        }
-        .auth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 242, 255, 0.4);
-        }
-        
-        /* UI */
-        .btn {
-            padding: 10px 15px;
             border-radius: 10px;
             border: 2px solid var(--p);
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.7);
             color: var(--text);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .auth-input:focus {
+            outline: none;
+            border-color: var(--s);
+            box-shadow: 0 0 15px var(--s);
+        }
+        
+        .auth-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(45deg, var(--p), var(--s));
+            color: #000;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
         }
-        .btn:hover {
-            background: var(--p);
-            color: #000;
+        
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 242, 255, 0.5);
+        }
+        
+        /* Основной интерфейс */
+        #main-content {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
         }
         
         /* Навигация */
-        #main-content { 
-            display: none; 
-            height: 100vh; 
-            flex-direction: column; 
-        }
         nav {
             display: flex;
             gap: 5px;
             padding: 10px;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0, 0, 0, 0.9);
             border-bottom: 2px solid var(--p);
             overflow-x: auto;
-            position: sticky;
-            top: 0;
-            z-index: 100;
             flex-wrap: wrap;
         }
+        
         nav button {
             background: transparent;
             border: 2px solid var(--p);
             color: var(--p);
             padding: 8px 12px;
             border-radius: 8px;
-            font-size: 11px;
-            white-space: nowrap;
+            font-size: 12px;
             cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
         }
-        nav button.active {
+        
+        nav button:hover, nav button.active {
             background: var(--p);
             color: #000;
         }
-
+        
         /* Секции */
         section {
             display: none;
             padding: 15px;
             height: calc(100vh - 60px);
             overflow-y: auto;
-            text-align: center;
         }
+        
         section.active {
             display: block;
         }
-
+        
         .card {
             background: var(--card);
-            padding: 15px;
+            padding: 20px;
             border-radius: 15px;
             border: 1px solid var(--border);
             margin-bottom: 15px;
         }
-
-        /* МАЙНЕР (только кликер) */
+        
+        h1, h2, h3 {
+            color: var(--p);
+            margin-bottom: 15px;
+        }
+        
+        /* МАЙНЕР */
         #core {
             width: 150px;
             height: 150px;
@@ -157,24 +168,22 @@
             border: 3px solid #fff;
             margin: 20px auto;
             cursor: pointer;
-            transition: all 0.1s;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 20px;
             font-weight: bold;
+            transition: all 0.1s;
         }
-
-        /* ТОМ 2 - точная копия */
+        
+        /* ТОМ 2 */
         #tom2-container {
-            max-width: 400px;
-            margin: 0 auto;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 20px;
             padding: 20px;
-            position: relative;
+            margin-bottom: 20px;
             border: 3px solid #ff6b6b;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
         }
         
         #tom2-character {
@@ -182,10 +191,9 @@
             height: 200px;
             background: #f8c291;
             border-radius: 50%;
-            margin: 20px auto;
+            margin: 0 auto 20px;
             position: relative;
             border: 5px solid #e55039;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
         }
         
         .tom2-eye {
@@ -196,8 +204,10 @@
             border-radius: 50%;
             top: 60px;
         }
+        
         .tom2-eye.left { left: 50px; }
         .tom2-eye.right { right: 50px; }
+        
         .tom2-pupil {
             position: absolute;
             width: 15px;
@@ -207,17 +217,6 @@
             top: 12px;
             left: 7px;
         }
-        
-        .tom2-ear {
-            position: absolute;
-            width: 40px;
-            height: 60px;
-            background: #f8c291;
-            border-radius: 50%;
-            top: -30px;
-        }
-        .tom2-ear.left { left: 40px; transform: rotate(-20deg); }
-        .tom2-ear.right { right: 40px; transform: rotate(20deg); }
         
         .tom2-mouth {
             position: absolute;
@@ -230,6 +229,18 @@
             transform: translateX(-50%);
         }
         
+        .tom2-ear {
+            position: absolute;
+            width: 40px;
+            height: 60px;
+            background: #f8c291;
+            border-radius: 50%;
+            top: -30px;
+        }
+        
+        .tom2-ear.left { left: 40px; transform: rotate(-20deg); }
+        .tom2-ear.right { right: 40px; transform: rotate(20deg); }
+        
         #tom2-message {
             background: white;
             padding: 10px;
@@ -237,33 +248,25 @@
             margin: 15px 0;
             border: 2px solid #ff6b6b;
             min-height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
             color: #333;
+            font-weight: bold;
         }
         
         .tom2-buttons {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-top: 20px;
         }
         
         .tom2-btn {
-            padding: 12px;
+            padding: 10px;
             border: none;
             border-radius: 10px;
             background: #ff6b6b;
             color: white;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-        .tom2-btn:hover {
-            transform: scale(1.05);
-            background: #ff5252;
         }
         
         .tom2-stats {
@@ -274,10 +277,11 @@
         }
         
         .tom2-stat {
-            background: rgba(255,255,255,0.9);
+            background: rgba(255, 255, 255, 0.9);
             padding: 10px;
             border-radius: 10px;
             border: 2px solid #4ecdc4;
+            color: #333;
         }
         
         .tom2-stat-bar {
@@ -294,11 +298,33 @@
             width: 100%;
             transition: width 0.5s;
         }
-
-        /* ЯЙЦА */
+        
+        /* Одежда для Тома */
+        .clothing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .clothing-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .clothing-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* Яйца */
         .egg-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 15px;
             margin-top: 20px;
         }
@@ -311,6 +337,7 @@
             cursor: pointer;
             transition: all 0.3s;
         }
+        
         .egg-item:hover {
             transform: scale(1.05);
         }
@@ -320,17 +347,8 @@
         .egg-epic { border-color: #9b59b6; background: #3d0059; }
         .egg-mythic { border-color: #e74c3c; background: #5d0000; }
         .egg-legendary { border-color: #f1c40f; background: #5d4d00; }
-        .egg-secret { border-color: #ffffff; background: #666; }
-        .egg-god { border-color: #00ffff; background: #003333; }
         
-        .egg-price {
-            font-size: 18px;
-            font-weight: bold;
-            color: gold;
-            margin: 10px 0;
-        }
-
-        /* ПИТОМЦЫ */
+        /* Питомцы */
         .pet-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -339,61 +357,71 @@
         }
         
         .pet-card {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             padding: 10px;
             border-radius: 10px;
+            text-align: center;
             border: 1px solid var(--p);
         }
         
-        .pet-emoji {
-            font-size: 40px;
-            margin-bottom: 5px;
-        }
-
-        /* ПЕРЕРОЖДЕНИЯ */
+        /* Перерождения */
         .prestige-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
             border-radius: 15px;
             margin: 20px 0;
             border: 2px solid gold;
+            text-align: center;
         }
         
-        .prestige-cost {
-            font-size: 24px;
-            color: gold;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        /* ОДЕЖДА (в Тамегочи) */
-        .clothing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .clothing-item {
-            padding: 10px;
-            background: rgba(255,255,255,0.1);
+        /* Кнопки */
+        .btn {
+            padding: 10px 15px;
             border-radius: 10px;
+            border: 2px solid var(--p);
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--text);
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
+            margin: 5px;
         }
-        .clothing-item:hover {
-            background: rgba(255,255,255,0.2);
+        
+        .btn:hover {
+            background: var(--p);
+            color: #000;
         }
-
+        
+        .btn-danger {
+            background: #ff5555;
+            border-color: #ff0000;
+        }
+        
         /* Адаптивность */
         @media (max-width: 768px) {
-            .auth-card { padding: 20px; }
-            nav button { font-size: 10px; padding: 6px 10px; }
-            section { padding: 10px; }
-            #tom2-character { width: 150px; height: 150px; }
-            .tom2-eye { top: 45px; }
-            .tom2-eye.left { left: 40px; }
-            .tom2-eye.right { right: 40px; }
+            .auth-card {
+                padding: 20px;
+            }
+            
+            #tom2-character {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .tom2-eye {
+                top: 45px;
+            }
+            
+            .tom2-eye.left { left: 35px; }
+            .tom2-eye.right { right: 35px; }
+            
+            .tom2-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .egg-grid, .clothing-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -402,25 +430,28 @@
 <!-- Аутентификация -->
 <div id="auth-overlay">
     <div class="auth-card">
-        <h2 style="color:var(--p); margin-bottom: 20px;">🔐 ВХОД В СИСТЕМУ</h2>
+        <h2>🔐 ВХОД В СИСТЕМУ</h2>
         
-        <select id="user-select">
+        <select id="user-select" class="auth-input">
             <option value="Никита">Никита [ADMIN]</option>
             <option value="Алена">Алена</option>
             <option value="Саша">Саша</option>
             <option value="Алиса">Алиса</option>
+            <option value="Гость">Гость</option>
         </select>
         
-        <select id="device-select">
+        <select id="device-select" class="auth-input">
             <option value="pc">🖥️ Компьютер</option>
             <option value="mobile">📱 Смартфон</option>
         </select>
         
-        <input type="password" id="password-input" placeholder="ВВЕДИТЕ ЛЮБОЙ ПАРОЛЬ" autocomplete="off">
+        <input type="password" id="password-input" class="auth-input" placeholder="ВВЕДИТЕ ЛЮБОЙ ПАРОЛЬ" autocomplete="off">
         
-        <button class="auth-btn" onclick="identify()">
-            🔓 ВОЙТИ
-        </button>
+        <button class="auth-btn" onclick="login()">🔓 ВОЙТИ</button>
+        
+        <p style="margin-top: 15px; font-size: 14px; color: #888;">
+            💡 Просто введите любой символ в поле пароля
+        </p>
     </div>
 </div>
 
@@ -439,25 +470,23 @@
     </nav>
 
     <!-- Главная -->
-    <section id="home" class="active">
-        <div class="card">
-            <h1 id="clock" style="font-size: 2.5rem; margin:0; text-shadow: 0 0 10px var(--p);">00:00:00</h1>
-            <p id="user-tag" style="color:var(--p); font-size: 1rem; margin: 10px 0;"></p>
-            <div style="margin-top: 20px;">
-                <h3>📊 СТАТИСТИКА</h3>
-                <p>💰 Баланс: <span id="balance-display">0</span> BYTES</p>
-                <p>🎪 Питомцев: <span id="pets-count">0</span></p>
-                <p>🔄 Перерождений: <span id="rebirth-count">0</span></p>
-                <p>⚡ Множитель: <span id="multiplier">1x</span></p>
-                <p>🥚 Яиц открыто: <span id="eggs-opened">0</span></p>
-            </div>
+    <section id="home" class="active card">
+        <h1 id="clock" style="text-align: center;">00:00:00</h1>
+        <p id="user-tag" style="text-align: center; margin: 10px 0;"></p>
+        
+        <div style="margin-top: 20px;">
+            <h3>📊 СТАТИСТИКА</h3>
+            <p>💰 Баланс: <span id="balance-display">0</span> BYTES</p>
+            <p>🎪 Питомцев: <span id="pets-count">0</span></p>
+            <p>🔄 Перерождений: <span id="rebirth-count">0</span></p>
+            <p>⚡ Множитель: <span id="multiplier">1x</span></p>
         </div>
     </section>
 
-    <!-- ТОМ 2 (полная копия с магазином одежды) -->
+    <!-- ТОМ 2 -->
     <section id="tom2">
         <div class="card">
-            <h2 style="color:#ff6b6b; margin-bottom: 20px;">😸 ТОМ 2</h2>
+            <h2 style="color:#ff6b6b; text-align: center;">😸 ТОМ 2</h2>
             
             <div id="tom2-container">
                 <div id="tom2-character">
@@ -473,9 +502,8 @@
                     
                     <div class="tom2-mouth"></div>
                     
-                    <!-- Одежда -->
                     <div id="tom2-clothing" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-                        <!-- Одежда будет добавляться сюда -->
+                        <!-- Одежда здесь -->
                     </div>
                 </div>
                 
@@ -487,7 +515,7 @@
                     <div class="tom2-stat">
                         <div>🍕 Голод</div>
                         <div class="tom2-stat-bar">
-                            <div id="tom2-hunger-bar" class="tom2-stat-fill" style="width: 100%; background: #4ecdc4;"></div>
+                            <div id="tom2-hunger-bar" class="tom2-stat-fill" style="width: 100%;"></div>
                         </div>
                         <div id="tom2-hunger-value">100%</div>
                     </div>
@@ -495,7 +523,7 @@
                     <div class="tom2-stat">
                         <div>💤 Энергия</div>
                         <div class="tom2-stat-bar">
-                            <div id="tom2-energy-bar" class="tom2-stat-fill" style="width: 100%; background: #ffd32a;"></div>
+                            <div id="tom2-energy-bar" class="tom2-stat-fill" style="width: 100%;"></div>
                         </div>
                         <div id="tom2-energy-value">100%</div>
                     </div>
@@ -503,7 +531,7 @@
                     <div class="tom2-stat">
                         <div>😊 Настроение</div>
                         <div class="tom2-stat-bar">
-                            <div id="tom2-mood-bar" class="tom2-stat-fill" style="width: 100%; background: #ff6b6b;"></div>
+                            <div id="tom2-mood-bar" class="tom2-stat-fill" style="width: 100%;"></div>
                         </div>
                         <div id="tom2-mood-value">100%</div>
                     </div>
@@ -511,7 +539,7 @@
                     <div class="tom2-stat">
                         <div>❤️ Здоровье</div>
                         <div class="tom2-stat-bar">
-                            <div id="tom2-health-bar" class="tom2-stat-fill" style="width: 100%; background: #1dd1a1;"></div>
+                            <div id="tom2-health-bar" class="tom2-stat-fill" style="width: 100%;"></div>
                         </div>
                         <div id="tom2-health-value">100%</div>
                     </div>
@@ -527,12 +555,12 @@
                 </div>
             </div>
             
-            <!-- Магазин одежды для Тома 2 -->
+            <!-- Магазин одежды -->
             <div style="margin-top: 30px;">
                 <h3>👕 МАГАЗИН ОДЕЖДЫ ДЛЯ ТОМА</h3>
                 <p>Ваши BYTES: <span id="clothing-balance">0</span></p>
                 
-                <div class="clothing-grid" id="clothing-store">
+                <div class="clothing-grid">
                     <div class="clothing-item" onclick="buyClothing('hat', 1000)">
                         <div style="font-size: 40px;">🎩</div>
                         <div>Шляпа</div>
@@ -550,271 +578,147 @@
                         <div>Галстук</div>
                         <div>1500 BYTES</div>
                     </div>
-                    
-                    <div class="clothing-item" onclick="buyClothing('cape', 5000)">
-                        <div style="font-size: 40px;">🧥</div>
-                        <div>Плащ</div>
-                        <div>5000 BYTES</div>
-                    </div>
-                    
-                    <div class="clothing-item" onclick="buyClothing('crown', 10000)">
-                        <div style="font-size: 40px;">👑</div>
-                        <div>Корона</div>
-                        <div>10000 BYTES</div>
-                    </div>
-                    
-                    <div class="clothing-item" onclick="buyClothing('armor', 20000)">
-                        <div style="font-size: 40px;">🛡️</div>
-                        <div>Броня</div>
-                        <div>20000 BYTES</div>
-                    </div>
-                </div>
-                
-                <h4 style="margin-top: 20px;">🎪 Ваша одежда:</h4>
-                <div class="clothing-grid" id="owned-clothing">
-                    <!-- Купленная одежда -->
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- МАЙНЕР (только кликер) -->
-    <section id="miner">
-        <div class="card">
-            <h2 style="color:var(--p);">⛏️ МАЙНЕР</h2>
-            <p style="font-size: 24px; margin: 20px 0;">💰 <span id="miner-balance">0</span> BYTES</p>
-            <p>⚡ Множитель: <span id="miner-multiplier">1x</span></p>
-            
-            <div id="core" onclick="clickMiner()">
-                КЛИКНИ!
-            </div>
-            
-            <p style="margin: 15px 0;">Нажимай на ядро для добычи BYTES!</p>
-            
-            <div style="margin-top: 20px;">
-                <h4>⚡ Улучшения:</h4>
-                <button class="btn" onclick="buyUpgrade('click_power')" style="margin: 5px;">
-                    💪 Сила клика (1000 BYTES)
-                </button>
-                <button class="btn" onclick="buyUpgrade('auto_clicker')" style="margin: 5px;">
-                    🤖 Автокликер (5000 BYTES)
-                </button>
-            </div>
+    <!-- МАЙНЕР -->
+    <section id="miner" class="card">
+        <h2>⛏️ МАЙНЕР</h2>
+        <p style="font-size: 24px; text-align: center; margin: 20px 0;">
+            💰 <span id="miner-balance">0</span> BYTES
+        </p>
+        <p style="text-align: center;">⚡ Множитель: <span id="miner-multiplier">1x</span></p>
+        
+        <div id="core" onclick="clickMiner()">
+            КЛИКНИ!
+        </div>
+        
+        <p style="text-align: center; margin: 15px 0;">
+            Нажимай на ядро для добычи BYTES!
+        </p>
+        
+        <div style="text-align: center;">
+            <button class="btn" onclick="buyUpgrade('click_power')">
+                💪 Сила клика (1000 BYTES)
+            </button>
+            <button class="btn" onclick="buyUpgrade('auto_clicker')">
+                🤖 Автокликер (5000 BYTES)
+            </button>
         </div>
     </section>
 
     <!-- ЯЙЦА -->
-    <section id="eggs">
-        <div class="card">
-            <h2>🥚 МАГАЗИН ЯИЦ</h2>
-            <p>Ваши BYTES: <span id="egg-balance">0</span></p>
-            <p>Открыто яиц: <span id="total-eggs">0</span></p>
-            
-            <div class="egg-grid">
-                <div class="egg-item egg-common" onclick="buyEgg('common')">
-                    <div style="font-size: 50px;">🥚</div>
-                    <h3>Обычное яйцо</h3>
-                    <div class="egg-price">100 BYTES</div>
-                    <p style="font-size: 12px;">Шанс: обычный 80%, редкий 15%</p>
-                </div>
-                
-                <div class="egg-item egg-rare" onclick="buyEgg('rare')">
-                    <div style="font-size: 50px;">🔵</div>
-                    <h3>Редкое яйцо</h3>
-                    <div class="egg-price">500 BYTES</div>
-                    <p style="font-size: 12px;">Шанс: редкий 70%, эпический 25%</p>
-                </div>
-                
-                <div class="egg-item egg-epic" onclick="buyEgg('epic')">
-                    <div style="font-size: 50px;">💜</div>
-                    <h3>Эпическое яйцо</h3>
-                    <div class="egg-price">2,000 BYTES</div>
-                    <p style="font-size: 12px;">Шанс: эпический 65%, мифический 30%</p>
-                </div>
-                
-                <div class="egg-item egg-mythic" onclick="buyEgg('mythic')">
-                    <div style="font-size: 50px;">🟠</div>
-                    <h3>Мифическое яйцо</h3>
-                    <div class="egg-price">10,000 BYTES</div>
-                    <p style="font-size: 12px;">Шанс: мифический 60%, легендарный 35%</p>
-                </div>
-                
-                <div class="egg-item egg-legendary" onclick="buyEgg('legendary')">
-                    <div style="font-size: 50px;">⭐</div>
-                    <h3>Легендарное яйцо</h3>
-                    <div class="egg-price">50,000 BYTES</div>
-                    <p style="font-size: 12px;">Шанс: легендарный 70%, секретное 25%</p>
-                </div>
-                
-                <div class="egg-item egg-secret" onclick="buyEgg('secret')">
-                    <div style="font-size: 50px;">👁️</div>
-                    <h3>Секретное яйцо</h3>
-                    <div class="egg-price">250,000 BYTES</div>
-                    <p style="font-size: 12px;">Шанс: секретное 85%, бог 15%</p>
-                </div>
-                
-                <div class="egg-item egg-god" onclick="buyEgg('god')">
-                    <div style="font-size: 50px;">👑</div>
-                    <h3>БОГ ЯЙЦО</h3>
-                    <div class="egg-price">1,000,000 BYTES</div>
-                    <p style="font-size: 12px;">Гарантировано: бог-питомец</p>
-                </div>
+    <section id="eggs" class="card">
+        <h2>🥚 МАГАЗИН ЯИЦ</h2>
+        <p>Ваши BYTES: <span id="egg-balance">0</span></p>
+        <p>Открыто яиц: <span id="total-eggs">0</span></p>
+        
+        <div class="egg-grid">
+            <div class="egg-item egg-common" onclick="buyEgg('common')">
+                <div style="font-size: 50px;">🥚</div>
+                <h3>Обычное яйцо</h3>
+                <div style="color: gold; font-weight: bold; margin: 10px 0;">100 BYTES</div>
             </div>
             
-            <div id="egg-result" style="margin-top: 20px; padding: 15px; background: rgba(0,255,0,0.1); border-radius: 10px; display: none;"></div>
+            <div class="egg-item egg-rare" onclick="buyEgg('rare')">
+                <div style="font-size: 50px;">🔵</div>
+                <h3>Редкое яйцо</h3>
+                <div style="color: gold; font-weight: bold; margin: 10px 0;">500 BYTES</div>
+            </div>
+            
+            <div class="egg-item egg-epic" onclick="buyEgg('epic')">
+                <div style="font-size: 50px;">💜</div>
+                <h3>Эпическое яйцо</h3>
+                <div style="color: gold; font-weight: bold; margin: 10px 0;">2,000 BYTES</div>
+            </div>
+            
+            <div class="egg-item egg-mythic" onclick="buyEgg('mythic')">
+                <div style="font-size: 50px;">🟠</div>
+                <h3>Мифическое яйцо</h3>
+                <div style="color: gold; font-weight: bold; margin: 10px 0;">10,000 BYTES</div>
+            </div>
         </div>
+        
+        <div id="egg-result" style="margin-top: 20px; padding: 15px; background: rgba(0,255,0,0.1); border-radius: 10px; display: none;"></div>
     </section>
 
     <!-- ПИТОМЦЫ -->
-    <section id="pets">
-        <div class="card">
-            <h2>🎪 ВАШИ ПИТОМЦЫ</h2>
-            <p>Всего питомцев: <span id="total-pets-display">0</span></p>
-            <p>Активные бонусы: +<span id="pet-bonus">0</span>x к множителю</p>
-            
-            <div class="pet-grid" id="pets-container">
-                <!-- Питомцы будут здесь -->
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <button class="btn" onclick="activateAllPets()" style="margin: 5px;">
-                    ⚡ Активировать всех
-                </button>
-                <button class="btn" onclick="petFusion()" style="margin: 5px;">
-                    🔮 Слияние (2 питомца → 1 улучшенный)
-                </button>
-            </div>
+    <section id="pets" class="card">
+        <h2>🎪 ВАШИ ПИТОМЦЫ</h2>
+        <p>Всего питомцев: <span id="total-pets-display">0</span></p>
+        
+        <div class="pet-grid" id="pets-container">
+            <!-- Питомцы здесь -->
         </div>
     </section>
 
     <!-- ПЕРЕРОЖДЕНИЯ -->
-    <section id="prestige">
-        <div class="card">
-            <h2>🔄 ПЕРЕРОЖДЕНИЯ</h2>
+    <section id="prestige" class="card">
+        <h2>🔄 ПЕРЕРОЖДЕНИЯ</h2>
+        
+        <div class="prestige-card">
+            <h3>Текущее перерождение: <span id="current-prestige">0</span></h3>
+            <p>Текущий множитель: <span id="current-multiplier">1x</span></p>
+            <p style="color: gold; font-size: 20px; margin: 10px 0;">
+                Стоимость: <span id="prestige-cost">10,000</span> BYTES
+            </p>
             
-            <div class="prestige-card">
-                <h3>Текущее перерождение: <span id="current-prestige">0</span></h3>
-                <p>Текущий множитель: <span id="current-multiplier">1x</span></p>
-                <p>Следующий множитель: <span id="next-multiplier">1.5x</span></p>
-                
-                <div class="prestige-cost">
-                    Стоимость: <span id="prestige-cost-display">10,000</span> BYTES
-                </div>
-                
-                <button class="btn" onclick="doPrestige()" style="background: gold; color: black; font-size: 18px; padding: 15px;">
-                    🔄 ПЕРЕРОДИТЬСЯ
-                </button>
-                
-                <p style="margin-top: 15px; font-size: 14px;">
-                    При перерождении вы теряете все BYTES, но получаете +0.5x к множителю навсегда!
-                </p>
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <h4>⚡ Бонусы от перерождений:</h4>
-                <div id="prestige-bonuses">
-                    <!-- Бонусы будут здесь -->
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- КАРТА -->
-    <section id="map">
-        <div class="card">
-            <h2>🗺️ КАРТА</h2>
-            <div id="map-container" style="height: 400px; border-radius: 10px; border: 2px solid var(--p);"></div>
-            <div style="margin-top: 15px;">
-                <button class="btn" onclick="findMyLocation()" style="margin: 5px;">📍 Мое местоположение</button>
-                <button class="btn" onclick="addMapMarker()" style="margin: 5px;">📌 Добавить метку</button>
-            </div>
+            <button class="btn" onclick="doPrestige()" style="background: gold; color: black; font-size: 18px; padding: 15px;">
+                🔄 ПЕРЕРОДИТЬСЯ
+            </button>
         </div>
     </section>
 
     <!-- ЧАТ -->
-    <section id="chat">
-        <div class="card">
-            <h2>💬 ЧАТ</h2>
-            <div id="chat-container" style="height: 300px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px; margin-bottom: 10px;"></div>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="chat-input" placeholder="Введите сообщение..." style="flex: 1; padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--p);">
-                <button class="btn" onclick="sendChatMessage()">📨</button>
-            </div>
+    <section id="chat" class="card">
+        <h2>💬 ЧАТ</h2>
+        <div id="chat-container" style="height: 300px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px; margin-bottom: 10px;"></div>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="chat-input" placeholder="Введите сообщение..." style="flex: 1; padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--p);">
+            <button class="btn" onclick="sendChat()">📨</button>
         </div>
     </section>
 
     <!-- ВЫХОД -->
-    <section id="exit">
-        <div class="card">
-            <h2>🚪 ВЫХОД</h2>
-            <button class="btn" onclick="logout()" style="margin: 10px; padding: 15px; font-size: 18px;">
-                🔓 Выйти из аккаунта
-            </button>
-            <button class="btn" onclick="exportData()" style="margin: 10px; padding: 15px; font-size: 18px; background: #4CAF50;">
-                💾 Экспорт данных
-            </button>
-            <button class="btn" onclick="importData()" style="margin: 10px; padding: 15px; font-size: 18px; background: #2196F3;">
-                📥 Импорт данных
-            </button>
-            <button class="btn" onclick="fullReset()" style="margin: 10px; padding: 15px; font-size: 18px; background: #f44336;">
-                💣 Сбросить все данные
-            </button>
-            <input type="file" id="import-file" accept=".json" style="display: none;" onchange="handleFileImport(this.files[0])">
-        </div>
+    <section id="exit" class="card">
+        <h2>🚪 ВЫХОД</h2>
+        <button class="btn" onclick="logout()" style="padding: 15px; font-size: 18px; margin: 10px;">
+            🔓 Выйти из аккаунта
+        </button>
+        <button class="btn btn-danger" onclick="resetData()" style="padding: 15px; font-size: 18px; margin: 10px;">
+            💣 Сбросить все данные
+        </button>
     </section>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // ====================
-// ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+// ПЕРЕМЕННЫЕ И ДАННЫЕ
 // ====================
 let currentUser = "";
 let currentDevice = "";
-let map = null;
-let markers = [];
 let autoClickerInterval = null;
 
-// Базы данных
+// База питомцев
 const petsDatabase = {
     common: [
-        { id: 1, name: "Котёнок", emoji: "🐱", bonus: "+0.1x", value: 0.1, rarity: "common" },
-        { id: 2, name: "Щенок", emoji: "🐶", bonus: "+0.1x", value: 0.1, rarity: "common" },
-        { id: 3, name: "Хомяк", emoji: "🐹", bonus: "+0.05x", value: 0.05, rarity: "common" }
+        { name: "Котёнок", emoji: "🐱", bonus: "+0.1x", value: 0.1 },
+        { name: "Щенок", emoji: "🐶", bonus: "+0.1x", value: 0.1 }
     ],
     rare: [
-        { id: 4, name: "Лиса", emoji: "🦊", bonus: "+0.2x", value: 0.2, rarity: "rare" },
-        { id: 5, name: "Панда", emoji: "🐼", bonus: "+0.15x", value: 0.15, rarity: "rare" }
+        { name: "Лиса", emoji: "🦊", bonus: "+0.2x", value: 0.2 },
+        { name: "Панда", emoji: "🐼", bonus: "+0.15x", value: 0.15 }
     ],
     epic: [
-        { id: 6, name: "Дракон", emoji: "🐲", bonus: "+0.5x", value: 0.5, rarity: "epic" },
-        { id: 7, name: "Единорог", emoji: "🦄", bonus: "+0.5x", value: 0.5, rarity: "epic" }
+        { name: "Дракон", emoji: "🐲", bonus: "+0.5x", value: 0.5 },
+        { name: "Единорог", emoji: "🦄", bonus: "+0.5x", value: 0.5 }
     ],
     mythic: [
-        { id: 8, name: "Грифон", emoji: "🦅", bonus: "+1x", value: 1, rarity: "mythic" },
-        { id: 9, name: "Демон", emoji: "😈", bonus: "+0.8x", value: 0.8, rarity: "mythic" }
-    ],
-    legendary: [
-        { id: 10, name: "Ангел", emoji: "👼", bonus: "+2x", value: 2, rarity: "legendary" },
-        { id: 11, name: "Титан", emoji: "🗿", bonus: "+1.5x", value: 1.5, rarity: "legendary" }
-    ],
-    secret: [
-        { id: 12, name: "Инопланетянин", emoji: "👽", bonus: "+3x", value: 3, rarity: "secret" },
-        { id: 13, name: "Робот", emoji: "🤖", bonus: "+2.5x", value: 2.5, rarity: "secret" }
-    ],
-    god: [
-        { id: 14, name: "БОГ-КОТ", emoji: "😼⚡", bonus: "+5x", value: 5, rarity: "god" },
-        { id: 15, name: "ВСЕЛЕННАЯ", emoji: "🌌", bonus: "+5x", value: 5, rarity: "god" }
+        { name: "Грифон", emoji: "🦅", bonus: "+1x", value: 1 },
+        { name: "Демон", emoji: "😈", bonus: "+0.8x", value: 0.8 }
     ]
-};
-
-const clothingItems = {
-    hat: { emoji: "🎩", name: "Шляпа", price: 1000 },
-    glasses: { emoji: "👓", name: "Очки", price: 2000 },
-    tie: { emoji: "👔", name: "Галстук", price: 1500 },
-    cape: { emoji: "🧥", name: "Плащ", price: 5000 },
-    crown: { emoji: "👑", name: "Корона", price: 10000 },
-    armor: { emoji: "🛡️", name: "Броня", price: 20000 }
 };
 
 // Загрузка данных
@@ -854,91 +758,113 @@ let hubData = JSON.parse(localStorage.getItem('hub_data')) || {
         clothing: [],
         upgrades: { click_power: 1, auto_clicker: false },
         tom2: { hunger: 100, energy: 100, mood: 100, health: 100 }
+    },
+    "Гость": { 
+        bytes: 100, 
+        rebirths: 0, 
+        eggsOpened: 0,
+        pets: [], 
+        clothing: [],
+        upgrades: { click_power: 1, auto_clicker: false },
+        tom2: { hunger: 100, energy: 100, mood: 100, health: 100 }
     }
 };
 
 let chatData = JSON.parse(localStorage.getItem('hub_chat')) || [];
 
 // ====================
-// АВТОРИЗАЦИЯ
+// АВТОРИЗАЦИЯ - ИСПРАВЛЕНА!
 // ====================
-function identify() {
+function login() {
     const user = document.getElementById('user-select').value;
     const device = document.getElementById('device-select').value;
     const password = document.getElementById('password-input').value;
     
+    console.log("Попытка входа:", user, device, password);
+    
     if (!password || password.trim() === "") {
-        alert("Введите любой символ в поле пароля!");
+        alert("⚠️ Введите любой символ в поле пароля!");
         return;
     }
     
     currentUser = user;
     currentDevice = device;
     
-    if (device === 'mobile') {
-        document.body.classList.add('mobile');
+    // Создаем пользователя если его нет
+    if (!hubData[user]) {
+        hubData[user] = { 
+            bytes: 100, 
+            rebirths: 0, 
+            eggsOpened: 0,
+            pets: [], 
+            clothing: [],
+            upgrades: { click_power: 1, auto_clicker: false },
+            tom2: { hunger: 100, energy: 100, mood: 100, health: 100 }
+        };
     }
     
+    // Настройка устройства
+    if (device === 'mobile') {
+        document.body.classList.add('mobile');
+    } else {
+        document.body.classList.remove('mobile');
+    }
+    
+    // Скрываем авторизацию, показываем интерфейс
     document.getElementById('auth-overlay').style.display = 'none';
     document.getElementById('main-content').style.display = 'flex';
-    document.getElementById('user-tag').innerText = `👤 ${user}`;
     
-    updateAllUI();
+    // Обновляем интерфейс
+    updateUI();
     startTom2System();
     loadChat();
     startClock();
     
+    // Запускаем автокликер если есть
     if (hubData[currentUser].upgrades.auto_clicker) {
         startAutoClicker();
     }
     
     saveData();
+    
+    alert(`🎉 Добро пожаловать, ${user}!`);
 }
 
 // ====================
-// ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
+// ОСНОВНЫЕ ФУНКЦИИ
 // ====================
-function updateAllUI() {
+function updateUI() {
     if (!currentUser || !hubData[currentUser]) return;
     
     const userData = hubData[currentUser];
     
-    // Обновляем баланс везде
+    // Обновляем всюду баланс
     const balance = userData.bytes || 0;
-    const rebirths = userData.rebirths || 0;
-    const multiplier = calculateMultiplier();
-    
     document.getElementById('balance-display').textContent = balance;
     document.getElementById('miner-balance').textContent = balance;
     document.getElementById('egg-balance').textContent = balance;
     document.getElementById('clothing-balance').textContent = balance;
     
-    document.getElementById('rebirth-count').textContent = rebirths;
-    document.getElementById('multiplier').textContent = multiplier.toFixed(1) + 'x';
-    document.getElementById('miner-multiplier').textContent = multiplier.toFixed(1) + 'x';
-    document.getElementById('current-multiplier').textContent = multiplier.toFixed(1) + 'x';
-    document.getElementById('next-multiplier').textContent = (multiplier + 0.5).toFixed(1) + 'x';
-    
+    // Обновляем статистику
+    document.getElementById('user-tag').textContent = `👤 ${currentUser}`;
+    document.getElementById('rebirth-count').textContent = userData.rebirths || 0;
+    document.getElementById('current-prestige').textContent = userData.rebirths || 0;
     document.getElementById('pets-count').textContent = (userData.pets || []).length;
     document.getElementById('total-pets-display').textContent = (userData.pets || []).length;
     document.getElementById('total-eggs').textContent = userData.eggsOpened || 0;
-    document.getElementById('eggs-opened').textContent = userData.eggsOpened || 0;
-    document.getElementById('current-prestige').textContent = rebirths;
     
-    const prestigeCost = Math.floor(10000 * Math.pow(1.5, rebirths));
-    document.getElementById('prestige-cost-display').textContent = prestigeCost.toLocaleString();
+    // Обновляем множитель
+    const multiplier = calculateMultiplier();
+    document.getElementById('multiplier').textContent = multiplier.toFixed(1) + 'x';
+    document.getElementById('miner-multiplier').textContent = multiplier.toFixed(1) + 'x';
+    document.getElementById('current-multiplier').textContent = multiplier.toFixed(1) + 'x';
     
-    // Обновляем бонусы питомцев
-    updatePetBonus();
+    // Стоимость перерождения
+    const prestigeCost = Math.floor(10000 * Math.pow(1.5, userData.rebirths || 0));
+    document.getElementById('prestige-cost').textContent = prestigeCost.toLocaleString();
     
     // Обновляем питомцев
     renderPets();
-    
-    // Обновляем одежду
-    renderOwnedClothing();
-    
-    // Обновляем Тома 2
-    updateTom2UI();
 }
 
 function calculateMultiplier() {
@@ -959,16 +885,6 @@ function calculateMultiplier() {
     return multiplier;
 }
 
-function updatePetBonus() {
-    const userData = hubData[currentUser];
-    const activePets = (userData.pets || []).filter(p => p.active);
-    let bonus = 0;
-    activePets.forEach(pet => {
-        bonus += pet.value || 0;
-    });
-    document.getElementById('pet-bonus').textContent = bonus.toFixed(1);
-}
-
 function saveData() {
     localStorage.setItem('hub_data', JSON.stringify(hubData));
     localStorage.setItem('hub_chat', JSON.stringify(chatData));
@@ -976,8 +892,83 @@ function saveData() {
 }
 
 // ====================
-// ТОМ 2 СИСТЕМА
+// МАЙНЕР
 // ====================
+function clickMiner() {
+    const core = document.getElementById('core');
+    const userData = hubData[currentUser];
+    const multiplier = calculateMultiplier();
+    const clickPower = userData.upgrades.click_power || 1;
+    
+    // Анимация
+    core.style.transform = 'scale(0.9)';
+    setTimeout(() => core.style.transform = 'scale(1)', 100);
+    
+    // Добавляем BYTES
+    const gain = Math.floor(10 * multiplier * clickPower);
+    userData.bytes += gain;
+    hubData[currentUser] = userData;
+    
+    updateUI();
+    saveData();
+}
+
+function buyUpgrade(type) {
+    const userData = hubData[currentUser];
+    const costs = {
+        click_power: 1000,
+        auto_clicker: 5000
+    };
+    
+    const cost = costs[type];
+    if (userData.bytes < cost) {
+        alert(`Нужно ${cost} BYTES!`);
+        return;
+    }
+    
+    userData.bytes -= cost;
+    
+    if (type === 'click_power') {
+        userData.upgrades.click_power = (userData.upgrades.click_power || 1) + 1;
+        alert(`💪 Сила клика увеличена!`);
+    } else if (type === 'auto_clicker' && !userData.upgrades.auto_clicker) {
+        userData.upgrades.auto_clicker = true;
+        startAutoClicker();
+        alert(`🤖 Автокликер активирован!`);
+    }
+    
+    hubData[currentUser] = userData;
+    updateUI();
+    saveData();
+}
+
+function startAutoClicker() {
+    if (autoClickerInterval) return;
+    
+    autoClickerInterval = setInterval(() => {
+        if (!hubData[currentUser]?.upgrades?.auto_clicker) {
+            clearInterval(autoClickerInterval);
+            autoClickerInterval = null;
+            return;
+        }
+        
+        const userData = hubData[currentUser];
+        const multiplier = calculateMultiplier();
+        const gain = Math.floor(5 * multiplier);
+        userData.bytes += gain;
+        hubData[currentUser] = userData;
+        
+        if (document.getElementById('miner').classList.contains('active')) {
+            updateUI();
+        }
+        
+        saveData();
+    }, 1000);
+}
+
+// ====================
+# ТОМ 2
+# ====================
 function startTom2System() {
     updateTom2UI();
     
@@ -1064,96 +1055,20 @@ function tom2Action(action) {
 }
 
 // ====================
-// МАЙНЕР (кликер)
-// ====================
-function clickMiner() {
-    const core = document.getElementById('core');
-    const userData = hubData[currentUser];
-    const multiplier = calculateMultiplier();
-    const clickPower = userData.upgrades.click_power || 1;
-    
-    // Анимация
-    core.style.transform = 'scale(0.9)';
-    setTimeout(() => core.style.transform = 'scale(1)', 100);
-    
-    // Добавляем BYTES
-    const gain = Math.floor(10 * multiplier * clickPower);
-    userData.bytes += gain;
-    hubData[currentUser] = userData;
-    
-    updateAllUI();
-    saveData();
-}
-
-function buyUpgrade(type) {
-    const userData = hubData[currentUser];
-    const costs = {
-        click_power: 1000,
-        auto_clicker: 5000
-    };
-    
-    const cost = costs[type];
-    if (userData.bytes < cost) {
-        alert(`Нужно ${cost} BYTES!`);
-        return;
-    }
-    
-    userData.bytes -= cost;
-    
-    if (type === 'click_power') {
-        userData.upgrades.click_power = (userData.upgrades.click_power || 1) + 1;
-    } else if (type === 'auto_clicker' && !userData.upgrades.auto_clicker) {
-        userData.upgrades.auto_clicker = true;
-        startAutoClicker();
-    }
-    
-    hubData[currentUser] = userData;
-    updateAllUI();
-    saveData();
-    alert(`Улучшение куплено!`);
-}
-
-function startAutoClicker() {
-    if (autoClickerInterval) return;
-    
-    autoClickerInterval = setInterval(() => {
-        if (!hubData[currentUser]?.upgrades?.auto_clicker) {
-            clearInterval(autoClickerInterval);
-            autoClickerInterval = null;
-            return;
-        }
-        
-        const userData = hubData[currentUser];
-        const multiplier = calculateMultiplier();
-        const gain = Math.floor(5 * multiplier);
-        userData.bytes += gain;
-        hubData[currentUser] = userData;
-        
-        if (document.getElementById('miner').classList.contains('active')) {
-            updateAllUI();
-        }
-        saveData();
-    }, 1000);
-}
-
-// ====================
-// ЯЙЦА
-// ====================
+# ЯЙЦА
+# ====================
 function buyEgg(type) {
     const userData = hubData[currentUser];
     const prices = {
         common: 100,
         rare: 500,
         epic: 2000,
-        mythic: 10000,
-        legendary: 50000,
-        secret: 250000,
-        god: 1000000
+        mythic: 10000
     };
     
     const price = prices[type];
     if (userData.bytes < price) {
-        alert(`Нужно ${price.toLocaleString()} BYTES!`);
+        alert(`Нужно ${price} BYTES!`);
         return;
     }
     
@@ -1184,7 +1099,7 @@ function buyEgg(type) {
     });
     
     hubData[currentUser] = userData;
-    updateAllUI();
+    updateUI();
     saveData();
     
     setTimeout(() => {
@@ -1194,54 +1109,21 @@ function buyEgg(type) {
 
 function openEgg(type) {
     const results = [];
+    const pool = petsDatabase[type];
     
     // Основной питомец
-    const eggChances = {
-        common: { common: 0.8, rare: 0.15, epic: 0.04, mythic: 0.01 },
-        rare: { rare: 0.7, epic: 0.25, mythic: 0.04, legendary: 0.01 },
-        epic: { epic: 0.65, mythic: 0.3, legendary: 0.04, secret: 0.01 },
-        mythic: { mythic: 0.6, legendary: 0.35, secret: 0.04, god: 0.01 },
-        legendary: { legendary: 0.7, secret: 0.25, god: 0.05 },
-        secret: { secret: 0.85, god: 0.15 },
-        god: { god: 1 }
-    };
-    
-    const chances = eggChances[type];
-    const rand = Math.random();
-    let cumulative = 0;
-    let selectedRarity = 'common';
-    
-    for (const [rarity, chance] of Object.entries(chances)) {
-        cumulative += chance;
-        if (rand <= cumulative) {
-            selectedRarity = rarity;
-            break;
-        }
-    }
-    
-    const pool = petsDatabase[selectedRarity];
     if (pool && pool.length > 0) {
         const pet = {...pool[Math.floor(Math.random() * pool.length)]};
         results.push(pet);
     }
     
-    // Дополнительные питомцы
-    if (type === 'god') {
-        for (let i = 0; i < 3; i++) {
-            const legendaryPool = petsDatabase['legendary'];
-            if (legendaryPool && legendaryPool.length > 0) {
-                results.push({...legendaryPool[Math.floor(Math.random() * legendaryPool.length)]});
-            }
-        }
-    } else if (['legendary', 'secret', 'mythic'].includes(type)) {
-        const extraCount = Math.floor(Math.random() * 2) + 1;
-        for (let i = 0; i < extraCount; i++) {
-            const extraTypes = ['common', 'rare', 'epic'];
-            const extraType = extraTypes[Math.floor(Math.random() * extraTypes.length)];
-            const extraPool = petsDatabase[extraType];
-            if (extraPool && extraPool.length > 0) {
-                results.push({...extraPool[Math.floor(Math.random() * extraPool.length)]});
-            }
+    // Шанс на дополнительного
+    if (Math.random() < 0.3) {
+        const extraTypes = ['common', 'rare', 'epic'];
+        const extraType = extraTypes[Math.floor(Math.random() * extraTypes.length)];
+        const extraPool = petsDatabase[extraType];
+        if (extraPool && extraPool.length > 0) {
+            results.push({...extraPool[Math.floor(Math.random() * extraPool.length)]});
         }
     }
     
@@ -1249,8 +1131,8 @@ function openEgg(type) {
 }
 
 // ====================
-// ПИТОМЦЫ
-// ====================
+# ПИТОМЦЫ
+# ====================
 function renderPets() {
     const container = document.getElementById('pets-container');
     const userData = hubData[currentUser];
@@ -1263,85 +1145,19 @@ function renderPets() {
         return;
     }
     
-    pets.forEach((pet, index) => {
+    pets.forEach(pet => {
         const petCard = document.createElement('div');
         petCard.className = 'pet-card';
         petCard.innerHTML = `
-            <div class="pet-emoji">${pet.emoji}</div>
+            <div style="font-size: 40px;">${pet.emoji}</div>
             <div><strong>${pet.name}</strong></div>
             <div>${pet.bonus}</div>
-            <div style="font-size: 12px; color: #888;">${pet.rarity}</div>
-            <button class="btn" onclick="togglePet(${index})" style="margin-top: 5px; padding: 5px; font-size: 12px;">
-                ${pet.active ? 'Деактивировать' : 'Активировать'}
-            </button>
+            <div style="font-size: 12px; color: #888;">
+                Статус: ${pet.active ? '⚡ Активен' : '💤 Неактивен'}
+            </div>
         `;
         container.appendChild(petCard);
     });
-}
-
-function togglePet(index) {
-    const userData = hubData[currentUser];
-    if (userData.pets && userData.pets[index]) {
-        userData.pets[index].active = !userData.pets[index].active;
-        hubData[currentUser] = userData;
-        updateAllUI();
-        saveData();
-    }
-}
-
-function activateAllPets() {
-    const userData = hubData[currentUser];
-    if (userData.pets) {
-        userData.pets.forEach(pet => pet.active = true);
-        hubData[currentUser] = userData;
-        updateAllUI();
-        saveData();
-        alert('Все питомцы активированы!');
-    }
-}
-
-function petFusion() {
-    const userData = hubData[currentUser];
-    const pets = userData.pets || [];
-    
-    if (pets.length < 2) {
-        alert('Нужно минимум 2 питомца для слияния!');
-        return;
-    }
-    
-    // Выбираем двух случайных питомцев
-    const index1 = Math.floor(Math.random() * pets.length);
-    let index2;
-    do {
-        index2 = Math.floor(Math.random() * pets.length);
-    } while (index2 === index1);
-    
-    const pet1 = pets[index1];
-    const pet2 = pets[index2];
-    
-    // Создаем нового питомца
-    const newPet = {
-        id: Date.now(),
-        name: `${pet1.name}-${pet2.name}`,
-        emoji: pet1.emoji + pet2.emoji,
-        bonus: `+${(pet1.value + pet2.value + 0.3).toFixed(1)}x`,
-        value: pet1.value + pet2.value + 0.3,
-        rarity: 'fused',
-        active: true
-    };
-    
-    // Удаляем старых
-    pets.splice(Math.max(index1, index2), 1);
-    pets.splice(Math.min(index1, index2), 1);
-    
-    // Добавляем нового
-    pets.push(newPet);
-    userData.pets = pets;
-    hubData[currentUser] = userData;
-    
-    updateAllUI();
-    saveData();
-    alert(`Слияние успешно! Получен: ${newPet.name}`);
 }
 
 // ====================
@@ -1353,27 +1169,26 @@ function doPrestige() {
     const cost = Math.floor(10000 * Math.pow(1.5, rebirths));
     
     if (userData.bytes < cost) {
-        alert(`Нужно ${cost.toLocaleString()} BYTES для перерождения!`);
+        alert(`Нужно ${cost.toLocaleString()} BYTES!`);
         return;
     }
     
-    if (!confirm(`Переродиться за ${cost.toLocaleString()} BYTES?\nВы получите +0.5x к множителю навсегда!`)) {
+    if (!confirm(`Переродиться за ${cost.toLocaleString()} BYTES?\n+0.5x к множителю навсегда!`)) {
         return;
     }
     
     userData.bytes = 0;
     userData.rebirths = rebirths + 1;
-    // Сбрасываем улучшения
     userData.upgrades = { click_power: 1, auto_clicker: false };
     
     hubData[currentUser] = userData;
-    updateAllUI();
+    updateUI();
     saveData();
     alert(`Перерождение #${userData.rebirths} завершено!`);
 }
 
 // ====================
-# ОДЕЖДА ДЛЯ ТОМА 2
+# ОДЕЖДА ДЛЯ ТОМА
 # ====================
 function buyClothing(item, price) {
     const userData = hubData[currentUser];
@@ -1393,128 +1208,34 @@ function buyClothing(item, price) {
     userData.clothing.push(item);
     hubData[currentUser] = userData;
     
-    updateAllUI();
+    updateUI();
     saveData();
-    alert(`Куплено: ${clothingItems[item].name}`);
+    alert('Одежда куплена!');
+    
+    // Показываем одежду на Томе
+    showClothingOnTom(item);
 }
 
-function renderOwnedClothing() {
-    const container = document.getElementById('owned-clothing');
+function showClothingOnTom(item) {
     const clothingContainer = document.getElementById('tom2-clothing');
-    const userData = hubData[currentUser];
-    const owned = userData.clothing || [];
-    
-    container.innerHTML = '';
     clothingContainer.innerHTML = '';
     
-    if (owned.length === 0) {
-        container.innerHTML = '<p>У вас пока нет одежды</p>';
-        return;
-    }
+    const clothingEmoji = {
+        hat: '🎩',
+        glasses: '👓',
+        tie: '👔'
+    };
     
-    owned.forEach(item => {
-        const clothing = clothingItems[item];
-        
-        // Добавляем в список
-        const div = document.createElement('div');
-        div.className = 'clothing-item';
-        div.onclick = () => equipClothing(item);
-        div.innerHTML = `
-            <div style="font-size: 30px;">${clothing.emoji}</div>
-            <div>${clothing.name}</div>
-            <button class="btn" onclick="sellClothing('${item}')" style="margin-top: 5px; padding: 3px; font-size: 10px;">
-                Продать
-            </button>
-        `;
-        container.appendChild(div);
-        
-        // Добавляем на Тома
+    if (clothingEmoji[item]) {
         const clothingElement = document.createElement('div');
         clothingElement.style.position = 'absolute';
         clothingElement.style.top = '50%';
         clothingElement.style.left = '50%';
         clothingElement.style.transform = 'translate(-50%, -50%)';
         clothingElement.style.fontSize = '80px';
-        clothingElement.textContent = clothing.emoji;
-        clothingElement.id = `clothing-${item}`;
-        clothingElement.style.display = 'none';
+        clothingElement.textContent = clothingEmoji[item];
         clothingContainer.appendChild(clothingElement);
-    });
-}
-
-function equipClothing(item) {
-    // Показываем одежду на Томе
-    document.querySelectorAll('#tom2-clothing > div').forEach(el => {
-        el.style.display = 'none';
-    });
-    
-    const clothingEl = document.getElementById(`clothing-${item}`);
-    if (clothingEl) {
-        clothingEl.style.display = 'block';
     }
-}
-
-function sellClothing(item) {
-    const userData = hubData[currentUser];
-    const clothing = clothingItems[item];
-    const sellPrice = Math.floor(clothing.price * 0.5);
-    
-    if (!confirm(`Продать ${clothing.name} за ${sellPrice} BYTES?`)) return;
-    
-    const index = userData.clothing.indexOf(item);
-    if (index > -1) {
-        userData.clothing.splice(index, 1);
-        userData.bytes += sellPrice;
-        hubData[currentUser] = userData;
-        
-        updateAllUI();
-        saveData();
-        alert(`Продано: ${clothing.name}`);
-    }
-}
-
-// ====================
-# КАРТА
-# ====================
-function initMap() {
-    if (map) return;
-    
-    map = L.map('map-container').setView([55.7558, 37.6173], 10);
-    
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-}
-
-function findMyLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                map.setView([lat, lng], 15);
-                L.marker([lat, lng]).addTo(map).bindPopup('Ваше местоположение').openPopup();
-                alert('📍 Местоположение найдено!');
-            },
-            () => {
-                alert('⚠️ Не удалось определить местоположение');
-            }
-        );
-    } else {
-        alert('⚠️ Геолокация не поддерживается');
-    }
-}
-
-function addMapMarker() {
-    if (!map) return;
-    
-    const center = map.getCenter();
-    L.marker([center.lat, center.lng])
-        .addTo(map)
-        .bindPopup(`Метка от ${currentUser}`)
-        .openPopup();
-    
-    alert('📌 Метка добавлена!');
 }
 
 // ====================
@@ -1537,7 +1258,7 @@ function loadChat() {
     container.scrollTop = container.scrollHeight;
 }
 
-function sendChatMessage() {
+function sendChat() {
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
     
@@ -1571,73 +1292,27 @@ function startClock() {
 }
 
 function switchTab(tabId) {
-    document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+    // Обновляем активную кнопку
+    document.querySelectorAll('nav button').forEach(btn => {
+        btn.classList.remove('active');
+    });
     event.target.classList.add('active');
     
-    document.querySelectorAll('section').forEach(section => section.classList.remove('active'));
+    // Показываем нужную секцию
+    document.querySelectorAll('section').forEach(section => {
+        section.classList.remove('active');
+    });
     document.getElementById(tabId).classList.add('active');
-    
-    if (tabId === 'map') {
-        setTimeout(() => {
-            if (map) map.invalidateSize();
-            else initMap();
-        }, 100);
-    }
 }
 
 function logout() {
     if (confirm('Выйти из аккаунта?')) {
+        saveData();
         location.reload();
     }
 }
 
-function exportData() {
-    const data = {
-        hubData: hubData,
-        chatData: chatData,
-        exportDate: new Date().toISOString()
-    };
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ultra-hub-backup-${currentUser}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    
-    alert('💾 Данные экспортированы!');
-}
-
-function importData() {
-    document.getElementById('import-file').click();
-}
-
-function handleFileImport(file) {
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const data = JSON.parse(e.target.result);
-            
-            if (confirm("Заменить все текущие данные?")) {
-                if (data.hubData) hubData = data.hubData;
-                if (data.chatData) chatData = data.chatData;
-                
-                saveData();
-                updateAllUI();
-                loadChat();
-                alert('💾 Данные импортированы!');
-            }
-        } catch (err) {
-            alert('⚠️ Ошибка при импорте файла!');
-        }
-    };
-    reader.readAsText(file);
-}
-
-function fullReset() {
+function resetData() {
     if (confirm('💣 УДАЛИТЬ ВСЕ ДАННЫЕ?\nЭто действие необратимо!')) {
         localStorage.clear();
         location.reload();
@@ -1648,22 +1323,25 @@ function fullReset() {
 # ИНИЦИАЛИЗАЦИЯ
 # ====================
 window.addEventListener('load', function() {
-    // Автозаполнение пароля
+    // Устанавливаем пароль по умолчанию
     document.getElementById('password-input').value = "1";
     
-    // Обработчик Enter
+    // Обработка Enter в поле пароля
     document.getElementById('password-input').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') identify();
+        if (e.key === 'Enter') {
+            login();
+        }
     });
     
-    // Проверка предыдущей сессии
+    // Проверяем, был ли пользователь авторизован
     const lastUser = localStorage.getItem('last_user');
     if (lastUser && hubData[lastUser]) {
+        // Автоматический вход
         currentUser = lastUser;
         document.getElementById('auth-overlay').style.display = 'none';
         document.getElementById('main-content').style.display = 'flex';
-        document.getElementById('user-tag').innerText = `👤 ${lastUser}`;
-        updateAllUI();
+        
+        updateUI();
         startTom2System();
         loadChat();
         startClock();
@@ -1681,7 +1359,7 @@ window.addEventListener('keydown', function(e) {
         const bytes = parseInt(prompt("Сколько BYTES добавить?"));
         if (!isNaN(bytes) && bytes > 0) {
             hubData[currentUser].bytes += bytes;
-            updateAllUI();
+            updateUI();
             saveData();
             alert(`Добавлено ${bytes} BYTES!`);
         }
@@ -1689,7 +1367,7 @@ window.addEventListener('keydown', function(e) {
     
     // Отправка сообщения в чате
     if (e.key === 'Enter' && document.getElementById('chat-input') === document.activeElement) {
-        sendChatMessage();
+        sendChat();
     }
 });
 </script>
