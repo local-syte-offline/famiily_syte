@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTRA PLATFORM</title>
+    <title>Платформа</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         * {
             margin: 0;
@@ -14,48 +13,61 @@
         }
 
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --dark: #1f2937;
-            --light: #f3f4f6;
-            --gray: #6b7280;
-            --background: #0f172a;
-            --card: #1e293b;
-            --border: #374151;
-            --text: #e5e7eb;
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --secondary: #EC4899;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --background: #0F172A;
+            --card: rgba(30, 41, 59, 0.95);
+            --text: #FFFFFF;
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         [data-theme="light"] {
-            --background: #ffffff;
-            --card: #f9fafb;
-            --border: #e5e7eb;
+            --background: #FFFFFF;
+            --card: rgba(249, 250, 251, 0.95);
             --text: #111827;
-            --dark: #f3f4f6;
+            --border: rgba(0, 0, 0, 0.1);
         }
 
         [data-theme="purple"] {
-            --primary: #a855f7;
-            --primary-dark: #9333ea;
-            --secondary: #d946ef;
-            --background: #1e1b4b;
-            --card: #312e81;
+            --primary: #A855F7;
+            --primary-dark: #9333EA;
+            --secondary: #D946EF;
+            --background: #1E1B4B;
+            --card: rgba(49, 46, 129, 0.95);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--background);
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
+        }
+
+        /* Снежинки */
+        .snowflake {
+            position: fixed;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.8;
+            animation: fall linear forwards;
+            z-index: 1000;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
         }
 
         /* Выбор пользователя */
-        #user-select {
+        .login-screen {
             position: fixed;
             top: 0;
             left: 0;
@@ -65,125 +77,103 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 2000;
             padding: 20px;
         }
 
-        .user-select-box {
-            background: rgba(30, 41, 59, 0.95);
-            padding: 3rem;
+        .login-box {
+            background: var(--card);
+            padding: 40px;
             border-radius: 20px;
-            border: 2px solid var(--primary);
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
             text-align: center;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--primary);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
 
-        .user-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
+        .login-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
             background: linear-gradient(45deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .user-subtitle {
-            opacity: 0.8;
-            margin-bottom: 2rem;
-        }
-
-        .user-grid {
+        .user-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 30px 0;
         }
 
         .user-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 2px solid var(--primary);
             color: var(--text);
-            padding: 1.25rem;
-            border-radius: 12px;
+            padding: 20px;
+            border-radius: 15px;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 1.1rem;
+            font-size: 18px;
             font-weight: 600;
+            position: relative;
         }
 
         .user-btn:hover {
             background: var(--primary);
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
         }
 
         .user-btn.selected {
             background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
-            animation: pulse 2s infinite;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
         }
 
         .user-btn.occupied {
             border-color: var(--danger);
             color: var(--danger);
             cursor: not-allowed;
-            opacity: 0.7;
-            position: relative;
         }
 
         .user-btn.occupied::after {
             content: 'ЗАНЯТ';
             position: absolute;
-            top: -8px;
-            right: -8px;
+            top: -10px;
+            right: -10px;
             background: var(--danger);
             color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 12px;
             font-weight: 700;
         }
 
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
-            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.8); }
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
         .action-btn {
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .enter-btn {
+            width: 100%;
+            padding: 15px;
             background: linear-gradient(45deg, var(--primary), var(--secondary));
             color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
         }
 
-        .enter-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
         }
 
         .exit-btn {
-            background: rgba(239, 68, 68, 0.1);
+            background: rgba(239, 68, 68, 0.2);
             color: var(--danger);
             border: 2px solid var(--danger);
         }
@@ -194,16 +184,16 @@
         }
 
         /* Основной интерфейс */
-        #main-app {
+        .main-app {
             display: none;
             min-height: 100vh;
         }
 
         /* Шапка */
         .header {
-            background: rgba(30, 41, 59, 0.95);
+            background: var(--card);
             backdrop-filter: blur(20px);
-            padding: 1rem 2rem;
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -214,21 +204,18 @@
         }
 
         .logo {
-            font-size: 1.5rem;
+            font-size: 24px;
             font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
             background: linear-gradient(45deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .user-info {
+        .user-display {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 15px;
         }
 
         .user-avatar {
@@ -239,39 +226,30 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: 18px;
+            color: white;
         }
 
-        .user-name {
-            font-weight: 600;
-        }
-
-        .user-balance {
-            background: rgba(16, 185, 129, 0.1);
+        .balance {
+            background: rgba(16, 185, 129, 0.2);
             color: var(--success);
-            padding: 0.5rem 1rem;
+            padding: 8px 16px;
             border-radius: 20px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 18px;
         }
 
         .settings-btn {
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(139, 92, 246, 0.2);
             border: 2px solid var(--primary);
             color: var(--primary);
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 1.2rem;
+            font-size: 20px;
         }
 
         .settings-btn:hover {
@@ -281,48 +259,52 @@
         }
 
         /* Навигация */
-        .nav-tabs {
+        .tabs {
             display: flex;
             background: var(--card);
-            padding: 1rem;
-            gap: 0.5rem;
+            padding: 15px;
+            gap: 10px;
             overflow-x: auto;
             border-bottom: 1px solid var(--border);
         }
 
-        .nav-tab {
+        .tab {
             background: transparent;
             border: 2px solid transparent;
             color: var(--text);
-            padding: 0.75rem 1.5rem;
+            padding: 12px 24px;
             border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s;
             font-weight: 600;
             white-space: nowrap;
             opacity: 0.7;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .nav-tab:hover {
+        .tab:hover {
             opacity: 1;
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(139, 92, 246, 0.1);
         }
 
-        .nav-tab.active {
+        .tab.active {
             background: var(--primary);
             color: white;
             opacity: 1;
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
         }
 
-        /* Содержимое */
+        /* Контент */
         .content {
-            padding: 2rem;
+            padding: 30px;
             min-height: calc(100vh - 140px);
         }
 
         .page {
             display: none;
-            animation: fadeIn 0.5s ease;
+            animation: fadeIn 0.5s;
         }
 
         .page.active {
@@ -335,111 +317,143 @@
         }
 
         /* Облако */
-        .cloud-subtabs {
+        .cloud-header {
             display: flex;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
         }
 
-        .cloud-subtab {
-            background: transparent;
+        .add-file-btn {
+            background: var(--primary);
+            color: white;
             border: none;
-            color: var(--text);
-            padding: 0.75rem 1.5rem;
+            padding: 10px 20px;
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            opacity: 0.7;
-            transition: all 0.3s;
-        }
-
-        .cloud-subtab.active {
-            background: var(--primary);
-            color: white;
-            opacity: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .files-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1.5rem;
+            gap: 20px;
         }
 
-        .file-card {
+        .file {
             background: var(--card);
             border-radius: 15px;
-            padding: 1.5rem;
+            padding: 20px;
             text-align: center;
-            border: 1px solid var(--border);
+            border: 2px solid transparent;
             transition: all 0.3s;
             cursor: pointer;
+            position: relative;
         }
 
-        .file-card:hover {
-            transform: translateY(-5px);
+        .file:hover {
             border-color: var(--primary);
+            transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
+        .delete-file {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .file:hover .delete-file {
+            opacity: 1;
+        }
+
         .file-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            word-break: break-word;
+        }
+
+        .file-size {
+            font-size: 14px;
+            opacity: 0.7;
         }
 
         /* Игры */
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
+            gap: 25px;
         }
 
-        .game-card {
+        .game {
             background: var(--card);
             border-radius: 20px;
             overflow: hidden;
-            border: 1px solid var(--border);
+            border: 2px solid transparent;
             transition: all 0.3s;
         }
 
-        .game-card:hover {
-            transform: translateY(-8px);
+        .game:hover {
             border-color: var(--primary);
+            transform: translateY(-10px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
         .game-header {
             background: linear-gradient(45deg, var(--primary), var(--secondary));
-            padding: 2rem;
+            padding: 25px;
             text-align: center;
             color: white;
         }
 
         .game-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .game-title {
+            font-size: 20px;
+            font-weight: 700;
         }
 
         .game-body {
-            padding: 1.5rem;
+            padding: 20px;
         }
 
         .game-stats {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
+            margin-bottom: 15px;
+            font-size: 14px;
             opacity: 0.8;
         }
 
         .play-btn {
             width: 100%;
-            padding: 1rem;
+            padding: 12px;
             background: var(--primary);
             color: white;
             border: none;
             border-radius: 10px;
+            font-weight: 700;
             cursor: pointer;
-            font-weight: 600;
             transition: all 0.3s;
         }
 
@@ -449,13 +463,13 @@
         }
 
         /* CS 3D игра */
-        .cs-container {
+        .cs-game {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000;
+            background: black;
             z-index: 1000;
             display: none;
         }
@@ -470,17 +484,13 @@
             top: 20px;
             left: 20px;
             right: 20px;
-            z-index: 10;
-        }
-
-        .cs-stats {
             background: rgba(0, 0, 0, 0.8);
-            padding: 1rem 1.5rem;
+            padding: 15px;
             border-radius: 10px;
             display: flex;
             justify-content: space-between;
             backdrop-filter: blur(10px);
-            border: 1px solid var(--primary);
+            border: 2px solid var(--primary);
         }
 
         .cs-controls {
@@ -492,59 +502,164 @@
             justify-content: space-between;
         }
 
-        .cs-weapon-selector {
+        .weapon-selector {
             display: flex;
-            gap: 0.5rem;
+            gap: 10px;
         }
 
-        .cs-weapon-btn {
+        .weapon-btn {
             background: rgba(0, 0, 0, 0.8);
             border: 2px solid var(--primary);
             color: white;
-            padding: 0.75rem;
+            padding: 10px;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        .cs-weapon-btn:hover {
+        .weapon-btn:hover {
             background: var(--primary);
         }
 
-        .cs-weapon-btn.active {
+        .weapon-btn.active {
             background: var(--primary);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        }
+
+        .cs-exit {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
         }
 
         /* Крестики-нолики */
-        .tic-tac-toe-board {
+        .tic-tac-toe {
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .tic-board {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            max-width: 400px;
-            margin: 2rem auto;
+            margin: 30px auto;
+            max-width: 300px;
         }
 
         .tic-cell {
             aspect-ratio: 1;
             background: var(--card);
-            border: 2px solid var(--primary);
+            border: 3px solid var(--primary);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
+            font-size: 36px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
         }
 
         .tic-cell:hover {
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(139, 92, 246, 0.1);
         }
 
-        .tic-cell.x { color: var(--primary); }
-        .tic-cell.o { color: var(--secondary); }
+        /* My Talking Tom 2 */
+        .talking-tom {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .tom-container {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            margin: 30px auto;
+        }
+
+        .tom-body {
+            width: 200px;
+            height: 300px;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            border-radius: 100px;
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .tom-body:active {
+            transform: scale(0.95);
+        }
+
+        .tom-face {
+            width: 120px;
+            height: 100px;
+            background: #CDDC39;
+            border-radius: 60px;
+            position: absolute;
+            top: 30px;
+            left: 40px;
+        }
+
+        .tom-eye {
+            width: 30px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 30px;
+        }
+
+        .tom-eye.left {
+            left: 25px;
+        }
+
+        .tom-eye.right {
+            right: 25px;
+        }
+
+        .tom-eye::after {
+            content: '';
+            width: 15px;
+            height: 15px;
+            background: black;
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+            left: 7px;
+        }
+
+        .tom-mouth {
+            width: 60px;
+            height: 30px;
+            background: #FF5722;
+            border-radius: 30px;
+            position: absolute;
+            bottom: 20px;
+            left: 30px;
+        }
+
+        .tom-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tom-stat {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 100px;
+        }
 
         /* Кликер */
         .clicker-game {
@@ -554,66 +669,90 @@
         }
 
         .clicker-money {
-            font-size: 4rem;
+            font-size: 48px;
             font-weight: 800;
             color: var(--success);
-            margin: 2rem 0;
+            margin: 30px 0;
             text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
         }
 
-        .clicker-button {
+        .clicker-btn {
             width: 200px;
             height: 200px;
             border-radius: 50%;
             background: linear-gradient(45deg, var(--primary), var(--secondary));
             border: none;
             color: white;
-            font-size: 1.5rem;
+            font-size: 24px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
-            margin: 2rem auto;
+            margin: 30px auto;
             display: block;
-            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3);
         }
 
-        .clicker-button:active {
+        .clicker-btn:active {
             transform: scale(0.95);
         }
 
         .clicker-upgrades {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
+            gap: 20px;
+            margin-top: 30px;
         }
 
-        .upgrade-card {
+        .upgrade {
             background: var(--card);
             border-radius: 15px;
-            padding: 1.5rem;
-            border: 1px solid var(--border);
+            padding: 20px;
+            border: 2px solid var(--border);
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        .upgrade-card:hover {
+        .upgrade:hover {
             border-color: var(--primary);
-            transform: translateY(-3px);
+            transform: translateY(-5px);
+        }
+
+        .upgrade-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upgrade-price {
+            color: var(--success);
+            font-weight: 700;
+            margin-top: 10px;
         }
 
         /* Карты */
-        #map {
+        .map-container {
             height: 600px;
             border-radius: 20px;
-            border: 2px solid var(--primary);
             overflow: hidden;
+            border: 2px solid var(--primary);
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .map-placeholder {
+            text-align: center;
+            padding: 40px;
         }
 
         .map-controls {
             display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
+            gap: 15px;
+            justify-content: center;
         }
 
         /* Переводчик */
@@ -622,21 +761,22 @@
             margin: 0 auto;
         }
 
-        .lang-selectors {
+        .translator-header {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: 15px;
             align-items: center;
+            margin-bottom: 30px;
         }
 
         .lang-select {
             background: var(--card);
             border: 2px solid var(--primary);
             color: var(--text);
-            padding: 1rem;
+            padding: 12px;
             border-radius: 10px;
-            font-size: 1rem;
+            font-size: 16px;
+            width: 100%;
         }
 
         .swap-btn {
@@ -647,57 +787,54 @@
             height: 50px;
             border-radius: 50%;
             cursor: pointer;
+            font-size: 20px;
             transition: all 0.3s;
-            font-size: 1.2rem;
         }
 
         .swap-btn:hover {
-            background: var(--secondary);
             transform: rotate(180deg);
         }
 
-        .text-boxes {
+        .text-areas {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
         .text-area {
             background: var(--card);
             border: 2px solid var(--primary);
             color: var(--text);
-            padding: 1.25rem;
-            border-radius: 10px;
+            padding: 20px;
+            border-radius: 15px;
             min-height: 200px;
-            font-size: 1rem;
+            font-size: 16px;
             resize: vertical;
             font-family: inherit;
         }
 
         .translate-controls {
             display: flex;
-            gap: 1rem;
+            gap: 15px;
             justify-content: center;
-            margin-top: 1.5rem;
         }
 
         .voice-btn {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
+            padding: 12px 24px;
             border-radius: 25px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 10px;
             font-weight: 600;
             transition: all 0.3s;
         }
 
         .voice-btn:hover {
-            background: var(--primary-dark);
             transform: scale(1.05);
         }
 
@@ -705,147 +842,129 @@
         .clocks-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
+            gap: 25px;
         }
 
-        .clock-card {
+        .clock {
             background: var(--card);
-            padding: 2rem;
+            padding: 25px;
             border-radius: 20px;
             text-align: center;
-            border: 1px solid var(--border);
+            border: 2px solid transparent;
             transition: all 0.3s;
         }
 
-        .clock-card:hover {
+        .clock:hover {
             border-color: var(--primary);
             transform: translateY(-5px);
         }
 
         .clock-city {
-            font-size: 1.25rem;
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 10px;
             color: var(--primary);
         }
 
         .clock-time {
-            font-size: 2.5rem;
+            font-size: 36px;
             font-weight: 800;
-            margin: 1rem 0;
+            margin: 15px 0;
         }
 
         .clock-date {
             opacity: 0.8;
-            font-size: 1rem;
+            font-size: 16px;
         }
 
-        /* Настройки */
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .setting-card {
-            background: var(--card);
-            padding: 2rem;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-        }
-
-        .theme-selector {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .theme-btn {
-            padding: 1rem;
-            border-radius: 10px;
-            border: 2px solid transparent;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .theme-btn.active {
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-        }
-
-        .theme-dark {
-            background: #1f2937;
-            color: white;
-        }
-
-        .theme-light {
-            background: white;
-            color: #111827;
-        }
-
-        .theme-purple {
-            background: linear-gradient(45deg, #1e1b4b, #312e81);
-            color: white;
-        }
-
-        /* Чат-бот */
+        /* Чат */
         .chat-container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            height: 600px;
+        }
+
+        .chat-users {
             background: var(--card);
             border-radius: 20px;
-            overflow: hidden;
-            height: 600px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            border: 1px solid var(--border);
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+
+        .chat-user {
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .chat-user:hover {
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .chat-user.active {
+            background: var(--primary);
+            color: white;
         }
 
         .chat-messages {
-            flex: 1;
-            padding: 1.5rem;
-            overflow-y: auto;
+            background: var(--card);
+            border-radius: 20px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
         }
 
-        .chat-message {
+        .messages-list {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .message {
             max-width: 70%;
-            padding: 1rem 1.25rem;
-            border-radius: 18px;
-            animation: fadeIn 0.3s ease;
+            padding: 12px 16px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            animation: fadeIn 0.3s;
         }
 
-        .chat-message.user {
+        .message.sent {
             background: var(--primary);
             color: white;
-            align-self: flex-end;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
         }
 
-        .chat-message.bot {
-            background: rgba(255, 255, 255, 0.05);
-            align-self: flex-start;
-        }
-
-        .chat-input-area {
-            display: flex;
-            gap: 1rem;
-            padding: 1.5rem;
-            background: rgba(0, 0, 0, 0.05);
-            border-top: 1px solid var(--border);
+        .message.received {
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom-left-radius: 5px;
         }
 
         .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
             flex: 1;
             background: var(--card);
             border: 2px solid var(--primary);
             color: var(--text);
-            padding: 1rem 1.25rem;
+            padding: 12px 20px;
             border-radius: 25px;
-            font-size: 1rem;
+            font-size: 16px;
         }
 
         .chat-send {
@@ -856,56 +975,110 @@
             height: 50px;
             border-radius: 50%;
             cursor: pointer;
-            transition: all 0.3s;
+            font-size: 20px;
         }
 
-        .chat-send:hover {
-            background: var(--secondary);
-            transform: scale(1.05);
-        }
-
-        /* Лидеры */
-        .leaderboard-table {
-            background: var(--card);
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .leaderboard-row {
+        /* Настройки */
+        .settings-grid {
             display: grid;
-            grid-template-columns: 60px 1fr 100px 100px;
-            padding: 1rem 1.5rem;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .setting {
+            background: var(--card);
+            padding: 25px;
+            border-radius: 20px;
+        }
+
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .theme-btn {
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
             transition: all 0.3s;
         }
 
-        .leaderboard-row:hover {
-            background: rgba(99, 102, 241, 0.05);
+        .theme-btn.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
         }
 
-        .leaderboard-header {
-            background: var(--primary);
+        .theme-dark {
+            background: #1F2937;
             color: white;
-            font-weight: 700;
         }
 
-        .rank-badge {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+        .theme-light {
+            background: white;
+            color: #111827;
+        }
+
+        .theme-purple {
+            background: linear-gradient(45deg, #1E1B4B, #312E81);
+            color: white;
+        }
+
+        .toggle {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: white;
+            gap: 15px;
+            margin: 10px 0;
         }
 
-        .rank-1 { background: gold; color: #000; }
-        .rank-2 { background: silver; color: #000; }
-        .rank-3 { background: #cd7f32; color: #000; }
-        .rank-other { background: var(--primary); }
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
 
         /* Модальные окна */
         .modal {
@@ -916,7 +1089,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
+            z-index: 3000;
             align-items: center;
             justify-content: center;
             padding: 20px;
@@ -925,114 +1098,123 @@
         .modal-content {
             background: var(--card);
             border-radius: 20px;
-            padding: 2.5rem;
+            padding: 30px;
             max-width: 500px;
             width: 100%;
             border: 2px solid var(--primary);
-            animation: modalIn 0.3s ease;
+            animation: modalIn 0.3s;
         }
 
         @keyframes modalIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 24px;
+            cursor: pointer;
         }
 
         /* Адаптивность */
         @media (max-width: 768px) {
-            .content { padding: 1rem; }
-            .header { padding: 1rem; flex-direction: column; gap: 1rem; }
-            .nav-tabs { overflow-x: scroll; }
-            .user-grid { grid-template-columns: repeat(2, 1fr); }
-            .text-boxes { grid-template-columns: 1fr; }
-            .lang-selectors { grid-template-columns: 1fr; }
+            .content { padding: 15px; }
+            .header { padding: 15px; flex-direction: column; gap: 15px; }
+            .tabs { padding: 10px; }
+            .tab { padding: 10px 15px; font-size: 14px; }
             .games-grid { grid-template-columns: 1fr; }
+            .text-areas { grid-template-columns: 1fr; }
+            .translator-header { grid-template-columns: 1fr; }
+            .swap-btn { margin: 10px auto; }
+            .chat-container { grid-template-columns: 1fr; height: 500px; }
             .clocks-grid { grid-template-columns: 1fr; }
-            .leaderboard-row { grid-template-columns: 50px 1fr 80px 80px; padding: 0.75rem 1rem; }
-            .cs-controls { flex-direction: column; gap: 1rem; }
         }
-
-        /* Утилиты */
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        .mt-2 { margin-top: 2rem; }
-        .mb-2 { margin-bottom: 2rem; }
-        .p-2 { padding: 2rem; }
-        .cursor-pointer { cursor: pointer; }
     </style>
 </head>
 <body>
     <!-- Выбор пользователя -->
-    <div id="user-select">
-        <div class="user-select-box">
-            <h1 class="user-title">ULTRA PLATFORM</h1>
-            <p class="user-subtitle">Выберите пользователя для входа</p>
+    <div class="login-screen">
+        <div class="login-box">
+            <h1 class="login-title">Выберите пользователя</h1>
+            <p style="opacity: 0.8; margin-bottom: 30px;">Просто выберите пользователя для входа</p>
             
-            <div class="user-grid" id="user-grid">
+            <div class="user-list" id="user-list">
                 <!-- Кнопки пользователей будут созданы через JS -->
             </div>
             
-            <div class="action-buttons">
-                <button class="action-btn enter-btn" onclick="enterPlatform()">
-                    Войти в платформу
-                </button>
-                <button class="action-btn exit-btn" onclick="exitPlatform()">
-                    Выйти с сайта
-                </button>
-            </div>
+            <button class="action-btn" onclick="login()">Войти в платформу</button>
+            <button class="action-btn exit-btn" onclick="exitApp()">Выйти</button>
         </div>
     </div>
 
     <!-- Основное приложение -->
-    <div id="main-app">
+    <div class="main-app">
         <!-- Шапка -->
         <header class="header">
-            <div class="logo">
-                <span>🎮</span>
-                <span>ULTRA PLATFORM</span>
+            <div class="logo">Платформа</div>
+            
+            <div class="user-display">
+                <div class="user-avatar" id="current-avatar">U</div>
+                <div>
+                    <div style="font-weight: 700;" id="current-username">Гость</div>
+                    <div class="balance" id="balance">$1000</div>
+                </div>
             </div>
             
-            <div class="user-info">
-                <div class="user-avatar" id="user-avatar">U</div>
-                <div>
-                    <div class="user-name" id="current-user">Гость</div>
-                    <div class="user-balance">
-                        <span>💰</span>
-                        <span id="user-balance">$1000</span>
-                    </div>
-                </div>
-                <button class="settings-btn" onclick="openSettings()">⚙️</button>
-            </div>
+            <button class="settings-btn" onclick="openSettings()">⚙️</button>
         </header>
 
         <!-- Навигация -->
-        <nav class="nav-tabs">
-            <button class="nav-tab active" data-page="cloud">☁️ Облако</button>
-            <button class="nav-tab" data-page="games">🎮 Игры</button>
-            <button class="nav-tab" data-page="maps">🗺️ Карты</button>
-            <button class="nav-tab" data-page="translator">🔤 Переводчик</button>
-            <button class="nav-tab" data-page="clocks">⏰ Часы</button>
-            <button class="nav-tab" data-page="chatbot">🤖 Чат-бот</button>
-            <button class="nav-tab" data-page="leaders">🏆 Лидеры</button>
+        <nav class="tabs">
+            <button class="tab active" data-page="cloud">
+                <span>☁️</span>
+                <span>Облако</span>
+            </button>
+            <button class="tab" data-page="games">
+                <span>🎮</span>
+                <span>Игры</span>
+            </button>
+            <button class="tab" data-page="maps">
+                <span>🗺️</span>
+                <span>Карты</span>
+            </button>
+            <button class="tab" data-page="translator">
+                <span>🔤</span>
+                <span>Переводчик</span>
+            </button>
+            <button class="tab" data-page="clocks">
+                <span>⏰</span>
+                <span>Часы</span>
+            </button>
+            <button class="tab" data-page="chat">
+                <span>💬</span>
+                <span>Чат</span>
+            </button>
         </nav>
 
-        <!-- Содержимое -->
+        <!-- Контент -->
         <main class="content">
             <!-- Облако -->
             <section id="cloud" class="page active">
-                <div class="cloud-subtabs">
-                    <button class="cloud-subtab active" data-subtab="photos">📷 Фото</button>
-                    <button class="cloud-subtab" data-subtab="videos">🎬 Видео</button>
-                    <button class="cloud-subtab" data-subtab="files">📁 Файлы</button>
+                <div class="cloud-header">
+                    <h2 style="font-size: 24px; font-weight: 700;">Облачное хранилище</h2>
+                    <button class="add-file-btn" onclick="addFile()">
+                        <span>+</span>
+                        <span>Добавить файл</span>
+                    </button>
                 </div>
                 
-                <div class="files-grid" id="cloud-files">
-                    <!-- Файлы будут загружены через JS -->
+                <div class="files-grid" id="files-grid">
+                    <!-- Файлы будут созданы через JS -->
                 </div>
             </section>
 
@@ -1040,53 +1222,62 @@
             <section id="games" class="page">
                 <div class="games-grid">
                     <!-- Counter-Strike -->
-                    <div class="game-card">
+                    <div class="game">
                         <div class="game-header">
                             <div class="game-icon">🔫</div>
-                            <h3>Counter-Strike 2</h3>
+                            <div class="game-title">Counter-Strike</div>
                         </div>
                         <div class="game-body">
                             <div class="game-stats">
                                 <span>👥 0/24</span>
                                 <span>🎯 0.00 K/D</span>
                             </div>
-                            <button class="play-btn" onclick="startCSGame()">
-                                Играть
-                            </button>
+                            <button class="play-btn" onclick="startCS()">Играть</button>
+                        </div>
+                    </div>
+
+                    <!-- My Talking Tom 2 -->
+                    <div class="game">
+                        <div class="game-header">
+                            <div class="game-icon">🐱</div>
+                            <div class="game-title">My Talking Tom 2</div>
+                        </div>
+                        <div class="game-body">
+                            <div class="game-stats">
+                                <span>😊 100%</span>
+                                <span>🍖 100%</span>
+                            </div>
+                            <button class="play-btn" onclick="startTalkingTom()">Играть</button>
                         </div>
                     </div>
 
                     <!-- Крестики-нолики -->
-                    <div class="game-card">
+                    <div class="game">
                         <div class="game-header">
                             <div class="game-icon">❌⭕</div>
-                            <h3>Крестики-нолики</h3>
+                            <div class="game-title">Крестики-нолики</div>
                         </div>
                         <div class="game-body">
                             <div class="game-stats">
                                 <span>🎮 Средняя</span>
                                 <span>🏆 0 побед</span>
                             </div>
-                            <button class="play-btn" onclick="startTicTacToe()">
-                                Играть
-                            </button>
+                            <button class="play-btn" onclick="startTicTacToe()">Играть</button>
                         </div>
                     </div>
 
                     <!-- Кликер -->
-                    <div class="game-card">
+                    <div class="game">
                         <div class="game-header">
                             <div class="game-icon">💰</div>
-                            <h3>Кликер</h3>
+                            <div class="game-title">Кликер</div>
                         </div>
                         <div class="game-body">
                             <div class="game-stats">
                                 <span>🔄 0 ур.</span>
                                 <span>🐾 0 питомцев</span>
                             </div>
-                            <button class="play-btn" onclick="startClicker()">
-                                Играть
-                            </button>
+                            <button class="play-btn" onclick="startClicker()">Играть</button>
                         </div>
                     </div>
                 </div>
@@ -1094,21 +1285,20 @@
 
             <!-- Карты -->
             <section id="maps" class="page">
-                <div id="map"></div>
-                <div class="map-controls mt-2">
-                    <button class="voice-btn" onclick="findMyLocation()">
-                        📍 Моё местоположение
-                    </button>
-                    <button class="voice-btn" onclick="searchLocation()">
-                        🔍 Поиск места
-                    </button>
+                <div class="map-container" id="map-container">
+                    <div class="map-placeholder">
+                        <div style="font-size: 72px; margin-bottom: 20px;">🗺️</div>
+                        <h3 style="font-size: 24px; margin-bottom: 10px;">Карты</h3>
+                        <p style="opacity: 0.8; margin-bottom: 30px;">Для работы карт требуется интернет</p>
+                        <button class="action-btn" onclick="loadMap()">Загрузить карту</button>
+                    </div>
                 </div>
             </section>
 
             <!-- Переводчик -->
             <section id="translator" class="page">
                 <div class="translator-container">
-                    <div class="lang-selectors">
+                    <div class="translator-header">
                         <select class="lang-select" id="lang-from">
                             <option value="ru">🇷🇺 Русский</option>
                             <option value="en">🇺🇸 Английский</option>
@@ -1126,17 +1316,19 @@
                         </select>
                     </div>
                     
-                    <div class="text-boxes">
-                        <textarea class="text-area" id="input-text" placeholder="Введите текст для перевода..." oninput="translateText()"></textarea>
+                    <div class="text-areas">
+                        <textarea class="text-area" id="input-text" placeholder="Введите текст..." oninput="translate()"></textarea>
                         <textarea class="text-area" id="output-text" placeholder="Перевод..." readonly></textarea>
                     </div>
                     
                     <div class="translate-controls">
                         <button class="voice-btn" onclick="speakTranslation()">
-                            🔊 Произнести перевод
+                            <span>🔊</span>
+                            <span>Произнести</span>
                         </button>
                         <button class="voice-btn" onclick="startVoiceInput()">
-                            🎤 Голосовой ввод
+                            <span>🎤</span>
+                            <span>Голосовой ввод</span>
                         </button>
                     </div>
                 </div>
@@ -1144,37 +1336,33 @@
 
             <!-- Часы -->
             <section id="clocks" class="page">
-                <div class="clocks-grid" id="clocks-container">
+                <div class="clocks-grid" id="clocks-grid">
                     <!-- Часы будут созданы через JS -->
                 </div>
             </section>
 
-            <!-- Чат-бот -->
-            <section id="chatbot" class="page">
+            <!-- Чат -->
+            <section id="chat" class="page">
                 <div class="chat-container">
-                    <div class="chat-messages" id="chat-messages">
-                        <div class="chat-message bot">
-                            Привет! Я ваш AI-ассистент. Могу ответить на вопросы, помочь с переводом или просто поболтать. Чем могу помочь?
+                    <div class="chat-users">
+                        <h3 style="margin-bottom: 15px;">Пользователи</h3>
+                        <div class="chat-list" id="chat-users">
+                            <!-- Пользователи будут созданы через JS -->
+                        </div>
+                        <div style="opacity: 0.7; font-size: 14px; text-align: center;">
+                            Для личных сообщений выберите пользователя
                         </div>
                     </div>
-                    <div class="chat-input-area">
-                        <input type="text" class="chat-input" id="chat-input" placeholder="Введите сообщение..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
-                        <button class="chat-send" onclick="sendChatMessage()">➤</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Лидеры -->
-            <section id="leaders" class="page">
-                <div class="leaderboard-table">
-                    <div class="leaderboard-row leaderboard-header">
-                        <div>#</div>
-                        <div>Игрок</div>
-                        <div>Очки</div>
-                        <div>Игра</div>
-                    </div>
-                    <div id="leaderboard-content">
-                        <!-- Лидеры будут загружены через JS -->
+                    
+                    <div class="chat-messages">
+                        <h3 id="chat-title">Общий чат</h3>
+                        <div class="messages-list" id="messages-list">
+                            <!-- Сообщения будут созданы через JS -->
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="chat-message" placeholder="Введите сообщение..." onkeypress="if(event.key === 'Enter') sendMessage()">
+                            <button class="chat-send" onclick="sendMessage()">➤</button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1182,38 +1370,89 @@
     </div>
 
     <!-- CS 3D Игра -->
-    <div class="cs-container" id="cs-game">
+    <div class="cs-game" id="cs-game">
         <canvas id="cs-canvas"></canvas>
         <div class="cs-hud">
-            <div class="cs-stats">
-                <span id="cs-health">❤️ 100</span>
-                <span id="cs-money">💰 $800</span>
-                <span id="cs-kills">🎯 0 убийств</span>
-                <span id="cs-ammo">🔫 30/90</span>
-            </div>
+            <div id="cs-health">❤️ 100</div>
+            <div id="cs-money">💰 $800</div>
+            <div id="cs-kills">🎯 0 убийств</div>
+            <div id="cs-ammo">🔫 30/90</div>
         </div>
         <div class="cs-controls">
-            <div class="cs-weapon-selector">
-                <button class="cs-weapon-btn" onclick="selectWeapon('akm')">🔫 AKM</button>
-                <button class="cs-weapon-btn" onclick="selectWeapon('awp')">🎯 AWP</button>
-                <button class="cs-weapon-btn" onclick="selectWeapon('glock')">🔫 GLOCK</button>
-                <button class="cs-weapon-btn" onclick="selectWeapon('deagle')">🔫 DEAGLE</button>
+            <div class="weapon-selector">
+                <button class="weapon-btn" onclick="selectWeapon('akm')">🔫 AKM</button>
+                <button class="weapon-btn" onclick="selectWeapon('awp')">🎯 AWP</button>
+                <button class="weapon-btn" onclick="selectWeapon('glock')">🔫 GLOCK</button>
+                <button class="weapon-btn" onclick="selectWeapon('deagle')">🔫 DEAGLE</button>
             </div>
-            <button class="cs-weapon-btn" onclick="exitCSGame()" style="background: var(--danger);">🚪 Выход</button>
+            <button class="cs-exit" onclick="exitCS()">🚪 Выход</button>
+        </div>
+    </div>
+
+    <!-- My Talking Tom 2 -->
+    <div id="talking-tom-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="font-size: 24px;">My Talking Tom 2</h2>
+                <button class="close-btn" onclick="closeModal('talking-tom-modal')">×</button>
+            </div>
+            
+            <div class="talking-tom">
+                <div class="tom-container">
+                    <div class="tom-body" onclick="petTom()">
+                        <div class="tom-face">
+                            <div class="tom-eye left"></div>
+                            <div class="tom-eye right"></div>
+                            <div class="tom-mouth"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tom-stats">
+                    <div class="tom-stat">
+                        <div style="font-weight: 700;">😊 Настроение</div>
+                        <div id="tom-happiness">100%</div>
+                    </div>
+                    <div class="tom-stat">
+                        <div style="font-weight: 700;">🍖 Голод</div>
+                        <div id="tom-hunger">100%</div>
+                    </div>
+                    <div class="tom-stat">
+                        <div style="font-weight: 700;">💰 Деньги</div>
+                        <div id="tom-money">$100</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <button class="play-btn" onclick="feedTom()" style="margin-bottom: 10px;">🍖 Покормить ($10)</button>
+                    <button class="play-btn" onclick="playWithTom()" style="background: var(--secondary);">🎮 Поиграть</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Крестики-нолики -->
-    <div id="tic-modal" class="modal">
+    <div id="tic-tac-toe-modal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-bottom: 1.5rem; text-align: center;">❌⭕ Крестики-нолики</h2>
+            <div class="modal-header">
+                <h2 style="font-size: 24px;">Крестики-нолики</h2>
+                <button class="close-btn" onclick="closeModal('tic-tac-toe-modal')">×</button>
+            </div>
             
-            <div class="tic-tac-toe-board" id="tic-board"></div>
-            
-            <div style="text-align: center; margin-top: 2rem;">
-                <div id="tic-status" style="margin-bottom: 1rem; font-size: 1.2rem; font-weight: 600;"></div>
-                <button class="play-btn" onclick="resetTicTacToe()">Новая игра</button>
-                <button class="play-btn" onclick="closeModal('tic-modal')" style="background: var(--gray); margin-top: 0.5rem;">Выход</button>
+            <div class="tic-tac-toe">
+                <div style="margin-bottom: 20px; text-align: center;">
+                    <select id="tic-mode" style="background: var(--card); border: 2px solid var(--primary); color: var(--text); padding: 10px; border-radius: 10px; width: 200px;">
+                        <option value="bot">🤖 Против бота</option>
+                        <option value="player">👥 Против игрока</option>
+                    </select>
+                </div>
+                
+                <div class="tic-board" id="tic-board"></div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <div id="tic-status" style="margin-bottom: 15px; font-size: 18px; font-weight: 700;"></div>
+                    <button class="play-btn" onclick="resetTicTacToe()">Новая игра</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1221,26 +1460,107 @@
     <!-- Кликер -->
     <div id="clicker-modal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-bottom: 1.5rem; text-align: center;">💰 Кликер игра</h2>
+            <div class="modal-header">
+                <h2 style="font-size: 24px;">Кликер игра</h2>
+                <button class="close-btn" onclick="closeModal('clicker-modal')">×</button>
+            </div>
             
             <div class="clicker-game">
                 <div class="clicker-money" id="clicker-money">$0</div>
-                <button class="clicker-button" onclick="clickMoney()">КЛИК!</button>
+                <button class="clicker-btn" onclick="clickMoney()">КЛИК!</button>
                 
                 <div class="clicker-upgrades">
-                    <div class="upgrade-card" onclick="buyUpgrade('click')">
-                        <div style="font-weight: 700; margin-bottom: 0.5rem;">💪 Сила клика</div>
-                        <div style="opacity: 0.8; font-size: 0.9rem;">+$1 за клик</div>
-                        <div style="color: var(--primary); margin-top: 0.5rem; font-weight: 600;">Цена: $10</div>
+                    <div class="upgrade" onclick="buyUpgrade('click')">
+                        <div class="upgrade-title">
+                            <span>💪</span>
+                            <span>Сила клика</span>
+                        </div>
+                        <div style="opacity: 0.8; margin: 10px 0;">+$1 за клик</div>
+                        <div class="upgrade-price" id="click-price">Цена: $10</div>
                     </div>
-                    <div class="upgrade-card" onclick="buyUpgrade('auto')">
-                        <div style="font-weight: 700; margin-bottom: 0.5rem;">⚡ Автокликер</div>
-                        <div style="opacity: 0.8; font-size: 0.9rem;">+$0.5/сек</div>
-                        <div style="color: var(--primary); margin-top: 0.5rem; font-weight: 600;">Цена: $100</div>
+                    
+                    <div class="upgrade" onclick="buyUpgrade('auto')">
+                        <div class="upgrade-title">
+                            <span>⚡</span>
+                            <span>Автокликер</span>
+                        </div>
+                        <div style="opacity: 0.8; margin: 10px 0;">+$0.5/сек</div>
+                        <div class="upgrade-price" id="auto-price">Цена: $100</div>
+                    </div>
+                    
+                    <div class="upgrade" onclick="buyUpgrade('multiplier')">
+                        <div class="upgrade-title">
+                            <span>🚀</span>
+                            <span>Множитель</span>
+                        </div>
+                        <div style="opacity: 0.8; margin: 10px 0;">×1.2 ко всему</div>
+                        <div class="upgrade-price" id="multiplier-price">Цена: $1000</div>
+                    </div>
+                    
+                    <div class="upgrade" onclick="buyRebirth()">
+                        <div class="upgrade-title">
+                            <span>🔄</span>
+                            <span>Перерождение</span>
+                        </div>
+                        <div style="opacity: 0.8; margin: 10px 0;">+0.5x множитель</div>
+                        <div class="upgrade-price" id="rebirth-price">Цена: $10000</div>
                     </div>
                 </div>
                 
-                <button class="play-btn" onclick="closeModal('clicker-modal')" style="margin-top: 2rem; background: var(--gray);">Выход</button>
+                <div style="margin-top: 30px; text-align: center;">
+                    <div id="rebirth-count" style="margin-bottom: 10px;">Перерождений: 0</div>
+                    <div id="multiplier" style="margin-bottom: 20px;">Множитель: 1x</div>
+                    <button class="play-btn" onclick="openShop()" style="background: var(--warning);">🛒 Магазин</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Магазин кликера -->
+    <div id="shop-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="font-size: 24px;">🛒 Магазин</h2>
+                <button class="close-btn" onclick="closeModal('shop-modal')">×</button>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                    <div class="upgrade" onclick="buyEgg('common')">
+                        <div style="font-size: 40px; margin-bottom: 10px;">🥚</div>
+                        <div style="font-weight: 700; margin-bottom: 5px;">Обычное яйцо</div>
+                        <div style="opacity: 0.8; margin-bottom: 10px;">Шанс обычного питомца</div>
+                        <div style="color: var(--success); font-weight: 700;">$100</div>
+                    </div>
+                    
+                    <div class="upgrade" onclick="buyEgg('rare')">
+                        <div style="font-size: 40px; margin-bottom: 10px;">🔵</div>
+                        <div style="font-weight: 700; margin-bottom: 5px;">Редкое яйцо</div>
+                        <div style="opacity: 0.8; margin-bottom: 10px;">Шанс редкого питомца</div>
+                        <div style="color: var(--success); font-weight: 700;">$500</div>
+                    </div>
+                    
+                    <div class="upgrade" onclick="buyEgg('epic')">
+                        <div style="font-size: 40px; margin-bottom: 10px;">🟣</div>
+                        <div style="font-weight: 700; margin-bottom: 5px;">Эпическое яйцо</div>
+                        <div style="opacity: 0.8; margin-bottom: 10px;">Шанс эпического питомца</div>
+                        <div style="color: var(--success); font-weight: 700;">$2000</div>
+                    </div>
+                    
+                    <div class="upgrade" onclick="buyBuff()">
+                        <div style="font-size: 40px; margin-bottom: 10px;">⚡</div>
+                        <div style="font-weight: 700; margin-bottom: 5px;">Буфф ×2</div>
+                        <div style="opacity: 0.8; margin-bottom: 10px;">×2 к кликам на 30 сек</div>
+                        <div style="color: var(--success); font-weight: 700;">$500</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <h3 style="margin-bottom: 15px;">Ваши питомцы</h3>
+                    <div id="pets-list" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <!-- Питомцы будут созданы через JS -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1248,11 +1568,14 @@
     <!-- Настройки -->
     <div id="settings-modal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-bottom: 1.5rem; text-align: center;">⚙️ Настройки</h2>
+            <div class="modal-header">
+                <h2 style="font-size: 24px;">Настройки</h2>
+                <button class="close-btn" onclick="closeModal('settings-modal')">×</button>
+            </div>
             
             <div class="settings-grid">
-                <div class="setting-card">
-                    <h3 style="margin-bottom: 1rem;">🎨 Тема</h3>
+                <div class="setting">
+                    <h3 style="margin-bottom: 15px;">🎨 Тема</h3>
                     <div class="theme-selector">
                         <button class="theme-btn theme-dark active" onclick="setTheme('dark')">Тёмная</button>
                         <button class="theme-btn theme-light" onclick="setTheme('light')">Светлая</button>
@@ -1260,29 +1583,27 @@
                     </div>
                 </div>
                 
-                <div class="setting-card">
-                    <h3 style="margin-bottom: 1rem;">🔊 Звуки</h3>
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <span>Включить звуки игры</span>
-                        <label style="position: relative; display: inline-block; width: 60px; height: 30px;">
-                            <input type="checkbox" id="sound-toggle" checked style="opacity: 0; width: 0; height: 0;">
-                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--gray); transition: .4s; border-radius: 34px;"></span>
-                            <span style="position: absolute; content: ''; height: 22px; width: 22px; left: 4px; bottom: 4px; background: white; transition: .4s; border-radius: 50%;"></span>
+                <div class="setting">
+                    <h3 style="margin-bottom: 15px;">❄️ Снежинки</h3>
+                    <div class="toggle">
+                        <span>Включить снег</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="snow-toggle" checked>
+                            <span class="slider"></span>
                         </label>
+                    </div>
+                    <div style="opacity: 0.7; font-size: 14px; margin-top: 10px;">
+                        Снег работает только в тёмной и фиолетовой теме
                     </div>
                 </div>
                 
-                <div class="setting-card">
-                    <h3 style="margin-bottom: 1rem;">💾 Данные</h3>
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                        <button class="play-btn" onclick="exportData()">Экспорт данных</button>
-                        <button class="play-btn" onclick="importData()" style="background: var(--secondary);">Импорт данных</button>
-                        <button class="play-btn" onclick="clearData()" style="background: var(--danger);">Сбросить данные</button>
-                    </div>
+                <div class="setting">
+                    <h3 style="margin-bottom: 15px;">💾 Данные</h3>
+                    <button class="play-btn" onclick="exportData()" style="margin-bottom: 10px; width: 100%;">Экспорт данных</button>
+                    <button class="play-btn" onclick="importData()" style="margin-bottom: 10px; width: 100%; background: var(--secondary);">Импорт данных</button>
+                    <button class="play-btn" onclick="clearData()" style="width: 100%; background: var(--danger);">Очистить данные</button>
                 </div>
             </div>
-            
-            <button class="play-btn" onclick="closeModal('settings-modal')" style="margin-top: 2rem; width: 100%; background: var(--gray);">Закрыть</button>
         </div>
     </div>
 
@@ -1292,45 +1613,59 @@
 // ====================
 const USERS = ["Никита", "Алена", "Саша", "Алиса", "Гость"];
 let currentUser = null;
-let platformData = JSON.parse(localStorage.getItem('ultra_platform_v2')) || {
+let appData = JSON.parse(localStorage.getItem('platform_data')) || {
     users: {},
     online: {},
-    settings: { theme: 'dark', sounds: true },
-    games: {
-        cs: { kills: 0, deaths: 0, wins: 0 },
-        tic: { wins: 0, losses: 0 },
-        clicker: { money: 0, clickPower: 1, autoClicker: 0 }
-    }
+    settings: { theme: 'dark', snow: true },
+    chat: [],
+    cloud: []
 };
 
-// Three.js переменные для CS
+// Three.js для CS
 let csScene, csCamera, csRenderer, csPlayer, csBots = [], csBullets = [], csWalls = [];
 let csHealth = 100, csMoney = 800, csKills = 0, csAmmo = 30;
 let currentWeapon = 'akm';
 
-// Карта
-let map = null;
+// Кликер
+let clickerMoney = 0;
+let clickerClickPower = 1;
+let clickerAutoClicker = 0;
+let clickerMultiplier = 1;
+let rebirths = 0;
+let pets = [];
+let activeBuff = false;
+
+// Чат
+let currentChat = 'general';
+let chatMessages = {
+    general: [],
+    'Никита': [],
+    'Алена': [],
+    'Саша': [],
+    'Алиса': [],
+    'Гость': []
+};
 
 // ====================
 // ВЫБОР ПОЛЬЗОВАТЕЛЯ
 // ====================
 function initUserSelection() {
-    const userGrid = document.getElementById('user-grid');
-    userGrid.innerHTML = '';
+    const userList = document.getElementById('user-list');
+    userList.innerHTML = '';
     
     USERS.forEach(username => {
-        const isOccupied = platformData.online && platformData.online[username];
+        const isOccupied = appData.online && appData.online[username];
         const btn = document.createElement('button');
         btn.className = `user-btn ${isOccupied ? 'occupied' : ''}`;
         btn.textContent = username;
         btn.onclick = () => selectUser(username, isOccupied);
-        userGrid.appendChild(btn);
+        userList.appendChild(btn);
     });
 }
 
 function selectUser(username, isOccupied) {
     if (isOccupied) {
-        alert(`❌ Пользователь "${username}" уже в игре!`);
+        alert(`Пользователь "${username}" уже в игре!`);
         return;
     }
     
@@ -1339,104 +1674,170 @@ function selectUser(username, isOccupied) {
     currentUser = username;
 }
 
-function enterPlatform() {
+function login() {
     if (!currentUser) {
         alert('Выберите пользователя!');
         return;
     }
     
-    if (platformData.online && platformData.online[currentUser]) {
-        alert(`❌ Пользователь "${currentUser}" только что вошел в игру!`);
+    if (appData.online && appData.online[currentUser]) {
+        alert(`Пользователь "${currentUser}" только что вошел в игру!`);
         initUserSelection();
         return;
     }
     
     // Создаем пользователя если нет
-    if (!platformData.users[currentUser]) {
-        platformData.users[currentUser] = {
+    if (!appData.users[currentUser]) {
+        appData.users[currentUser] = {
             balance: 1000,
-            joinDate: new Date().toISOString()
+            createdAt: Date.now(),
+            games: {
+                cs: { kills: 0, deaths: 0 },
+                tic: { wins: 0, losses: 0 },
+                clicker: { money: 0, rebirths: 0 }
+            }
         };
     }
     
     // Помечаем как онлайн
-    platformData.online[currentUser] = Date.now();
+    appData.online[currentUser] = Date.now();
     saveData();
     
-    // Инициализируем платформу
-    initPlatform();
+    // Инициализируем приложение
+    initApp();
 }
 
-function initPlatform() {
-    document.getElementById('user-select').style.display = 'none';
-    document.getElementById('main-app').style.display = 'block';
+function initApp() {
+    document.querySelector('.login-screen').style.display = 'none';
+    document.querySelector('.main-app').style.display = 'block';
     
     // Устанавливаем тему
-    setTheme(platformData.settings.theme);
+    setTheme(appData.settings.theme);
+    
+    // Снежинки
+    if (appData.settings.snow) {
+        createSnowflakes();
+    }
     
     // Обновляем интерфейс
     updateUserInfo();
     loadCloudFiles();
-    initMap();
     initWorldClocks();
-    initLeaderboard();
+    loadChat();
     
-    // Добавляем обработчики
+    // Настройки
     setupEventListeners();
 }
 
 function updateUserInfo() {
-    const userData = platformData.users[currentUser];
+    const userData = appData.users[currentUser];
     const firstLetter = currentUser.charAt(0).toUpperCase();
     
-    document.getElementById('user-avatar').textContent = firstLetter;
-    document.getElementById('current-user').textContent = currentUser;
-    document.getElementById('user-balance').textContent = `$${userData.balance || 1000}`;
+    document.getElementById('current-avatar').textContent = firstLetter;
+    document.getElementById('current-username').textContent = currentUser;
+    document.getElementById('balance').textContent = `$${userData.balance || 1000}`;
 }
 
-function exitPlatform() {
+function exitApp() {
     if (confirm('Выйти с сайта?')) {
-        if (currentUser && platformData.online) {
-            delete platformData.online[currentUser];
-            saveData();
-        }
         window.close();
     }
+}
+
+// ====================
+// СНЕЖИНКИ
+// ====================
+function createSnowflakes() {
+    if (appData.settings.theme === 'light') return;
+    
+    for (let i = 0; i < 50; i++) {
+        const snowflake = document.createElement('div');
+        snowflake.className = 'snowflake';
+        
+        const size = Math.random() * 10 + 5;
+        snowflake.style.width = `${size}px`;
+        snowflake.style.height = `${size}px`;
+        snowflake.style.left = `${Math.random() * 100}vw`;
+        snowflake.style.opacity = Math.random() * 0.5 + 0.3;
+        snowflake.style.animationDuration = `${Math.random() * 10 + 10}s`;
+        snowflake.style.animationDelay = `${Math.random() * 5}s`;
+        
+        document.body.appendChild(snowflake);
+        
+        // Удаляем снежинку после анимации
+        setTimeout(() => {
+            if (snowflake.parentNode) {
+                snowflake.parentNode.removeChild(snowflake);
+            }
+        }, 15000);
+    }
+    
+    // Периодически создаем новые снежинки
+    setInterval(createSnowflakes, 15000);
 }
 
 // ====================
 // ОБЛАКО
 // ====================
 function loadCloudFiles() {
-    const files = [
-        { name: 'Фото 1.jpg', type: 'photo', size: '2.4 MB', icon: '📷' },
-        { name: 'Пейзаж.png', type: 'photo', size: '3.1 MB', icon: '🏞️' },
-        { name: 'Видео 1.mp4', type: 'video', size: '45.2 MB', icon: '🎬' },
-        { name: 'Документ.pdf', type: 'file', size: '1.1 MB', icon: '📄' },
-        { name: 'Презентация.pptx', type: 'file', size: '8.7 MB', icon: '📊' },
-        { name: 'Музыка.mp3', type: 'audio', size: '5.3 MB', icon: '🎵' }
-    ];
+    const grid = document.getElementById('files-grid');
+    const files = appData.cloud || [];
     
-    const grid = document.getElementById('cloud-files');
-    grid.innerHTML = files.map(file => `
-        <div class="file-card">
-            <div class="file-icon">${file.icon}</div>
-            <div style="font-weight: 600; margin-bottom: 0.5rem;">${file.name}</div>
-            <div style="font-size: 0.9rem; opacity: 0.7;">${file.size}</div>
+    if (files.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; opacity: 0.7;">Файлов пока нет. Добавьте первый файл!</div>';
+        return;
+    }
+    
+    grid.innerHTML = files.map((file, index) => `
+        <div class="file">
+            <button class="delete-file" onclick="deleteFile(${index})">×</button>
+            <div class="file-icon">${getFileIcon(file.type)}</div>
+            <div class="file-name">${file.name}</div>
+            <div class="file-size">${file.size}</div>
         </div>
     `).join('');
+}
+
+function getFileIcon(type) {
+    const icons = {
+        'photo': '📷',
+        'video': '🎬',
+        'audio': '🎵',
+        'file': '📄'
+    };
+    return icons[type] || '📄';
+}
+
+function addFile() {
+    const name = prompt('Введите название файла:');
+    if (!name) return;
+    
+    const type = prompt('Введите тип (photo, video, audio, file):') || 'file';
+    const size = Math.floor(Math.random() * 1000) + ' KB';
+    
+    appData.cloud.push({ name, type, size, date: new Date().toLocaleString() });
+    saveData();
+    loadCloudFiles();
+}
+
+function deleteFile(index) {
+    if (confirm('Удалить файл?')) {
+        appData.cloud.splice(index, 1);
+        saveData();
+        loadCloudFiles();
+    }
 }
 
 // ====================
 // ИГРЫ
 // ====================
 // Counter-Strike 3D
-function startCSGame() {
+function startCS() {
     document.getElementById('cs-game').style.display = 'block';
-    initCSGame();
+    initCS();
 }
 
-function initCSGame() {
+function initCS() {
     const canvas = document.getElementById('cs-canvas');
     
     // Сцена
@@ -1446,7 +1847,6 @@ function initCSGame() {
     // Камера
     csCamera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
     csCamera.position.set(0, 10, 20);
-    csCamera.lookAt(0, 0, 0);
     
     // Рендерер
     csRenderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -1454,175 +1854,55 @@ function initCSGame() {
     csRenderer.shadowMap.enabled = true;
     
     // Освещение
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
-    csScene.add(ambientLight);
+    const light = new THREE.AmbientLight(0x404040, 0.6);
+    csScene.add(light);
     
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(10, 20, 10);
-    directionalLight.castShadow = true;
-    csScene.add(directionalLight);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(10, 20, 10);
+    csScene.add(dirLight);
     
-    // Пол (карта Dust 2)
-    createMapDust2();
+    // Пол
+    const floorGeometry = new THREE.PlaneGeometry(100, 100);
+    const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x2a2a2a });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = -Math.PI / 2;
+    csScene.add(floor);
     
     // Игрок
-    createPlayer();
+    createCSPlayer();
     
     // Боты
-    createBots();
+    createCSBots();
     
     // Управление
     setupCSControls();
     
     // Анимация
     animateCS();
-    
-    // Обновляем HUD
-    updateCSHUD();
 }
 
-function createMapDust2() {
-    // Пол
-    const floorGeometry = new THREE.PlaneGeometry(100, 100);
-    const floorTexture = createGridTexture(100, 100);
-    const floorMaterial = new THREE.MeshPhongMaterial({ map: floorTexture });
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2;
-    floor.receiveShadow = true;
-    csScene.add(floor);
-    
-    // Стены карты Dust 2
-    const wallMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
-    
-    // Внешние стены
-    const wallPositions = [
-        { x: 0, z: -40, width: 80, height: 10, depth: 2 }, // Север
-        { x: 0, z: 40, width: 80, height: 10, depth: 2 }, // Юг
-        { x: -40, z: 0, width: 2, height: 10, depth: 80 }, // Запад
-        { x: 40, z: 0, width: 2, height: 10, depth: 80 } // Восток
-    ];
-    
-    wallPositions.forEach(pos => {
-        const geometry = new THREE.BoxGeometry(pos.width, pos.height, pos.depth);
-        const wall = new THREE.Mesh(geometry, wallMaterial);
-        wall.position.set(pos.x, pos.height/2, pos.z);
-        wall.castShadow = true;
-        wall.receiveShadow = true;
-        csWalls.push(wall);
-        csScene.add(wall);
-    });
-    
-    // Здания и препятствия
-    const obstacles = [
-        { x: -20, z: -20, size: [8, 6, 8] }, // Бомба A
-        { x: 20, z: 20, size: [8, 6, 8] }, // Бомба B
-        { x: -10, z: 10, size: [4, 4, 4] },
-        { x: 10, z: -10, size: [4, 4, 4] }
-    ];
-    
-    obstacles.forEach(obs => {
-        const geometry = new THREE.BoxGeometry(...obs.size);
-        const material = new THREE.MeshPhongMaterial({ color: 0xA0522D });
-        const obstacle = new THREE.Mesh(geometry, material);
-        obstacle.position.set(obs.x, obs.size[1]/2, obs.z);
-        obstacle.castShadow = true;
-        obstacle.receiveShadow = true;
-        csWalls.push(obstacle);
-        csScene.add(obstacle);
-    });
-    
-    // Ящики (как в CS)
-    for (let i = 0; i < 10; i++) {
-        const geometry = new THREE.BoxGeometry(2, 2, 2);
-        const material = new THREE.MeshPhongMaterial({ 
-            color: Math.random() > 0.5 ? 0x8B4513 : 0xA0522D 
-        });
-        const box = new THREE.Mesh(geometry, material);
-        box.position.set(
-            (Math.random() - 0.5) * 70,
-            1,
-            (Math.random() - 0.5) * 70
-        );
-        box.castShadow = true;
-        box.receiveShadow = true;
-        csWalls.push(box);
-        csScene.add(box);
-    }
-}
-
-function createGridTexture(width, height) {
-    const canvas = document.createElement('canvas');
-    canvas.width = width * 10;
-    canvas.height = height * 10;
-    const ctx = canvas.getContext('2d');
-    
-    // Текстура земли
-    ctx.fillStyle = '#8B7355';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Сетка
-    ctx.strokeStyle = '#6B5B45';
-    ctx.lineWidth = 2;
-    
-    for (let i = 0; i <= canvas.width; i += 100) {
-        ctx.beginPath();
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i, canvas.height);
-        ctx.stroke();
-    }
-    
-    for (let i = 0; i <= canvas.height; i += 100) {
-        ctx.beginPath();
-        ctx.moveTo(0, i);
-        ctx.lineTo(canvas.width, i);
-        ctx.stroke();
-    }
-    
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(10, 10);
-    return texture;
-}
-
-function createPlayer() {
-    // Тело игрока
-    const bodyGeometry = new THREE.BoxGeometry(1, 2, 1);
-    const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
-    csPlayer = new THREE.Mesh(bodyGeometry, bodyMaterial);
+function createCSPlayer() {
+    const geometry = new THREE.BoxGeometry(1, 2, 1);
+    const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+    csPlayer = new THREE.Mesh(geometry, material);
     csPlayer.position.y = 1;
-    csPlayer.castShadow = true;
     csScene.add(csPlayer);
-    
-    // Голова
-    const headGeometry = new THREE.SphereGeometry(0.5);
-    const headMaterial = new THREE.MeshPhongMaterial({ color: 0x00cc00 });
-    const head = new THREE.Mesh(headGeometry, headMaterial);
-    head.position.y = 2.5;
-    csPlayer.add(head);
 }
 
-function createBots() {
+function createCSBots() {
     for (let i = 0; i < 3; i++) {
         const geometry = new THREE.BoxGeometry(1, 2, 1);
         const material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
         const bot = new THREE.Mesh(geometry, material);
         
         bot.position.set(
-            (Math.random() - 0.5) * 60,
+            (Math.random() - 0.5) * 80,
             1,
-            (Math.random() - 0.5) * 60
+            (Math.random() - 0.5) * 80
         );
         
-        bot.userData = {
-            health: 100,
-            type: 'bot',
-            speed: 0.03 + Math.random() * 0.02
-        };
-        
-        bot.castShadow = true;
-        csScene.add(bot);
         csBots.push(bot);
+        csScene.add(bot);
     }
 }
 
@@ -1632,27 +1912,14 @@ function setupCSControls() {
     window.addEventListener('keydown', (e) => {
         keys[e.key.toLowerCase()] = true;
         
-        // Выстрел
-        if (e.key === ' ' || e.key === 'f') {
-            shoot();
-        }
-        
-        // Выход
-        if (e.key === 'Escape') {
-            exitCSGame();
-        }
-        
-        // Перезарядка
-        if (e.key === 'r') {
-            reload();
-        }
+        if (e.key === ' ') shoot();
+        if (e.key === 'r') reload();
     });
     
     window.addEventListener('keyup', (e) => {
         keys[e.key.toLowerCase()] = false;
     });
     
-    // Движение
     function updateMovement() {
         const speed = 0.2;
         
@@ -1661,53 +1928,34 @@ function setupCSControls() {
         if (keys['a']) csPlayer.position.x -= speed;
         if (keys['d']) csPlayer.position.x += speed;
         
-        // Ограничение движения
-        csPlayer.position.x = Math.max(-38, Math.min(38, csPlayer.position.x));
-        csPlayer.position.z = Math.max(-38, Math.min(38, csPlayer.position.z));
-        
-        // Камера следует за игроком
+        // Камера
         csCamera.position.x = csPlayer.position.x;
         csCamera.position.y = csPlayer.position.y + 5;
-        csCamera.position.z = csPlayer.position.z + 10;
+        csCamera.position.z = csPlayer.position.z + 8;
         csCamera.lookAt(csPlayer.position.x, csPlayer.position.y, csPlayer.position.z);
     }
     
-    // Анимация
     function animateCS() {
         requestAnimationFrame(animateCS);
         
         updateMovement();
-        updateBots();
-        updateBullets();
+        
+        // Движение ботов
+        csBots.forEach(bot => {
+            const dx = csPlayer.position.x - bot.position.x;
+            const dz = csPlayer.position.z - bot.position.z;
+            const distance = Math.sqrt(dx * dx + dz * dz);
+            
+            if (distance > 10) {
+                bot.position.x += (dx / distance) * 0.03;
+                bot.position.z += (dz / distance) * 0.03;
+            }
+        });
         
         csRenderer.render(csScene, csCamera);
     }
     
-    window.csAnimation = animateCS;
-}
-
-function updateBots() {
-    csBots.forEach((bot, index) => {
-        if (!bot.userData || bot.userData.health <= 0) return;
-        
-        // Движение к игроку
-        const dx = csPlayer.position.x - bot.position.x;
-        const dz = csPlayer.position.z - bot.position.z;
-        const distance = Math.sqrt(dx * dx + dz * dz);
-        
-        if (distance > 5) {
-            bot.position.x += (dx / distance) * bot.userData.speed;
-            bot.position.z += (dz / distance) * bot.userData.speed;
-        }
-        
-        // Поворот к игроку
-        bot.lookAt(csPlayer.position);
-        
-        // Случайная стрельба
-        if (distance < 15 && Math.random() < 0.01) {
-            botShoot(bot);
-        }
-    });
+    animateCS();
 }
 
 function shoot() {
@@ -1716,132 +1964,36 @@ function shoot() {
     csAmmo--;
     updateCSHUD();
     
-    // Создание пули
-    const geometry = new THREE.SphereGeometry(0.1);
-    const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-    const bullet = new THREE.Mesh(geometry, material);
-    
-    // Направление от камеры
-    const direction = new THREE.Vector3();
-    csCamera.getWorldDirection(direction);
-    
-    bullet.position.copy(csCamera.position);
-    bullet.userData = {
-        velocity: direction.multiplyScalar(1),
-        damage: 34,
-        owner: 'player'
-    };
-    
-    csBullets.push(bullet);
-    csScene.add(bullet);
-}
-
-function botShoot(bot) {
-    const geometry = new THREE.SphereGeometry(0.1);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    const bullet = new THREE.Mesh(geometry, material);
-    
-    const direction = new THREE.Vector3();
-    direction.subVectors(csPlayer.position, bot.position).normalize();
-    
-    bullet.position.copy(bot.position);
-    bullet.position.y += 1.5;
-    
-    bullet.userData = {
-        velocity: direction.multiplyScalar(0.8),
-        damage: 10,
-        owner: 'bot'
-    };
-    
-    csBullets.push(bullet);
-    csScene.add(bullet);
-}
-
-function updateBullets() {
-    for (let i = csBullets.length - 1; i >= 0; i--) {
-        const bullet = csBullets[i];
-        bullet.position.add(bullet.userData.velocity);
-        
-        // Проверка попадания
-        let hit = false;
-        
-        // В ботов (от игрока)
-        if (bullet.userData.owner === 'player') {
-            csBots.forEach((bot, botIndex) => {
-                const distance = bullet.position.distanceTo(bot.position);
-                if (distance < 1.5) {
-                    bot.userData.health -= bullet.userData.damage;
-                    
-                    if (bot.userData.health <= 0) {
-                        // Убийство
-                        csKills++;
-                        csMoney += 300;
-                        platformData.games.cs.kills = (platformData.games.cs.kills || 0) + 1;
-                        saveData();
-                        
-                        // Удаляем бота
-                        csScene.remove(bot);
-                        csBots.splice(botIndex, 1);
-                        
-                        // Создаем нового бота через 2 секунды
-                        setTimeout(() => {
-                            if (csBots.length < 5) {
-                                createBots();
-                            }
-                        }, 2000);
-                    }
-                    hit = true;
-                }
-            });
+    // Проверка попадания в ботов
+    csBots.forEach((bot, index) => {
+        const distance = csPlayer.position.distanceTo(bot.position);
+        if (distance < 5) {
+            csKills++;
+            csMoney += 300;
+            updateCSHUD();
+            
+            // Удаляем бота
+            csScene.remove(bot);
+            csBots.splice(index, 1);
+            
+            // Новый бот
+            setTimeout(createCSBots, 2000);
         }
-        
-        // В игрока (от ботов)
-        if (bullet.userData.owner === 'bot') {
-            const distance = bullet.position.distanceTo(csPlayer.position);
-            if (distance < 1.5) {
-                csHealth -= bullet.userData.damage;
-                updateCSHUD();
-                
-                if (csHealth <= 0) {
-                    csHealth = 0;
-                    platformData.games.cs.deaths = (platformData.games.cs.deaths || 0) + 1;
-                    saveData();
-                    alert('💀 Вы умерли! Нажмите OK для возрождения.');
-                    csHealth = 100;
-                    csPlayer.position.set(0, 1, 0);
-                }
-                hit = true;
-            }
-        }
-        
-        // В стены
-        csWalls.forEach(wall => {
-            const distance = bullet.position.distanceTo(wall.position);
-            if (distance < 3) {
-                hit = true;
-            }
-        });
-        
-        // Удаление при попадании или далеко
-        if (hit || bullet.position.distanceTo(csPlayer.position) > 100) {
-            csScene.remove(bullet);
-            csBullets.splice(i, 1);
-        }
-    }
+    });
 }
 
 function selectWeapon(weapon) {
     currentWeapon = weapon;
-    document.querySelectorAll('.cs-weapon-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.weapon-btn').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
     
-    // Обновляем патроны
     switch(weapon) {
         case 'akm': csAmmo = 30; break;
         case 'awp': csAmmo = 10; break;
         case 'glock': csAmmo = 20; break;
         case 'deagle': csAmmo = 7; break;
     }
+    
     updateCSHUD();
 }
 
@@ -1859,33 +2011,61 @@ function updateCSHUD() {
     document.getElementById('cs-ammo').textContent = `🔫 ${csAmmo}`;
 }
 
-function exitCSGame() {
+function exitCS() {
     document.getElementById('cs-game').style.display = 'none';
-    
-    // Очищаем сцену
-    if (csScene) {
-        while(csScene.children.length > 0) {
-            csScene.remove(csScene.children[0]);
-        }
-    }
+    csScene = null;
     csBots = [];
-    csBullets = [];
-    csWalls = [];
-    
-    // Сбрасываем статистику
-    csHealth = 100;
-    csMoney = 800;
-    csKills = 0;
-    csAmmo = 30;
+}
+
+// My Talking Tom 2
+let tomHappiness = 100;
+let tomHunger = 100;
+let tomMoney = 100;
+
+function startTalkingTom() {
+    showModal('talking-tom-modal');
+    updateTomStats();
+}
+
+function petTom() {
+    tomHappiness = Math.min(100, tomHappiness + 10);
+    tomMoney += 5;
+    updateTomStats();
+    saveData();
+}
+
+function feedTom() {
+    if (tomMoney >= 10) {
+        tomHunger = Math.min(100, tomHunger + 30);
+        tomMoney -= 10;
+        updateTomStats();
+        saveData();
+    } else {
+        alert('Недостаточно денег!');
+    }
+}
+
+function playWithTom() {
+    tomHappiness = Math.min(100, tomHappiness + 20);
+    tomHunger = Math.max(0, tomHunger - 10);
+    updateTomStats();
+    saveData();
+}
+
+function updateTomStats() {
+    document.getElementById('tom-happiness').textContent = `${tomHappiness}%`;
+    document.getElementById('tom-hunger').textContent = `${tomHunger}%`;
+    document.getElementById('tom-money').textContent = `$${tomMoney}`;
 }
 
 // Крестики-нолики
 let ticBoard = ['', '', '', '', '', '', '', '', ''];
 let ticCurrentPlayer = 'X';
 let ticGameActive = true;
+let ticMode = 'bot';
 
 function startTicTacToe() {
-    showModal('tic-modal');
+    showModal('tic-tac-toe-modal');
     initTicTacToe();
 }
 
@@ -1901,62 +2081,37 @@ function initTicTacToe() {
         board.appendChild(cell);
     }
     
-    document.getElementById('tic-status').textContent = `Ход игрока: ${ticCurrentPlayer}`;
+    ticMode = document.getElementById('tic-mode').value;
+    document.getElementById('tic-status').textContent = `Ход: ${ticCurrentPlayer}`;
 }
 
 function makeMove(index) {
     if (!ticGameActive || ticBoard[index] !== '') return;
     
     ticBoard[index] = ticCurrentPlayer;
-    const cell = document.querySelector(`.tic-cell[data-index="${index}"]`);
-    cell.textContent = ticCurrentPlayer;
-    cell.classList.add(ticCurrentPlayer.toLowerCase());
+    document.querySelector(`.tic-cell[data-index="${index}"]`).textContent = ticCurrentPlayer;
     
     if (checkWin()) {
-        document.getElementById('tic-status').textContent = `🏆 Победил ${ticCurrentPlayer}!`;
+        document.getElementById('tic-status').textContent = `Победил ${ticCurrentPlayer}!`;
         ticGameActive = false;
-        if (ticCurrentPlayer === 'X') {
-            platformData.games.tic.wins = (platformData.games.tic.wins || 0) + 1;
-        }
-        saveData();
         return;
     }
     
     if (isBoardFull()) {
-        document.getElementById('tic-status').textContent = '🤝 Ничья!';
+        document.getElementById('tic-status').textContent = 'Ничья!';
         ticGameActive = false;
         return;
     }
     
     ticCurrentPlayer = ticCurrentPlayer === 'X' ? 'O' : 'X';
-    document.getElementById('tic-status').textContent = `Ход игрока: ${ticCurrentPlayer}`;
+    document.getElementById('tic-status').textContent = `Ход: ${ticCurrentPlayer}`;
     
-    // Ход бота
-    if (ticCurrentPlayer === 'O') {
+    if (ticMode === 'bot' && ticCurrentPlayer === 'O') {
         setTimeout(makeBotMove, 500);
     }
 }
 
 function makeBotMove() {
-    // Простой AI: сначала попробуем выиграть, потом заблокировать, потом случайный ход
-    
-    // 1. Проверка на выигрыш
-    for (let i = 0; i < 9; i++) {
-        if (ticBoard[i] === '' && checkMoveWin('O', i)) {
-            makeMove(i);
-            return;
-        }
-    }
-    
-    // 2. Блокировка игрока
-    for (let i = 0; i < 9; i++) {
-        if (ticBoard[i] === '' && checkMoveWin('X', i)) {
-            makeMove(i);
-            return;
-        }
-    }
-    
-    // 3. Случайный ход
     const availableMoves = ticBoard.map((cell, index) => cell === '' ? index : -1).filter(i => i !== -1);
     if (availableMoves.length > 0) {
         const randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
@@ -1964,24 +2119,17 @@ function makeBotMove() {
     }
 }
 
-function checkMoveWin(player, move) {
-    const tempBoard = [...ticBoard];
-    tempBoard[move] = player;
-    
-    const winPatterns = [
-        [0,1,2], [3,4,5], [6,7,8], // rows
-        [0,3,6], [1,4,7], [2,5,8], // columns
-        [0,4,8], [2,4,6] // diagonals
+function checkWin() {
+    const patterns = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
     ];
     
-    return winPatterns.some(pattern => {
+    return patterns.some(pattern => {
         const [a,b,c] = pattern;
-        return tempBoard[a] === player && tempBoard[b] === player && tempBoard[c] === player;
+        return ticBoard[a] && ticBoard[a] === ticBoard[b] && ticBoard[a] === ticBoard[c];
     });
-}
-
-function checkWin() {
-    return checkMoveWin(ticCurrentPlayer, -1);
 }
 
 function isBoardFull() {
@@ -1996,22 +2144,21 @@ function resetTicTacToe() {
 }
 
 // Кликер
-let clickerMoney = 0;
-let clickerClickPower = 1;
-let clickerAutoClicker = 0;
-
 function startClicker() {
     showModal('clicker-modal');
     loadClickerData();
 }
 
 function loadClickerData() {
-    const data = platformData.games.clicker;
-    clickerMoney = data.money || 0;
-    clickerClickPower = data.clickPower || 1;
-    clickerAutoClicker = data.autoClicker || 0;
+    const userData = appData.users[currentUser];
+    clickerMoney = userData.games.clicker.money || 0;
+    clickerClickPower = userData.games.clicker.clickPower || 1;
+    clickerAutoClicker = userData.games.clicker.autoClicker || 0;
+    clickerMultiplier = userData.games.clicker.multiplier || 1;
+    rebirths = userData.games.clicker.rebirths || 0;
+    pets = userData.games.clicker.pets || [];
     
-    updateClickerDisplay();
+    updateClickerUI();
     
     // Автокликер
     if (clickerAutoClicker > 0 && !window.autoClickerInterval) {
@@ -2020,33 +2167,68 @@ function loadClickerData() {
 }
 
 function clickMoney() {
-    clickerMoney += clickerClickPower;
-    updateClickerDisplay();
+    let gain = clickerClickPower * clickerMultiplier;
+    if (activeBuff) gain *= 2;
+    
+    clickerMoney += gain;
+    updateClickerUI();
     saveClickerData();
 }
 
 function buyUpgrade(type) {
-    const costs = {
-        click: 10 * Math.pow(2, clickerClickPower - 1),
-        auto: 100 * Math.pow(2, clickerAutoClicker)
-    };
+    let cost = 0;
     
-    const cost = costs[type];
+    switch(type) {
+        case 'click':
+            cost = 10 * Math.pow(2, clickerClickPower - 1);
+            if (clickerMoney >= cost) {
+                clickerMoney -= cost;
+                clickerClickPower++;
+            }
+            break;
+        case 'auto':
+            cost = 100 * Math.pow(2, clickerAutoClicker);
+            if (clickerMoney >= cost) {
+                clickerMoney -= cost;
+                clickerAutoClicker++;
+                if (!window.autoClickerInterval) {
+                    startAutoClicker();
+                }
+            }
+            break;
+        case 'multiplier':
+            cost = 1000 * Math.pow(2, clickerMultiplier - 1);
+            if (clickerMoney >= cost) {
+                clickerMoney -= cost;
+                clickerMultiplier += 0.2;
+            }
+            break;
+    }
+    
+    if (cost > 0 && clickerMoney >= cost) {
+        updateClickerUI();
+        saveClickerData();
+    } else {
+        alert('Недостаточно денег!');
+    }
+}
+
+function buyRebirth() {
+    const cost = 10000 * Math.pow(2, rebirths);
     
     if (clickerMoney >= cost) {
-        clickerMoney -= cost;
-        
-        if (type === 'click') {
-            clickerClickPower++;
-        } else if (type === 'auto') {
-            clickerAutoClicker++;
-            if (!window.autoClickerInterval) {
-                startAutoClicker();
-            }
+        if (confirm(`Переродиться за $${cost}?\n+0.5x к множителю навсегда!`)) {
+            clickerMoney = 0;
+            rebirths++;
+            clickerMultiplier += 0.5;
+            clickerClickPower = 1;
+            clickerAutoClicker = 0;
+            activeBuff = false;
+            
+            updateClickerUI();
+            saveClickerData();
+            alert(`Перерождение #${rebirths} завершено!`);
         }
-        
-        updateClickerDisplay();
-        saveClickerData();
     } else {
         alert('Недостаточно денег!');
     }
@@ -2058,96 +2240,109 @@ function startAutoClicker() {
     }
     
     window.autoClickerInterval = setInterval(() => {
-        clickerMoney += clickerAutoClicker * 0.5;
-        updateClickerDisplay();
+        let gain = clickerAutoClicker * 0.5 * clickerMultiplier;
+        if (activeBuff) gain *= 2;
+        
+        clickerMoney += gain;
+        updateClickerUI();
         saveClickerData();
     }, 1000);
 }
 
-function updateClickerDisplay() {
-    document.getElementById('clicker-money').textContent = `$${clickerMoney.toFixed(2)}`;
+function openShop() {
+    closeModal('clicker-modal');
+    showModal('shop-modal');
+    updateShop();
+}
+
+function buyEgg(type) {
+    const prices = {
+        'common': 100,
+        'rare': 500,
+        'epic': 2000
+    };
+    
+    const price = prices[type];
+    if (clickerMoney >= price) {
+        clickerMoney -= price;
+        
+        // Случайный питомец
+        const petTypes = {
+            'common': ['🐱 Кот', '🐶 Собака', '🐰 Кролик', '🐦 Птица'],
+            'rare': ['🐲 Дракон', '🦄 Единорог', '🐺 Волк', '🦅 Орёл'],
+            'epic': ['👻 Призрак', '🧚 Фея', '🧌 Огр', '🧜 Русалка']
+        };
+        
+        const pet = petTypes[type][Math.floor(Math.random() * petTypes[type].length)];
+        pets.push({ name: pet, type: type });
+        
+        updateClickerUI();
+        updateShop();
+        saveClickerData();
+        
+        alert(`Вы получили питомца: ${pet}`);
+    } else {
+        alert('Недостаточно денег!');
+    }
+}
+
+function buyBuff() {
+    if (clickerMoney >= 500) {
+        clickerMoney -= 500;
+        activeBuff = true;
+        
+        updateClickerUI();
+        saveClickerData();
+        
+        setTimeout(() => {
+            activeBuff = false;
+            updateClickerUI();
+        }, 30000);
+        
+        alert('Буфф ×2 активирован на 30 секунд!');
+    } else {
+        alert('Недостаточно денег!');
+    }
+}
+
+function updateClickerUI() {
+    document.getElementById('clicker-money').textContent = `$${Math.floor(clickerMoney)}`;
+    document.getElementById('click-price').textContent = `Цена: $${10 * Math.pow(2, clickerClickPower - 1)}`;
+    document.getElementById('auto-price').textContent = `Цена: $${100 * Math.pow(2, clickerAutoClicker)}`;
+    document.getElementById('multiplier-price').textContent = `Цена: $${1000 * Math.pow(2, clickerMultiplier - 1)}`;
+    document.getElementById('rebirth-price').textContent = `Цена: $${10000 * Math.pow(2, rebirths)}`;
+    document.getElementById('rebirth-count').textContent = `Перерождений: ${rebirths}`;
+    document.getElementById('multiplier').textContent = `Множитель: ${clickerMultiplier.toFixed(1)}x ${activeBuff ? '(×2 БУФФ)' : ''}`;
+}
+
+function updateShop() {
+    const petsList = document.getElementById('pets-list');
+    petsList.innerHTML = pets.length === 0 ? 
+        '<div style="opacity: 0.7;">Питомцев пока нет</div>' :
+        pets.map(pet => `
+            <div style="background: var(--card); padding: 10px; border-radius: 10px; border: 2px solid var(--primary);">
+                <div style="font-size: 24px;">${pet.name.split(' ')[0]}</div>
+                <div style="font-size: 12px; opacity: 0.8;">${pet.type}</div>
+            </div>
+        `).join('');
 }
 
 function saveClickerData() {
-    platformData.games.clicker = {
+    appData.users[currentUser].games.clicker = {
         money: clickerMoney,
         clickPower: clickerClickPower,
-        autoClicker: clickerAutoClicker
+        autoClicker: clickerAutoClicker,
+        multiplier: clickerMultiplier,
+        rebirths: rebirths,
+        pets: pets
     };
     saveData();
 }
 
 // ====================
-// КАРТЫ (Leaflet OpenStreetMap)
+// ПЕРЕВОДЧИК
 // ====================
-function initMap() {
-    map = L.map('map').setView([55.7558, 37.6173], 13); // Москва
-    
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 19
-    }).addTo(map);
-    
-    // Добавляем маркер
-    L.marker([55.7558, 37.6173]).addTo(map)
-        .bindPopup('Москва, Россия')
-        .openPopup();
-}
-
-function findMyLocation() {
-    if (!navigator.geolocation) {
-        alert('Геолокация не поддерживается вашим браузером');
-        return;
-    }
-    
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            
-            map.setView([lat, lng], 15);
-            
-            L.marker([lat, lng]).addTo(map)
-                .bindPopup('Ваше местоположение')
-                .openPopup();
-        },
-        () => {
-            alert('Не удалось получить местоположение');
-        }
-    );
-}
-
-function searchLocation() {
-    const query = prompt('Введите название места для поиска:');
-    if (!query) return;
-    
-    // Простой поиск по популярным местам
-    const locations = {
-        'москва': [55.7558, 37.6173],
-        'дубай': [25.2048, 55.2708],
-        'киев': [50.4501, 30.5234],
-        'париж': [48.8566, 2.3522],
-        'берлин': [52.5200, 13.4050],
-        'токио': [35.6762, 139.6503],
-        'пекин': [39.9042, 116.4074]
-    };
-    
-    const loc = locations[query.toLowerCase()];
-    if (loc) {
-        map.setView(loc, 13);
-        L.marker(loc).addTo(map)
-            .bindPopup(query.charAt(0).toUpperCase() + query.slice(1))
-            .openPopup();
-    } else {
-        alert('Место не найдено в базе');
-    }
-}
-
-// ====================
-// ПЕРЕВОДЧИК (улучшенный)
-// ====================
-const translationDictionary = {
-    // Русский -> Английский
+const translations = {
     'ru-en': {
         'привет': 'hello',
         'здравствуйте': 'hello',
@@ -2160,63 +2355,44 @@ const translationDictionary = {
         'плохо': 'bad',
         'я': 'i',
         'ты': 'you',
-        'мы': 'we',
-        'они': 'they',
-        'дом': 'house',
-        'машина': 'car',
-        'компьютер': 'computer',
-        'игра': 'game',
-        'деньги': 'money',
-        'работа': 'work',
-        'любовь': 'love',
-        'семья': 'family',
-        'друг': 'friend'
+        'мы': 'we'
     },
-    // Английский -> Русский
     'en-ru': {
         'hello': 'привет',
         'hi': 'привет',
         'how are you': 'как дела',
         'thank you': 'спасибо',
-        'thanks': 'спасибо',
-        'you are welcome': 'пожалуйста',
         'yes': 'да',
         'no': 'нет',
         'good': 'хорошо',
         'bad': 'плохо',
         'i': 'я',
         'you': 'ты',
-        'we': 'мы',
-        'they': 'они',
-        'house': 'дом',
-        'car': 'машина',
-        'computer': 'компьютер',
-        'game': 'игра',
-        'money': 'деньги',
-        'work': 'работа',
-        'love': 'любовь',
-        'family': 'семья',
-        'friend': 'друг'
+        'we': 'мы'
     },
-    // Русский -> Китайский
     'ru-zh': {
         'привет': '你好',
         'спасибо': '谢谢',
         'да': '是',
-        'нет': '没有',
-        'я': '我',
-        'ты': '你',
-        'деньги': '钱'
+        'нет': '不'
     },
-    // Китайский -> Русский
     'zh-ru': {
         '你好': 'привет',
         '谢谢': 'спасибо',
         '是': 'да',
-        '没有': 'нет',
-        '我': 'я',
-        '你': 'ты',
-        '钱': 'деньги'
+        '不': 'нет'
+    },
+    'ru-ar': {
+        'привет': 'مرحبا',
+        'спасибо': 'شكرا',
+        'да': 'نعم',
+        'нет': 'لا'
+    },
+    'ar-ru': {
+        'مرحبا': 'привет',
+        'شكرا': 'спасибо',
+        'نعم': 'да',
+        'لا': 'нет'
     }
 };
 
@@ -2226,65 +2402,48 @@ function swapLanguages() {
     const temp = from.value;
     from.value = to.value;
     to.value = temp;
-    translateText();
+    translate();
 }
 
-function translateText() {
-    const text = document.getElementById('input-text').value.trim();
+function translate() {
+    const text = document.getElementById('input-text').value.toLowerCase();
     const from = document.getElementById('lang-from').value;
     const to = document.getElementById('lang-to').value;
     
-    if (!text) {
+    if (!text.trim()) {
         document.getElementById('output-text').value = '';
         return;
     }
     
     const key = `${from}-${to}`;
-    const dict = translationDictionary[key];
+    const dict = translations[key];
     
     if (dict) {
-        // Простой по-словный перевод
-        const words = text.toLowerCase().split(' ');
-        const translatedWords = words.map(word => {
-            // Ищем точное совпадение
-            if (dict[word]) return dict[word];
-            
-            // Ищем частичное совпадение
-            for (const [key, value] of Object.entries(dict)) {
-                if (key.includes(word) || word.includes(key)) {
-                    return value;
-                }
+        let result = text;
+        for (const [key, value] of Object.entries(dict)) {
+            if (text.includes(key)) {
+                result = result.replace(new RegExp(key, 'gi'), value);
             }
-            
-            return word; // Если не нашли, оставляем как есть
-        });
-        
-        document.getElementById('output-text').value = translatedWords.join(' ');
+        }
+        document.getElementById('output-text').value = result.charAt(0).toUpperCase() + result.slice(1);
     } else {
-        // Если нет словаря для этой пары языков, используем псевдоперевод
-        const pseudoTranslated = text.split('').map((char, i) => {
-            if (Math.random() > 0.7 && i > 0) {
-                return char.toUpperCase();
-            }
-            return char;
-        }).join('');
-        
-        document.getElementById('output-text').value = `[ПЕРЕВОД]: ${pseudoTranslated}`;
+        // Псевдоперевод
+        const translated = text.split(' ').map(word => {
+            if (Math.random() > 0.5) return word + '...';
+            return word;
+        }).join(' ');
+        document.getElementById('output-text').value = `[ПЕРЕВОД]: ${translated}`;
     }
 }
 
 function speakTranslation() {
     const text = document.getElementById('output-text').value;
-    if (!text) return;
+    if (!text.trim()) return;
     
     if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = document.getElementById('lang-to').value;
-        utterance.rate = 0.9;
-        utterance.pitch = 1.0;
         speechSynthesis.speak(utterance);
-    } else {
-        alert('Браузер не поддерживает синтез речи');
     }
 }
 
@@ -2293,22 +2452,14 @@ function startVoiceInput() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
         recognition.lang = document.getElementById('lang-from').value;
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
         
         recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
             document.getElementById('input-text').value = transcript;
-            translateText();
-        };
-        
-        recognition.onerror = (event) => {
-            console.error('Ошибка распознавания:', event.error);
+            translate();
         };
         
         recognition.start();
-    } else {
-        alert('Браузер не поддерживает распознавание речи');
     }
 }
 
@@ -2328,18 +2479,18 @@ const timezones = {
 };
 
 function initWorldClocks() {
-    const container = document.getElementById('clocks-container');
-    container.innerHTML = '';
+    const grid = document.getElementById('clocks-grid');
+    grid.innerHTML = '';
     
     Object.keys(timezones).forEach(city => {
-        const card = document.createElement('div');
-        card.className = 'clock-card';
-        card.innerHTML = `
+        const clock = document.createElement('div');
+        clock.className = 'clock';
+        clock.innerHTML = `
             <div class="clock-city">${city}</div>
             <div class="clock-time" id="clock-${city}">00:00:00</div>
             <div class="clock-date" id="date-${city}">1 января 2024</div>
         `;
-        container.appendChild(card);
+        grid.appendChild(clock);
     });
     
     updateClocks();
@@ -2351,7 +2502,7 @@ function updateClocks() {
     
     Object.keys(timezones).forEach(city => {
         try {
-            const timeString = now.toLocaleTimeString('ru-RU', { timeZone: timezones[city], hour12: false });
+            const timeString = now.toLocaleTimeString('ru-RU', { timeZone: timezones[city] });
             const dateString = now.toLocaleDateString('ru-RU', { 
                 timeZone: timezones[city],
                 weekday: 'long',
@@ -2363,7 +2514,6 @@ function updateClocks() {
             document.getElementById(`clock-${city}`).textContent = timeString;
             document.getElementById(`date-${city}`).textContent = dateString;
         } catch (e) {
-            console.log(`Ошибка часового пояса для ${city}:`, e);
             document.getElementById(`clock-${city}`).textContent = now.toLocaleTimeString();
             document.getElementById(`date-${city}`).textContent = now.toLocaleDateString();
         }
@@ -2371,118 +2521,117 @@ function updateClocks() {
 }
 
 // ====================
-// ЧАТ-БОТ AI
+// ЧАТ
 // ====================
-const botResponses = {
-    'привет': ['Привет! 😊', 'Здравствуйте!', 'Приветствую!'],
-    'как дела': ['Отлично, спасибо! А у вас?', 'Хорошо, работаю над ответами!', 'Всё прекрасно!'],
-    'что ты умеешь': [
-        'Я могу: переводить текст, показывать карты, играть с вами в игры, отвечать на вопросы!',
-        'Мои функции: Переводчик, Карты, Игры (CS, крестики-нолики, кликер), Часы мира, Чат с ИИ!',
-        'Я ваш универсальный помощник: перевод, карты, игры и многое другое!'
-    ],
-    'спасибо': ['Пожалуйста! 😊', 'Всегда рад помочь!', 'Обращайтесь!'],
-    'пока': ['До свидания! 👋', 'Всего хорошего!', 'Возвращайтесь!'],
-    'игра': ['У нас есть: Counter-Strike 3D, Крестики-нолики, Кликер! В какую хотите?', 'Игры: CS 3D, Крестики-нолики, Кликер с питомцами!'],
-    'перевод': ['Я перевожу с русского, английского, китайского и арабского. Что перевести?', 'Переводчик поддерживает 4 языка. Введите текст!'],
-    'карта': ['Карты на основе OpenStreetMap. Можно найти любое место!', 'Используйте карту для навигации или поиска мест!'],
-    'время': ['Показываю время в 9 городах мира!', 'Часы мира: Москва, Дубай, Киев, Париж, Берлин, Токио, Пекин, Сеул, Ташкент']
-};
-
-function sendChatMessage() {
-    const input = document.getElementById('chat-input');
-    const message = input.value.trim();
+function loadChat() {
+    const usersList = document.getElementById('chat-users');
+    usersList.innerHTML = `
+        <div class="chat-user active" onclick="switchChat('general')">
+            <div style="font-weight: 700;">💬 Общий чат</div>
+            <div style="font-size: 12px; opacity: 0.7;">Все пользователи</div>
+        </div>
+    `;
     
-    if (!message) return;
+    USERS.forEach(user => {
+        if (user !== currentUser) {
+            const userDiv = document.createElement('div');
+            userDiv.className = 'chat-user';
+            userDiv.onclick = () => switchChat(user);
+            userDiv.innerHTML = `
+                <div style="font-weight: 700;">👤 ${user}</div>
+                <div style="font-size: 12px; opacity: 0.7;">${appData.online[user] ? '🟢 Онлайн' : '⚫ Офлайн'}</div>
+            `;
+            usersList.appendChild(userDiv);
+        }
+    });
     
-    addChatMessage(message, 'user');
-    input.value = '';
-    
-    // Ответ бота
-    setTimeout(() => {
-        const response = getBotResponse(message.toLowerCase());
-        addChatMessage(response, 'bot');
-    }, 500);
+    switchChat('general');
 }
 
-function getBotResponse(message) {
-    // Ищем точное совпадение
-    for (const [key, responses] of Object.entries(botResponses)) {
-        if (message.includes(key)) {
-            return responses[Math.floor(Math.random() * responses.length)];
-        }
+function switchChat(user) {
+    currentChat = user;
+    
+    document.querySelectorAll('.chat-user').forEach(el => el.classList.remove('active'));
+    event.target.closest('.chat-user').classList.add('active');
+    
+    document.getElementById('chat-title').textContent = user === 'general' ? '💬 Общий чат' : `👤 Личный чат с ${user}`;
+    
+    showMessages();
+}
+
+function showMessages() {
+    const list = document.getElementById('messages-list');
+    const messages = chatMessages[currentChat] || [];
+    
+    list.innerHTML = messages.map(msg => `
+        <div class="message ${msg.sender === currentUser ? 'sent' : 'received'}">
+            <div style="font-weight: 700; margin-bottom: 5px;">${msg.sender}</div>
+            <div>${msg.text}</div>
+            <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">${msg.time}</div>
+        </div>
+    `).join('');
+    
+    list.scrollTop = list.scrollHeight;
+}
+
+function sendMessage() {
+    const input = document.getElementById('chat-message');
+    const text = input.value.trim();
+    
+    if (!text) return;
+    
+    const message = {
+        sender: currentUser,
+        text: text,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+    
+    // Сохраняем сообщение
+    chatMessages[currentChat].push(message);
+    
+    // Если личное сообщение, сохраняем и у получателя
+    if (currentChat !== 'general' && appData.online[currentChat]) {
+        chatMessages[currentUser].push({
+            sender: currentUser,
+            text: text,
+            time: message.time
+        });
     }
     
-    // Если нет точного совпадения, используем общие ответы
-    const genericResponses = [
-        'Интересный вопрос! Уточните, пожалуйста.',
-        'Я еще учусь. Спросите что-то другое!',
-        'Попробуйте задать вопрос по-другому.',
-        'К сожалению, я не знаю ответ на этот вопрос. Но я учусь!',
-        'Можете спросить о переводе, картах или играх!'
-    ];
+    // Общий чат сохраняем для всех
+    if (currentChat === 'general') {
+        appData.chat.push(message);
+        saveData();
+    }
     
-    return genericResponses[Math.floor(Math.random() * genericResponses.length)];
-}
-
-function addChatMessage(text, sender) {
-    const messages = document.getElementById('chat-messages');
-    const message = document.createElement('div');
-    message.className = `chat-message ${sender}`;
-    message.textContent = text;
-    messages.appendChild(message);
-    messages.scrollTop = messages.scrollHeight;
+    input.value = '';
+    showMessages();
 }
 
 // ====================
-// ЛИДЕРБОРД
+// КАРТЫ
 // ====================
-function initLeaderboard() {
-    updateLeaderboard();
-}
-
-function updateLeaderboard() {
-    const leaderboard = document.getElementById('leaderboard-content');
-    leaderboard.innerHTML = '';
-    
-    // Собираем данные всех игроков
-    const players = Object.entries(platformData.users).map(([username, data]) => {
-        const csScore = platformData.games.cs?.kills || 0;
-        const ticScore = platformData.games.tic?.wins || 0;
-        const clickerScore = platformData.games.clicker?.money || 0;
-        
-        const totalScore = csScore * 10 + ticScore * 100 + clickerScore / 1000;
-        
-        return {
-            username,
-            score: Math.round(totalScore),
-            cs: csScore,
-            tic: ticScore,
-            clicker: clickerScore
-        };
-    });
-    
-    // Сортируем по очкам
-    players.sort((a, b) => b.score - a.score);
-    
-    // Отображаем топ-10
-    players.slice(0, 10).forEach((player, index) => {
-        const row = document.createElement('div');
-        row.className = 'leaderboard-row';
-        
-        const rankClass = index < 3 ? `rank-${index + 1}` : 'rank-other';
-        
-        row.innerHTML = `
-            <div>
-                <div class="rank-badge ${rankClass}">${index + 1}</div>
+function loadMap() {
+    const container = document.getElementById('map-container');
+    container.innerHTML = `
+        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+            <div style="font-size: 48px; margin-bottom: 20px;">🗺️</div>
+            <h3 style="font-size: 24px; margin-bottom: 10px;">Карты</h3>
+            <p style="opacity: 0.8; margin-bottom: 30px; text-align: center;">
+                Для работы карт требуется интернет.<br>
+                Рекомендуем использовать Google Maps.
+            </p>
+            <div class="map-controls">
+                <button class="voice-btn" onclick="showLocation('Москва')">📍 Москва</button>
+                <button class="voice-btn" onclick="showLocation('Дубай')">📍 Дубай</button>
+                <button class="voice-btn" onclick="showLocation('Париж')">📍 Париж</button>
             </div>
-            <div>${player.username}</div>
-            <div>${player.score}</div>
-            <div>CS:${player.cs} T:${player.tic} C:$${Math.round(player.clicker)}</div>
-        `;
-        
-        leaderboard.appendChild(row);
-    });
+        </div>
+    `;
+}
+
+function showLocation(city) {
+    alert(`📍 ${city}\n\nШирота: 55.7558\nДолгота: 37.6173\n\nДля навигации используйте Google Maps с координатами.`);
 }
 
 // ====================
@@ -2494,23 +2643,34 @@ function openSettings() {
 
 function setTheme(theme) {
     document.body.setAttribute('data-theme', theme);
-    platformData.settings.theme = theme;
+    appData.settings.theme = theme;
     saveData();
     
     document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
-    event?.target.classList.add('active');
+    event.target.classList.add('active');
+    
+    // Включаем/выключаем снежинки
+    const snowToggle = document.getElementById('snow-toggle');
+    if (theme === 'light') {
+        snowToggle.checked = false;
+        snowToggle.disabled = true;
+    } else {
+        snowToggle.disabled = false;
+        if (snowToggle.checked) {
+            createSnowflakes();
+        }
+    }
 }
 
 function exportData() {
-    const dataStr = JSON.stringify(platformData);
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+    const data = JSON.stringify(appData);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
     
-    const link = document.createElement('a');
-    link.setAttribute('href', dataUri);
-    link.setAttribute('download', 'ultra-platform-backup.json');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'platform_backup.json';
+    a.click();
     
     alert('Данные экспортированы!');
 }
@@ -2520,16 +2680,16 @@ function importData() {
     input.type = 'file';
     input.accept = 'application/json';
     
-    input.onchange = e => {
+    input.onchange = (e) => {
         const file = e.target.files[0];
         const reader = new FileReader();
         
-        reader.onload = e => {
+        reader.onload = (e) => {
             try {
                 const data = JSON.parse(e.target.result);
-                Object.assign(platformData, data);
+                Object.assign(appData, data);
                 saveData();
-                alert('Данные импортированы! Страница будет перезагружена.');
+                alert('Данные импортированы!');
                 location.reload();
             } catch (error) {
                 alert('Ошибка при импорте: ' + error.message);
@@ -2543,9 +2703,9 @@ function importData() {
 }
 
 function clearData() {
-    if (confirm('ВНИМАНИЕ! Все данные будут удалены. Продолжить?')) {
+    if (confirm('УДАЛИТЬ ВСЕ ДАННЫЕ?')) {
         localStorage.clear();
-        alert('Данные удалены. Страница перезагрузится.');
+        alert('Данные удалены!');
         location.reload();
     }
 }
@@ -2553,62 +2713,48 @@ function clearData() {
 // ====================
 // УТИЛИТЫ
 // ====================
-function showModal(modalId) {
-    document.getElementById(modalId).style.display = 'flex';
+function showModal(id) {
+    document.getElementById(id).style.display = 'flex';
 }
 
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
+function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
 }
 
 function saveData() {
-    localStorage.setItem('ultra_platform_v2', JSON.stringify(platformData));
+    localStorage.setItem('platform_data', JSON.stringify(appData));
 }
 
 function setupEventListeners() {
     // Навигация по вкладкам
-    document.querySelectorAll('.nav-tab').forEach(tab => {
+    document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
-            const pageId = tab.dataset.page;
+            const page = tab.dataset.page;
             
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             
             tab.classList.add('active');
-            document.getElementById(pageId).classList.add('active');
+            document.getElementById(page).classList.add('active');
         });
     });
     
-    // Вкладки облака
-    document.querySelectorAll('.cloud-subtab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.cloud-subtab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-        });
+    // Снежинки
+    document.getElementById('snow-toggle').addEventListener('change', (e) => {
+        appData.settings.snow = e.target.checked;
+        saveData();
+        
+        if (e.target.checked) {
+            createSnowflakes();
+        }
     });
     
     // Переводчик
-    document.getElementById('input-text').addEventListener('input', translateText);
+    document.getElementById('input-text').addEventListener('input', translate);
     
-    // Чат (Enter для отправки)
-    document.getElementById('chat-input').addEventListener('keypress', e => {
-        if (e.key === 'Enter') sendChatMessage();
-    });
-    
-    // Обновление карты при изменении размера
-    window.addEventListener('resize', () => {
-        if (map) {
-            map.invalidateSize();
-        }
-        
-        if (csRenderer && csCamera) {
-            const canvas = document.getElementById('cs-canvas');
-            if (canvas) {
-                csCamera.aspect = canvas.clientWidth / canvas.clientHeight;
-                csCamera.updateProjectionMatrix();
-                csRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
-            }
-        }
+    // Чат
+    document.getElementById('chat-message').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
     });
 }
 
@@ -2618,11 +2764,11 @@ function setupEventListeners() {
 window.addEventListener('load', () => {
     initUserSelection();
     
-    // Очищаем неактивные сессии (старше 5 минут)
+    // Очищаем неактивные сессии
     const now = Date.now();
-    Object.keys(platformData.online || {}).forEach(user => {
-        if (now - platformData.online[user] > 5 * 60 * 1000) {
-            delete platformData.online[user];
+    Object.keys(appData.online || {}).forEach(user => {
+        if (now - appData.online[user] > 5 * 60 * 1000) {
+            delete appData.online[user];
         }
     });
     saveData();
