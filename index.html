@@ -3,23 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTRA HUB: EVOLUTION 3D</title>
+    <title>ULTRA HUB 3D - PVP ШУТЕР</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
             --p: #00f2ff;
             --s: #ff00ff;
             --bg: #050505;
-            --card: rgba(255, 255, 255, 0.08);
             --text: #fff;
-            --border: rgba(0, 242, 255, 0.3);
         }
         
         body {
@@ -30,13 +24,11 @@
             overflow: hidden;
         }
         
-        /* Аутентификация */
+        /* Аутентификация - ПРОСТАЯ */
         #auth-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: linear-gradient(135deg, #000 0%, #0a0a2a 100%);
             z-index: 9999;
             display: flex;
@@ -46,21 +38,13 @@
         }
         
         .auth-card {
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0,0,0,0.9);
             padding: 40px;
             border-radius: 20px;
             border: 3px solid var(--p);
             text-align: center;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 0 50px var(--p);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { box-shadow: 0 0 20px var(--p); }
-            50% { box-shadow: 0 0 50px var(--p); }
-            100% { box-shadow: 0 0 20px var(--p); }
         }
         
         .auth-input {
@@ -69,10 +53,9 @@
             margin: 15px 0;
             border-radius: 10px;
             border: 2px solid var(--p);
-            background: rgba(0, 0, 0, 0.7);
-            color: var(--text);
+            background: rgba(255,255,255,0.1);
+            color: white;
             font-size: 16px;
-            transition: all 0.3s;
         }
         
         .auth-btn {
@@ -81,17 +64,11 @@
             margin-top: 20px;
             border-radius: 10px;
             border: none;
-            background: linear-gradient(45deg, var(--p), var(--s));
-            color: #000;
+            background: var(--p);
+            color: black;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .auth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 242, 255, 0.5);
         }
         
         /* Основной интерфейс */
@@ -106,12 +83,10 @@
             display: flex;
             gap: 10px;
             padding: 15px;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0,0,0,0.9);
             border-bottom: 3px solid var(--p);
             overflow-x: auto;
             flex-wrap: wrap;
-            position: relative;
-            z-index: 100;
         }
         
         nav button {
@@ -120,16 +95,13 @@
             color: var(--p);
             padding: 10px 15px;
             border-radius: 10px;
-            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
-            white-space: nowrap;
         }
         
         nav button:hover, nav button.active {
             background: var(--p);
-            color: #000;
-            transform: translateY(-2px);
+            color: black;
         }
         
         /* Секции */
@@ -137,36 +109,31 @@
             display: none;
             height: calc(100vh - 70px);
             overflow: hidden;
-            position: relative;
         }
         
         section.active {
             display: block;
         }
         
-        /* Майнер 3D */
-        #miner-3d {
+        /* 3D Игра */
+        #game-container {
             width: 100%;
             height: 100%;
             position: relative;
         }
         
-        #gameCanvas {
+        #game-canvas {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             z-index: 1;
         }
         
-        /* UI поверх 3D */
+        /* Игровой UI */
         #game-ui {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             z-index: 2;
             pointer-events: none;
             padding: 20px;
@@ -174,9 +141,8 @@
         
         .game-stats {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.8);
+            top: 20px; left: 20px;
+            background: rgba(0,0,0,0.8);
             padding: 15px;
             border-radius: 10px;
             border: 2px solid var(--p);
@@ -184,47 +150,81 @@
             min-width: 250px;
         }
         
-        .game-controls {
+        .mobile-controls {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            padding: 0 20px;
+        }
+        
+        .mobile-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .mobile-btn {
+            padding: 20px;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid var(--p);
+            color: white;
+            font-size: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            pointer-events: all;
+            user-select: none;
+        }
+        
+        .joystick-area {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 150px;
+            height: 150px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            pointer-events: all;
+        }
+        
+        .joystick {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: var(--p);
+            border-radius: 50%;
+            top: 45px;
+            left: 45px;
+            touch-action: none;
+        }
+        
+        /* Оружие */
+        .weapon-selector {
             position: absolute;
             bottom: 20px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0,0,0,0.8);
             padding: 15px;
             border-radius: 10px;
             border: 2px solid var(--p);
             pointer-events: all;
         }
         
-        .miner-core {
-            position: absolute;
-            bottom: 150px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120px;
-            height: 120px;
-            background: radial-gradient(circle, var(--p) 0%, transparent 70%);
-            border-radius: 50%;
-            border: 4px solid white;
-            cursor: pointer;
-            transition: all 0.1s;
-            z-index: 3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
+        .weapon-btn {
+            padding: 10px;
+            margin: 5px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid var(--p);
             color: white;
-            pointer-events: all;
-            box-shadow: 0 0 30px var(--p);
+            cursor: pointer;
         }
         
-        /* Меню в игре */
+        /* Меню игры */
         .game-menu {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0,0,0,0.95);
             padding: 30px;
             border-radius: 15px;
             border: 3px solid var(--p);
@@ -236,124 +236,18 @@
         
         /* Карточки */
         .card {
-            background: var(--card);
+            background: rgba(255,255,255,0.05);
             padding: 20px;
             border-radius: 15px;
-            border: 1px solid var(--border);
-            margin-bottom: 15px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        /* Яйца */
-        .egg-card {
-            padding: 15px;
-            border-radius: 15px;
-            border: 3px solid;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: rgba(0, 0, 0, 0.5);
-        }
-        
-        .egg-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
-        }
-        
-        .egg-common { border-color: #bdc3c7; }
-        .egg-rare { border-color: #00ff00; }
-        .egg-epic { border-color: #9b59b6; }
-        .egg-mythic { border-color: #e74c3c; }
-        .egg-legendary { border-color: #f1c40f; }
-        .egg-god { border-color: #00ffff; }
-        
-        /* Питомцы */
-        .pet-card {
-            padding: 15px;
-            border-radius: 15px;
-            border: 2px solid var(--p);
-            text-align: center;
-            background: rgba(0, 0, 0, 0.3);
-        }
-        
-        .pet-emoji {
-            font-size: 50px;
-            margin-bottom: 10px;
-        }
-        
-        /* Перерождения */
-        .prestige-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            border: 3px solid gold;
-            margin: 20px 0;
-        }
-        
-        /* Кнопки */
-        .btn {
-            padding: 12px 20px;
-            border-radius: 10px;
-            border: 2px solid var(--p);
-            background: rgba(0, 0, 0, 0.5);
-            color: var(--text);
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 5px;
-        }
-        
-        .btn:hover {
-            background: var(--p);
-            color: #000;
-            transform: translateY(-2px);
-        }
-        
-        .btn-big {
-            padding: 20px;
-            font-size: 18px;
             margin: 10px;
-        }
-        
-        /* Хедшоты */
-        .damage-indicator {
-            position: absolute;
-            font-size: 40px;
-            color: red;
-            font-weight: bold;
-            animation: floatUp 1s forwards;
-            pointer-events: none;
-            z-index: 100;
-        }
-        
-        @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-100px); opacity: 0; }
-        }
-        
-        /* Улучшения */
-        .upgrade-card {
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            border: 2px solid var(--s);
-            margin: 10px 0;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
         /* Адаптивность */
         @media (max-width: 768px) {
-            .auth-card { padding: 20px; }
-            nav button { font-size: 12px; padding: 8px 12px; }
-            .game-stats, .game-controls { padding: 10px; }
-            .miner-core { width: 100px; height: 100px; bottom: 100px; }
+            .mobile-controls { display: block; }
+            .joystick-area { display: block; }
+            .game-menu { min-width: 90%; }
         }
     </style>
 </head>
@@ -362,29 +256,20 @@
 <!-- Аутентификация -->
 <div id="auth-overlay">
     <div class="auth-card">
-        <h2 style="color:var(--p); margin-bottom: 30px;">🚀 3D ULTRA HUB</h2>
+        <h2 style="color:var(--p); margin-bottom: 30px;">🎮 3D PVP ШУТЕР</h2>
         
         <select id="user-select" class="auth-input">
-            <option value="Никита">Никита [ADMIN]</option>
+            <option value="Никита">Никита</option>
             <option value="Алена">Алена</option>
             <option value="Саша">Саша</option>
             <option value="Алиса">Алиса</option>
         </select>
         
-        <select id="device-select" class="auth-input">
-            <option value="pc">🖥️ Компьютер</option>
-            <option value="mobile">📱 Смартфон</option>
-        </select>
-        
-        <input type="password" id="password-input" class="auth-input" placeholder="ВВЕДИТЕ ЛЮБОЙ ПАРОЛЬ" value="1" autocomplete="off">
+        <input type="password" id="password-input" class="auth-input" placeholder="Введите любой пароль" value="1">
         
         <button class="auth-btn" onclick="login()">
-            🚀 ЗАПУСТИТЬ 3D СИСТЕМУ
+            🚀 НАЧАТЬ ИГРУ
         </button>
-        
-        <p style="margin-top: 20px; color: #888; font-size: 14px;">
-            ⚡ F8 - админ-панель | WASD - движение в 3D
-        </p>
     </div>
 </div>
 
@@ -392,207 +277,146 @@
 <div id="main-content">
     <nav>
         <button onclick="switchTab('home')" class="active">🏠 ГЛАВНАЯ</button>
-        <button onclick="switchTab('miner3d')">🎮 3D МАЙНЕР</button>
-        <button onclick="switchTab('tom2')">😸 ТОМ 2</button>
+        <button onclick="switchTab('pvp')">🎮 PVP ШУТЕР</button>
+        <button onclick="switchTab('miner')">⛏️ МАЙНЕР</button>
         <button onclick="switchTab('chat')">💬 ЧАТ</button>
         <button onclick="switchTab('exit')">🚪 ВЫХОД</button>
     </nav>
 
     <!-- Главная -->
     <section id="home" class="active">
-        <div style="padding: 20px; max-width: 1200px; margin: 0 auto;">
+        <div style="padding: 20px;">
             <div class="card">
-                <h1 id="clock" style="font-size: 3rem; text-align: center; color: var(--p);">00:00:00</h1>
-                <p id="user-tag" style="text-align: center; font-size: 1.2rem; margin: 10px 0;"></p>
-            </div>
-            
-            <div class="card">
-                <h2>📊 СТАТИСТИКА СИСТЕМЫ</h2>
+                <h1 id="clock" style="text-align: center; color: var(--p);">00:00:00</h1>
+                <p id="user-tag" style="text-align: center; margin: 10px 0;"></p>
+                
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
-                    <div style="background: rgba(0,255,0,0.1); padding: 15px; border-radius: 10px;">
+                    <div class="card">
                         <h3>💰 BYTES</h3>
-                        <p style="font-size: 2rem; font-weight: bold;" id="balance-display">0</p>
+                        <p style="font-size: 2rem;" id="balance-display">0</p>
                     </div>
-                    
-                    <div style="background: rgba(255,0,255,0.1); padding: 15px; border-radius: 10px;">
+                    <div class="card">
                         <h3>⚡ МНОЖИТЕЛЬ</h3>
-                        <p style="font-size: 2rem; font-weight: bold;" id="multiplier">1x</p>
+                        <p style="font-size: 2rem;" id="multiplier">1x</p>
                     </div>
-                    
-                    <div style="background: rgba(0,242,255,0.1); padding: 15px; border-radius: 10px;">
+                    <div class="card">
                         <h3>🎪 ПИТОМЦЕВ</h3>
-                        <p style="font-size: 2rem; font-weight: bold;" id="pets-count">0</p>
-                    </div>
-                    
-                    <div style="background: rgba(255,215,0,0.1); padding: 15px; border-radius: 10px;">
-                        <h3>🔄 ПЕРЕРОЖДЕНИЙ</h3>
-                        <p style="font-size: 2rem; font-weight: bold;" id="rebirth-count">0</p>
+                        <p style="font-size: 2rem;" id="pets-count">0</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 3D МАЙНЕР (всё в одном) -->
-    <section id="miner3d">
-        <div id="miner-3d">
-            <canvas id="gameCanvas"></canvas>
+    <!-- PVP ШУТЕР -->
+    <section id="pvp">
+        <div id="game-container">
+            <canvas id="game-canvas"></canvas>
             
-            <!-- UI поверх 3D -->
             <div id="game-ui">
                 <!-- Статистика -->
                 <div class="game-stats">
-                    <h3>🎮 3D МАЙНЕР</h3>
-                    <p>💰 <span id="game-balance">0</span> BYTES</p>
-                    <p>⚡ Множитель: <span id="game-multiplier">1x</span></p>
-                    <p>🎯 Сила удара: <span id="click-power">1</span>x</p>
-                    <p>🤖 Автокликер: <span id="auto-clicker-status">ВЫКЛ</span></p>
+                    <h3>🎮 PVP ШУТЕР</h3>
+                    <p>Игрок: <span id="game-player">-</span></p>
+                    <p>Убийства: <span id="game-kills">0</span></p>
+                    <p>Смерти: <span id="game-deaths">0</span></p>
+                    <p>Здоровье: <span id="game-health">100</span> ❤️</p>
+                    <p>Патроны: <span id="game-ammo">30</span> 🔫</p>
+                    <p>Оружие: <span id="game-weapon">AKM</span></p>
                 </div>
                 
-                <!-- Ядро для кликов -->
-                <div class="miner-core" onclick="clickCore3D()">
-                    КЛИКНИ!
+                <!-- Выбор оружия -->
+                <div class="weapon-selector">
+                    <h4>🛠️ ОРУЖИЕ</h4>
+                    <button class="weapon-btn" onclick="switchWeapon('akm')">🔫 AKM</button>
+                    <button class="weapon-btn" onclick="switchWeapon('awp')">🎯 AWP</button>
+                    <button class="weapon-btn" onclick="switchWeapon('knife')">🔪 НОЖ</button>
                 </div>
                 
-                <!-- Управление -->
-                <div class="game-controls">
-                    <button class="btn" onclick="toggleGameMenu()">⚙️ МЕНЮ</button>
-                    <button class="btn" onclick="shootBullet()">🔫 ВЫСТРЕЛ</button>
-                </div>
-                
-                <!-- Меню в игре -->
+                <!-- Меню игры -->
                 <div id="game-menu" class="game-menu">
-                    <h2 style="color:var(--p); margin-bottom: 20px;">🎮 ИГРОВОЕ МЕНЮ</h2>
+                    <h2 style="color:var(--p); margin-bottom: 20px;">🎮 ВЫБОР РЕЖИМА</h2>
                     
-                    <!-- Яйца -->
-                    <div class="card">
-                        <h3>🥚 МАГАЗИН ЯИЦ</h3>
-                        <p>Ваши BYTES: <span id="menu-balance">0</span></p>
-                        <div class="card-grid">
-                            <div class="egg-card egg-common" onclick="buyEgg('common')">
-                                <div style="font-size: 40px;">🥚</div>
-                                <h4>Обычное</h4>
-                                <p style="color: gold; font-weight: bold;">100 BYTES</p>
-                            </div>
-                            
-                            <div class="egg-card egg-rare" onclick="buyEgg('rare')">
-                                <div style="font-size: 40px;">🔵</div>
-                                <h4>Редкое</h4>
-                                <p style="color: gold; font-weight: bold;">500 BYTES</p>
-                            </div>
-                            
-                            <div class="egg-card egg-epic" onclick="buyEgg('epic')">
-                                <div style="font-size: 40px;">💜</div>
-                                <h4>Эпическое</h4>
-                                <p style="color: gold; font-weight: bold;">2,000 BYTES</p>
-                            </div>
-                            
-                            <div class="egg-card egg-mythic" onclick="buyEgg('mythic')">
-                                <div style="font-size: 40px;">🟠</div>
-                                <h4>Мифическое</h4>
-                                <p style="color: gold; font-weight: bold;">10,000 BYTES</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Питомцы -->
-                    <div class="card">
-                        <h3>🎪 ВАШИ ПИТОМЦЫ</h3>
-                        <div id="pets-container" class="card-grid">
-                            <!-- Питомцы будут здесь -->
-                        </div>
-                    </div>
-                    
-                    <!-- Перерождения -->
-                    <div class="prestige-card">
-                        <h3>🔄 СИСТЕМА ПЕРЕРОЖДЕНИЙ</h3>
-                        <p>Текущий уровень: <span id="menu-rebirths">0</span></p>
-                        <p style="font-size: 24px; color: gold; margin: 15px 0;">
-                            Стоимость: <span id="menu-prestige-cost">10,000</span> BYTES
-                        </p>
-                        <button class="btn btn-big" onclick="doPrestige()">🔄 ПЕРЕРОДИТЬСЯ</button>
-                        <p style="margin-top: 15px; font-size: 14px;">
-                            +0.5x к множителю | Сброс BYTES
-                        </p>
-                    </div>
-                    
-                    <!-- Улучшения -->
-                    <div class="card">
-                        <h3>⚡ УЛУЧШЕНИЯ</h3>
-                        <div class="upgrade-card">
-                            <h4>💪 Сила клика</h4>
-                            <p>Текущая: <span id="upgrade-click-power">1</span>x</p>
-                            <p>Следующая: <span id="next-click-power">2</span>x</p>
-                            <button class="btn" onclick="buyUpgrade('click_power')">
-                                Купить (1000 BYTES)
-                            </button>
-                        </div>
+                    <div style="margin: 20px 0;">
+                        <button class="auth-btn" onclick="startPVP('bot')" style="margin: 10px 0;">
+                            🤖 ИГРА С БОТАМИ
+                        </button>
                         
-                        <div class="upgrade-card">
-                            <h4>🤖 Автокликер</h4>
-                            <p>Статус: <span id="upgrade-auto-status">ВЫКЛ</span></p>
-                            <button class="btn" onclick="buyUpgrade('auto_clicker')" id="auto-clicker-btn">
-                                Активировать (5000 BYTES)
-                            </button>
-                        </div>
+                        <button class="auth-btn" onclick="startPVP('pvp')" style="margin: 10px 0; background: var(--s);">
+                            ⚔️ PVP 1 на 1
+                        </button>
+                        
+                        <select id="pvp-opponent" class="auth-input" style="margin: 15px 0;">
+                            <option value="bot">Против бота</option>
+                            <option value="Алена">Против Алены</option>
+                            <option value="Саша">Против Саши</option>
+                            <option value="Алиса">Против Алисы</option>
+                        </select>
+                        
+                        <button class="auth-btn" onclick="toggleGameMenu()" style="margin-top: 20px; background: #666;">
+                            ✖ ЗАКРЫТЬ
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Мобильное управление -->
+                <div class="mobile-controls">
+                    <div class="joystick-area">
+                        <div class="joystick" id="joystick"></div>
                     </div>
                     
-                    <button class="btn" onclick="toggleGameMenu()" style="width: 100%; margin-top: 20px;">
-                        ✖ ЗАКРЫТЬ МЕНЮ
-                    </button>
+                    <div class="mobile-buttons">
+                        <button class="mobile-btn" onclick="mobileAction('jump')">↑</button>
+                        <button class="mobile-btn" onclick="mobileAction('shoot')">🔫</button>
+                        <button class="mobile-btn" onclick="mobileAction('reload')">🔄</button>
+                        <button class="mobile-btn" onclick="toggleGameMenu()">⚙️</button>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ТОМ 2 -->
-    <section id="tom2">
-        <div style="padding: 20px; max-width: 800px; margin: 0 auto;">
+    <!-- МАЙНЕР -->
+    <section id="miner">
+        <div style="padding: 20px;">
             <div class="card">
-                <h2 style="color:#ff6b6b; text-align: center;">😸 ТОМ 2</h2>
+                <h2>⛏️ 3D МАЙНЕР</h2>
+                <p style="font-size: 2rem; text-align: center; margin: 20px 0;">
+                    💰 <span id="miner-balance">0</span> BYTES
+                </p>
                 
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 20px; border: 3px solid #ff6b6b; margin: 20px 0;">
-                    <div style="width: 200px; height: 200px; background: #f8c291; border-radius: 50%; margin: 0 auto; position: relative; border: 5px solid #e55039;">
-                        <div style="position: absolute; width: 40px; height: 60px; background: #f8c291; border-radius: 50%; top: -30px; left: 40px; transform: rotate(-20deg);"></div>
-                        <div style="position: absolute; width: 40px; height: 60px; background: #f8c291; border-radius: 50%; top: -30px; right: 40px; transform: rotate(20deg);"></div>
-                        
-                        <div style="position: absolute; width: 30px; height: 40px; background: white; border-radius: 50%; top: 60px; left: 50px;">
-                            <div style="position: absolute; width: 15px; height: 15px; background: black; border-radius: 50%; top: 12px; left: 7px;"></div>
-                        </div>
-                        
-                        <div style="position: absolute; width: 30px; height: 40px; background: white; border-radius: 50%; top: 60px; right: 50px;">
-                            <div style="position: absolute; width: 15px; height: 15px; background: black; border-radius: 50%; top: 12px; left: 7px;"></div>
-                        </div>
-                        
-                        <div style="position: absolute; width: 60px; height: 30px; background: #e55039; border-radius: 0 0 30px 30px; bottom: 50px; left: 50%; transform: translateX(-50%);"></div>
+                <div style="text-align: center;">
+                    <div id="miner-core" style="width: 150px; height: 150px; background: radial-gradient(circle, var(--p) 0%, transparent 70%); border-radius: 50%; border: 3px solid white; margin: 0 auto; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold;">
+                        КЛИКНИ!
                     </div>
-                    
-                    <div id="tom2-message" style="background: white; padding: 10px; border-radius: 10px; margin: 20px 0; border: 2px solid #ff6b6b; text-align: center; font-weight: bold; color: #333;">
-                        Привет! Я Том!
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0;">
-                        <div style="background: white; padding: 10px; border-radius: 10px; border: 2px solid #4ecdc4; color: #333;">
-                            <div>🍕 Голод</div>
-                            <div style="height: 10px; background: #ddd; border-radius: 5px; margin-top: 5px; overflow: hidden;">
-                                <div id="tom2-hunger-bar" style="height: 100%; background: #4ecdc4; width: 100%;"></div>
-                            </div>
-                            <div id="tom2-hunger-value">100%</div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <h3>🥚 ЯЙЦА</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 15px 0;">
+                        <div class="card" onclick="buyEgg('common')" style="cursor: pointer;">
+                            <div style="font-size: 40px;">🥚</div>
+                            <h4>Обычное</h4>
+                            <p>100 BYTES</p>
                         </div>
-                        
-                        <div style="background: white; padding: 10px; border-radius: 10px; border: 2px solid #ffd32a; color: #333;">
-                            <div>💤 Энергия</div>
-                            <div style="height: 10px; background: #ddd; border-radius: 5px; margin-top: 5px; overflow: hidden;">
-                                <div id="tom2-energy-bar" style="height: 100%; background: #ffd32a; width: 100%;"></div>
-                            </div>
-                            <div id="tom2-energy-value">100%</div>
+                        <div class="card" onclick="buyEgg('rare')" style="cursor: pointer;">
+                            <div style="font-size: 40px;">🔵</div>
+                            <h4>Редкое</h4>
+                            <p>500 BYTES</p>
                         </div>
                     </div>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                        <button class="tom2-btn" onclick="tomAction('feed')">🍕 КОРМИТЬ</button>
-                        <button class="tom2-btn" onclick="tomAction('sleep')">😴 СПАТЬ</button>
-                        <button class="tom2-btn" onclick="tomAction('play')">⚽ ИГРАТЬ</button>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <h3>🔄 ПЕРЕРОЖДЕНИЯ</h3>
+                    <div class="card">
+                        <p>Текущий уровень: <span id="rebirth-level">0</span></p>
+                        <p style="color: gold; font-size: 1.5rem; margin: 10px 0;">
+                            Стоимость: <span id="rebirth-cost">10000</span> BYTES
+                        </p>
+                        <button class="auth-btn" onclick="doRebirth()" style="background: gold; color: black;">
+                            🔄 ПЕРЕРОДИТЬСЯ
+                        </button>
                     </div>
                 </div>
             </div>
@@ -601,13 +425,13 @@
 
     <!-- ЧАТ -->
     <section id="chat">
-        <div style="padding: 20px; max-width: 800px; margin: 0 auto; height: 100%;">
+        <div style="padding: 20px; height: 100%;">
             <div class="card" style="height: 100%; display: flex; flex-direction: column;">
-                <h2>💬 ЧАТ СИСТЕМЫ</h2>
+                <h2>💬 ЧАТ</h2>
                 <div id="chat-container" style="flex: 1; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; margin: 15px 0;"></div>
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" id="chat-input" placeholder="Введите сообщение..." style="flex: 1; padding: 12px; border-radius: 10px; background: rgba(255,255,255,0.1); color: white; border: 2px solid var(--p);">
-                    <button class="btn" onclick="sendChat()" style="padding: 12px 25px;">📨</button>
+                    <input type="text" id="chat-input" placeholder="Сообщение..." style="flex: 1; padding: 12px; border-radius: 10px; background: rgba(255,255,255,0.1); color: white; border: 2px solid var(--p);">
+                    <button class="auth-btn" onclick="sendChat()" style="width: auto;">📨</button>
                 </div>
             </div>
         </div>
@@ -615,38 +439,17 @@
 
     <!-- ВЫХОД -->
     <section id="exit">
-        <div style="padding: 20px; max-width: 600px; margin: 0 auto;">
+        <div style="padding: 20px;">
             <div class="card">
-                <h2 style="text-align: center;">🚪 УПРАВЛЕНИЕ СИСТЕМОЙ</h2>
+                <h2 style="text-align: center;">🚪 ВЫХОД</h2>
                 
-                <button class="btn btn-big" onclick="logout()" style="width: 100%; margin: 10px 0;">
+                <button class="auth-btn" onclick="logout()" style="margin: 10px 0;">
                     🔓 Выйти из аккаунта
                 </button>
                 
-                <button class="btn btn-big" onclick="exportData()" style="width: 100%; margin: 10px 0; background: #4CAF50;">
-                    💾 Экспорт всех данных
+                <button class="auth-btn" onclick="resetData()" style="margin: 10px 0; background: #f44336;">
+                    💣 Сбросить все данные
                 </button>
-                
-                <button class="btn btn-big" onclick="importData()" style="width: 100%; margin: 10px 0; background: #2196F3;">
-                    📥 Импорт данных
-                </button>
-                
-                <button class="btn btn-big" onclick="resetData()" style="width: 100%; margin: 10px 0; background: #f44336;">
-                    💣 Полный сброс системы
-                </button>
-                
-                <input type="file" id="import-file" accept=".json" style="display: none;" onchange="handleFileImport(this.files[0])">
-                
-                <div style="margin-top: 30px; padding: 20px; background: rgba(255,0,0,0.1); border-radius: 15px; border: 2px solid red;">
-                    <h3 style="color: red;">⚠️ ОПАСНАЯ ЗОНА</h3>
-                    <p>Полный сброс удалит ВСЕ данные без возможности восстановления:</p>
-                    <ul style="margin: 10px 0 20px 20px;">
-                        <li>Все ваши BYTES и прогресс</li>
-                        <li>Питомцев и яйца</li>
-                        <li>Улучшения и перерождения</li>
-                        <li>Историю чата</li>
-                    </ul>
-                </div>
             </div>
         </div>
     </section>
@@ -657,236 +460,231 @@
 // ПЕРЕМЕННЫЕ И ДАННЫЕ
 // ====================
 let currentUser = "";
-let currentDevice = "";
-let autoClickerInterval = null;
-let scene, camera, renderer, controls;
-let cubes = [];
-let bullets = [];
-let enemies = [];
+let isMobile = false;
 let gameActive = false;
-let keys = {};
-let lastShotTime = 0;
-let shotCooldown = 300; // мс между выстрелами
+let pvpMode = false;
+let currentWeapon = 'akm';
+let kills = 0;
+let deaths = 0;
+let health = 100;
+let ammo = 30;
 
-// База питомцев
-const petsDatabase = {
-    common: [
-        { name: "Кристалл", emoji: "💎", bonus: "+0.2x", value: 0.2, rarity: "common" },
-        { name: "Робот", emoji: "🤖", bonus: "+0.15x", value: 0.15, rarity: "common" },
-        { name: "Дроид", emoji: "⚙️", bonus: "+0.1x", value: 0.1, rarity: "common" }
-    ],
-    rare: [
-        { name: "Кибер-Кот", emoji: "🐱💻", bonus: "+0.3x", value: 0.3, rarity: "rare" },
-        { name: "Хакер", emoji: "👨‍💻", bonus: "+0.25x", value: 0.25, rarity: "rare" },
-        { name: "Шпион", emoji: "🕵️", bonus: "+0.2x", value: 0.2, rarity: "rare" }
-    ],
-    epic: [
-        { name: "Дракон", emoji: "🐲", bonus: "+0.5x", value: 0.5, rarity: "epic" },
-        { name: "Грифон", emoji: "🦅", bonus: "+0.45x", value: 0.45, rarity: "epic" },
-        { name: "Феникс", emoji: "🔥", bonus: "+0.4x", value: 0.4, rarity: "epic" }
-    ],
-    mythic: [
-        { name: "Кибер-Демон", emoji: "😈💻", bonus: "+1x", value: 1, rarity: "mythic" },
-        { name: "Ангел данных", emoji: "👼💾", bonus: "+0.8x", value: 0.8, rarity: "mythic" },
-        { name: "Титан", emoji: "🗿", bonus: "+0.7x", value: 0.7, rarity: "mythic" }
-    ]
+// Three.js переменные
+let scene, camera, renderer;
+let player, opponent;
+let walls = [];
+let bullets = [];
+let bots = [];
+
+// Данные игры через localStorage (мультиплеер)
+let gameData = JSON.parse(localStorage.getItem('game_data')) || {
+    players: {},
+    pvpMatches: []
 };
 
-// Загрузка данных
-let hubData = JSON.parse(localStorage.getItem('hub_data')) || {
-    "Никита": { 
-        bytes: 5000, 
-        rebirths: 0, 
-        eggsOpened: 0,
-        pets: [], 
-        upgrades: { click_power: 1, auto_clicker: false },
-        tom2: { hunger: 100, energy: 100 }
-    },
-    "Алена": { 
-        bytes: 3000, 
-        rebirths: 0, 
-        eggsOpened: 0,
-        pets: [], 
-        upgrades: { click_power: 1, auto_clicker: false },
-        tom2: { hunger: 100, energy: 100 }
-    },
-    "Саша": { 
-        bytes: 2000, 
-        rebirths: 0, 
-        eggsOpened: 0,
-        pets: [], 
-        upgrades: { click_power: 1, auto_clicker: false },
-        tom2: { hunger: 100, energy: 100 }
-    },
-    "Алиса": { 
-        bytes: 1000, 
-        rebirths: 0, 
-        eggsOpened: 0,
-        pets: [], 
-        upgrades: { click_power: 1, auto_clicker: false },
-        tom2: { hunger: 100, energy: 100 }
-    }
+// Данные пользователей
+let userData = JSON.parse(localStorage.getItem('user_data')) || {
+    "Никита": { bytes: 10000, rebirths: 0, pets: [], kills: 0, deaths: 0 },
+    "Алена": { bytes: 5000, rebirths: 0, pets: [], kills: 0, deaths: 0 },
+    "Саша": { bytes: 3000, rebirths: 0, pets: [], kills: 0, deaths: 0 },
+    "Алиса": { bytes: 2000, rebirths: 0, pets: [], kills: 0, deaths: 0 }
 };
 
-let chatData = JSON.parse(localStorage.getItem('hub_chat')) || [];
+let chatData = JSON.parse(localStorage.getItem('chat_data')) || [];
 
 // ====================
-// АВТОРИЗАЦИЯ
+// АВТОРИЗАЦИЯ - РАБОТАЕТ!
 // ====================
 function login() {
     const user = document.getElementById('user-select').value;
-    const device = document.getElementById('device-select').value;
     const password = document.getElementById('password-input').value;
     
-    if (!password || password.trim() === "") {
-        alert("Введите любой символ в поле пароля!");
+    if (!password) {
+        alert("Введите любой пароль!");
         return;
     }
     
     currentUser = user;
-    currentDevice = device;
     
-    if (!hubData[user]) {
-        hubData[user] = { 
-            bytes: 1000, 
-            rebirths: 0, 
-            eggsOpened: 0,
-            pets: [], 
-            upgrades: { click_power: 1, auto_clicker: false },
-            tom2: { hunger: 100, energy: 100 }
-        };
+    // Определяем устройство
+    isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Создаем пользователя если нет
+    if (!userData[user]) {
+        userData[user] = { bytes: 1000, rebirths: 0, pets: [], kills: 0, deaths: 0 };
     }
     
+    // Показываем интерфейс
     document.getElementById('auth-overlay').style.display = 'none';
     document.getElementById('main-content').style.display = 'flex';
+    document.getElementById('user-tag').textContent = `👤 ${user}`;
     
-    updateAllUI();
-    startTom2System();
+    // Обновляем UI
+    updateUI();
     loadChat();
     startClock();
     
-    if (hubData[currentUser].upgrades.auto_clicker) {
-        startAutoClicker();
-    }
+    // Сохраняем
+    saveAllData();
     
-    saveData();
-    alert(`🎮 Добро пожаловать в 3D систему, ${user}!`);
+    alert(`🎮 Добро пожаловать, ${user}!`);
 }
 
 // ====================
-// 3D ИГРА
+// 3D PVP ИГРА
 // ====================
 function init3DGame() {
-    const canvas = document.getElementById('gameCanvas');
+    const canvas = document.getElementById('game-canvas');
     
     // Сцена
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x050505);
-    scene.fog = new THREE.Fog(0x050505, 10, 50);
+    scene.background = new THREE.Color(0x111122);
+    scene.fog = new THREE.Fog(0x111122, 1, 100);
     
     // Камера
     camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-    camera.position.set(0, 5, 15);
+    camera.position.set(0, 2, 5);
     
     // Рендерер
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     
     // Освещение
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+    const ambientLight = new THREE.AmbientLight(0x404040);
     scene.add(ambientLight);
     
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(10, 20, 5);
+    directionalLight.position.set(10, 20, 10);
     directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 2048;
-    directionalLight.shadow.mapSize.height = 2048;
     scene.add(directionalLight);
     
     // Пол
-    const floorGeometry = new THREE.PlaneGeometry(100, 100);
-    const floorMaterial = new THREE.MeshPhongMaterial({ 
-        color: 0x1a1a1a,
-        shininess: 30
-    });
+    const floorGeometry = new THREE.PlaneGeometry(50, 50);
+    const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x2a2a2a });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     scene.add(floor);
     
-    // Создаем кубы-мишени
-    createTargetCubes();
+    // Стены
+    createWalls();
     
-    // Создаем врагов
-    createEnemies();
+    // Игрок
+    createPlayer();
     
-    // Запускаем анимацию
+    // Запускаем игру
     gameActive = true;
     animate();
     
-    // Обработка клавиш
-    window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
-    window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
-}
-
-function createTargetCubes() {
-    const colors = [0x00ff00, 0xff0000, 0x0000ff, 0xffff00, 0xff00ff];
+    // Управление клавиатурой
+    setupKeyboardControls();
     
-    for (let i = 0; i < 20; i++) {
-        const size = 1 + Math.random() * 2;
-        const geometry = new THREE.BoxGeometry(size, size, size);
-        const material = new THREE.MeshPhongMaterial({ 
-            color: colors[Math.floor(Math.random() * colors.length)],
-            emissive: 0x222222,
-            shininess: 100
-        });
-        
-        const cube = new THREE.Mesh(geometry, material);
-        cube.castShadow = true;
-        cube.receiveShadow = true;
-        
-        cube.position.x = (Math.random() - 0.5) * 40;
-        cube.position.z = (Math.random() - 0.5) * 40;
-        cube.position.y = size / 2;
-        
-        cube.userData = {
-            health: 100,
-            value: Math.floor(size * 10),
-            isTarget: true
-        };
-        
-        cubes.push(cube);
-        scene.add(cube);
+    // Мобильное управление
+    if (isMobile) {
+        setupMobileControls();
     }
 }
 
-function createEnemies() {
-    for (let i = 0; i < 5; i++) {
-        const geometry = new THREE.ConeGeometry(0.5, 2, 8);
-        const material = new THREE.MeshPhongMaterial({ 
-            color: 0xff5555,
-            emissive: 0x550000
-        });
-        
-        const enemy = new THREE.Mesh(geometry, material);
-        enemy.castShadow = true;
-        
-        enemy.position.x = (Math.random() - 0.5) * 30;
-        enemy.position.z = (Math.random() - 0.5) * 30;
-        enemy.position.y = 1;
-        
-        enemy.userData = {
-            health: 50,
-            speed: 0.02 + Math.random() * 0.03,
-            damage: 10,
-            isEnemy: true
-        };
-        
-        enemies.push(enemy);
-        scene.add(enemy);
+function createWalls() {
+    const wallMaterial = new THREE.MeshPhongMaterial({ color: 0x444444 });
+    
+    // Боковые стены
+    for (let i = -20; i <= 20; i += 40) {
+        const wallGeometry = new THREE.BoxGeometry(1, 4, 40);
+        const wall = new THREE.Mesh(wallGeometry, wallMaterial);
+        wall.position.set(i, 2, 0);
+        wall.castShadow = true;
+        wall.receiveShadow = true;
+        walls.push(wall);
+        scene.add(wall);
     }
+    
+    // Передняя/задняя стены
+    for (let i = -20; i <= 20; i += 40) {
+        const wallGeometry = new THREE.BoxGeometry(40, 4, 1);
+        const wall = new THREE.Mesh(wallGeometry, wallMaterial);
+        wall.position.set(0, 2, i);
+        wall.castShadow = true;
+        wall.receiveShadow = true;
+        walls.push(wall);
+        scene.add(wall);
+    }
+    
+    // Препятствия
+    for (let i = 0; i < 10; i++) {
+        const size = 1 + Math.random() * 2;
+        const obstacleGeometry = new THREE.BoxGeometry(size, size, size);
+        const obstacle = new THREE.Mesh(obstacleGeometry, wallMaterial);
+        obstacle.position.set(
+            (Math.random() - 0.5) * 30,
+            size / 2,
+            (Math.random() - 0.5) * 30
+        );
+        obstacle.castShadow = true;
+        obstacle.receiveShadow = true;
+        walls.push(obstacle);
+        scene.add(obstacle);
+    }
+}
+
+function createPlayer() {
+    // Тело игрока
+    const bodyGeometry = new THREE.BoxGeometry(0.5, 1.8, 0.5);
+    const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+    player = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    player.position.set(0, 1, 0);
+    player.castShadow = true;
+    scene.add(player);
+    
+    // Голова
+    const headGeometry = new THREE.SphereGeometry(0.3);
+    const headMaterial = new THREE.MeshPhongMaterial({ color: 0x00aa00 });
+    const head = new THREE.Mesh(headGeometry, headMaterial);
+    head.position.y = 1;
+    player.add(head);
+}
+
+function createBot() {
+    const bodyGeometry = new THREE.BoxGeometry(0.5, 1.8, 0.5);
+    const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+    const bot = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    
+    bot.position.set(
+        (Math.random() - 0.5) * 30,
+        1,
+        (Math.random() - 0.5) * 30
+    );
+    
+    bot.userData = {
+        type: 'bot',
+        health: 100,
+        speed: 0.02,
+        target: player,
+        lastShot: 0
+    };
+    
+    bot.castShadow = true;
+    scene.add(bot);
+    bots.push(bot);
+    return bot;
+}
+
+function createOpponent(username) {
+    const bodyGeometry = new THREE.BoxGeometry(0.5, 1.8, 0.5);
+    const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0xff5555 });
+    opponent = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    
+    opponent.position.set(10, 1, 0);
+    opponent.userData = {
+        type: 'player',
+        username: username,
+        health: 100
+    };
+    
+    opponent.castShadow = true;
+    scene.add(opponent);
+    return opponent;
 }
 
 function animate() {
@@ -894,139 +692,236 @@ function animate() {
     
     requestAnimationFrame(animate);
     
-    // Движение камеры
-    const speed = 0.2;
-    if (keys['w']) camera.position.z -= speed;
-    if (keys['s']) camera.position.z += speed;
-    if (keys['a']) camera.position.x -= speed;
-    if (keys['d']) camera.position.x += speed;
-    if (keys[' ']) camera.position.y += speed; // Пробел - вверх
-    if (keys['shift']) camera.position.y -= speed; // Shift - вниз
+    // Движение игрока
+    const speed = 0.1;
+    if (keys['w']) player.position.z -= speed;
+    if (keys['s']) player.position.z += speed;
+    if (keys['a']) player.position.x -= speed;
+    if (keys['d']) player.position.x += speed;
+    if (keys[' ']) player.position.y += speed; // Прыжок
     
-    // Ограничение движения камеры
-    camera.position.x = Math.max(-40, Math.min(40, camera.position.x));
-    camera.position.z = Math.max(-40, Math.min(40, camera.position.z));
-    camera.position.y = Math.max(1, Math.min(20, camera.position.y));
+    // Ограничение движения
+    player.position.x = Math.max(-19, Math.min(19, player.position.x));
+    player.position.z = Math.max(-19, Math.min(19, player.position.z));
+    player.position.y = Math.max(0.9, Math.min(5, player.position.y));
     
-    // Вращение кубов
-    cubes.forEach(cube => {
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
-        
-        // Плавное движение вверх-вниз
-        cube.position.y = (cube.geometry.parameters.height / 2) + Math.sin(Date.now() * 0.001 + cube.position.x) * 0.5;
-    });
+    // Камера следует за игроком
+    camera.position.x = player.position.x;
+    camera.position.y = player.position.y + 2;
+    camera.position.z = player.position.z + 5;
+    camera.lookAt(player.position.x, player.position.y, player.position.z);
     
-    // Движение врагов
-    enemies.forEach(enemy => {
-        const dx = camera.position.x - enemy.position.x;
-        const dz = camera.position.z - enemy.position.z;
-        const distance = Math.sqrt(dx * dx + dz * dz);
-        
-        if (distance > 5) {
-            enemy.position.x += (dx / distance) * enemy.userData.speed;
-            enemy.position.z += (dz / distance) * enemy.userData.speed;
-        }
-        
-        // Вращение к игроку
-        enemy.lookAt(camera.position);
-        
-        // Если враг близко - наносим урон
-        if (distance < 3) {
-            showDamage(-enemy.userData.damage, camera.position.x, camera.position.y, camera.position.z);
-        }
-    });
+    // AI ботов
+    updateBots();
     
     // Движение пуль
-    for (let i = bullets.length - 1; i >= 0; i--) {
-        const bullet = bullets[i];
-        bullet.position.add(bullet.userData.velocity);
-        
-        // Проверка столкновения с кубами
-        cubes.forEach((cube, cubeIndex) => {
-            const distance = bullet.position.distanceTo(cube.position);
-            if (distance < cube.geometry.parameters.width) {
-                // Попадание!
-                cube.userData.health -= 25;
-                
-                if (cube.userData.health <= 0) {
-                    // Уничтожение куба
-                    const reward = cube.userData.value * calculateMultiplier();
-                    hubData[currentUser].bytes += reward;
-                    
-                    showDamage(reward, cube.position.x, cube.position.y, cube.position.z);
-                    
-                    scene.remove(cube);
-                    cubes.splice(cubeIndex, 1);
-                    updateAllUI();
-                    saveData();
-                    
-                    // Создаем новый куб
-                    setTimeout(() => createNewCube(), 1000);
-                }
-                
-                // Удаляем пулю
-                scene.remove(bullet);
-                bullets.splice(i, 1);
-            }
-        });
-        
-        // Проверка столкновения с врагами
-        enemies.forEach((enemy, enemyIndex) => {
-            const distance = bullet.position.distanceTo(enemy.position);
-            if (distance < 2) {
-                // Попадание во врага
-                enemy.userData.health -= 25;
-                
-                if (enemy.userData.health <= 0) {
-                    const reward = 100 * calculateMultiplier();
-                    hubData[currentUser].bytes += reward;
-                    
-                    showDamage(reward, enemy.position.x, enemy.position.y, enemy.position.z);
-                    
-                    scene.remove(enemy);
-                    enemies.splice(enemyIndex, 1);
-                    updateAllUI();
-                    saveData();
-                    
-                    // Создаем нового врага
-                    setTimeout(() => createNewEnemy(), 2000);
-                }
-                
-                // Удаляем пулю
-                scene.remove(bullet);
-                bullets.splice(i, 1);
-            }
-        });
-        
-        // Удаление пуль далеко от камеры
-        if (bullet.position.distanceTo(camera.position) > 100) {
-            scene.remove(bullet);
-            bullets.splice(i, 1);
-        }
-    }
+    updateBullets();
+    
+    // Обновление PVP оппонента
+    updateOpponent();
     
     renderer.render(scene, camera);
 }
 
-function shootBullet() {
-    const now = Date.now();
-    if (now - lastShotTime < shotCooldown) return;
-    lastShotTime = now;
+function updateBots() {
+    bots.forEach((bot, index) => {
+        if (!bot.userData.target) return;
+        
+        const target = bot.userData.target;
+        const dx = target.position.x - bot.position.x;
+        const dz = target.position.z - bot.position.z;
+        const distance = Math.sqrt(dx * dx + dz * dz);
+        
+        // Движение к цели
+        if (distance > 2) {
+            bot.position.x += (dx / distance) * bot.userData.speed;
+            bot.position.z += (dz / distance) * bot.userData.speed;
+        }
+        
+        // Стрельба
+        const now = Date.now();
+        if (distance < 10 && now - bot.userData.lastShot > 1000) {
+            shootFromBot(bot);
+            bot.userData.lastShot = now;
+        }
+        
+        // Проверка смерти
+        if (bot.userData.health <= 0) {
+            scene.remove(bot);
+            bots.splice(index, 1);
+            kills++;
+            updateGameUI();
+            
+            // Награда
+            userData[currentUser].bytes += 100;
+            userData[currentUser].kills++;
+            updateUI();
+            saveAllData();
+            
+            // Новый бот
+            setTimeout(() => createBot(), 2000);
+        }
+    });
+}
+
+function updateBullets() {
+    for (let i = bullets.length - 1; i >= 0; i--) {
+        const bullet = bullets[i];
+        bullet.position.add(bullet.userData.velocity);
+        
+        // Проверка столкновения со стенами
+        let hit = false;
+        walls.forEach(wall => {
+            const distance = bullet.position.distanceTo(wall.position);
+            if (distance < 2) {
+                hit = true;
+            }
+        });
+        
+        // Проверка попадания в ботов
+        bots.forEach((bot, botIndex) => {
+            const distance = bullet.position.distanceTo(bot.position);
+            if (distance < 1) {
+                bot.userData.health -= 34;
+                hit = true;
+                
+                if (bot.userData.health <= 0) {
+                    // Эффект смерти
+                    showHitEffect(bot.position, '💀');
+                } else {
+                    showHitEffect(bot.position, '💥');
+                }
+            }
+        });
+        
+        // Проверка попадания в оппонента (PVP)
+        if (opponent) {
+            const distance = bullet.position.distanceTo(opponent.position);
+            if (distance < 1) {
+                opponent.userData.health -= 34;
+                hit = true;
+                showHitEffect(opponent.position, '🎯');
+                
+                if (opponent.userData.health <= 0) {
+                    // Убийство в PVP
+                    kills++;
+                    userData[currentUser].kills++;
+                    
+                    // Сохраняем в историю PVP
+                    if (gameData.pvpMatches.length > 20) gameData.pvpMatches.shift();
+                    gameData.pvpMatches.push({
+                        winner: currentUser,
+                        loser: opponent.userData.username,
+                        time: new Date().toISOString()
+                    });
+                    
+                    // Награда
+                    userData[currentUser].bytes += 500;
+                    updateGameUI();
+                    updateUI();
+                    saveAllData();
+                    
+                    alert(`🎉 Вы победили ${opponent.userData.username} в PVP!`);
+                    resetPVPMatch();
+                }
+            }
+        }
+        
+        // Удаление пули при попадании или далеко
+        if (hit || bullet.position.distanceTo(player.position) > 100) {
+            scene.remove(bullet);
+            bullets.splice(i, 1);
+        }
+    }
+}
+
+function updateOpponent() {
+    if (!opponent || opponent.userData.type !== 'player') return;
     
-    const geometry = new THREE.SphereGeometry(0.1, 8, 8);
-    const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-    const bullet = new THREE.Mesh(geometry, material);
+    // В PVP режиме оппонент двигается случайно
+    if (pvpMode && opponent.userData.health > 0) {
+        // Простое случайное движение
+        if (Math.random() < 0.02) {
+            opponent.position.x += (Math.random() - 0.5) * 0.5;
+            opponent.position.z += (Math.random() - 0.5) * 0.5;
+            
+            // Ограничение
+            opponent.position.x = Math.max(-19, Math.min(19, opponent.position.x));
+            opponent.position.z = Math.max(-19, Math.min(19, opponent.position.z));
+        }
+        
+        // Случайная стрельба
+        if (Math.random() < 0.01) {
+            shootFromOpponent();
+        }
+    }
+}
+
+function shoot() {
+    if (ammo <= 0) {
+        alert('Нет патронов! Нажмите R для перезарядки');
+        return;
+    }
     
-    // Направление взгляда камеры
+    ammo--;
+    updateGameUI();
+    
+    const bulletGeometry = new THREE.SphereGeometry(0.1);
+    const bulletMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
+    
+    // Направление выстрела
     const direction = new THREE.Vector3();
     camera.getWorldDirection(direction);
     
     bullet.position.copy(camera.position);
-    bullet.position.y -= 1; // Немного ниже камеры
+    bullet.position.y -= 0.5;
     
     bullet.userData = {
         velocity: direction.multiplyScalar(1),
+        damage: 34
+    };
+    
+    bullets.push(bullet);
+    scene.add(bullet);
+    
+    // Эффект выстрела
+    showHitEffect(bullet.position, '🔫');
+}
+
+function shootFromBot(bot) {
+    const bulletGeometry = new THREE.SphereGeometry(0.1);
+    const bulletMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
+    
+    const direction = new THREE.Vector3();
+    direction.subVectors(player.position, bot.position).normalize();
+    
+    bullet.position.copy(bot.position);
+    bullet.position.y += 1;
+    
+    bullet.userData = {
+        velocity: direction.multiplyScalar(0.8),
+        damage: 10
+    };
+    
+    bullets.push(bullet);
+    scene.add(bullet);
+}
+
+function shootFromOpponent() {
+    const bulletGeometry = new THREE.SphereGeometry(0.1);
+    const bulletMaterial = new THREE.MeshBasicMaterial({ color: 0xff5555 });
+    const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
+    
+    const direction = new THREE.Vector3();
+    direction.subVectors(player.position, opponent.position).normalize();
+    
+    bullet.position.copy(opponent.position);
+    bullet.position.y += 1;
+    
+    bullet.userData = {
+        velocity: direction.multiplyScalar(0.7),
         damage: 25
     };
     
@@ -1034,424 +929,321 @@ function shootBullet() {
     scene.add(bullet);
 }
 
-function createNewCube() {
-    const colors = [0x00ff00, 0xff0000, 0x0000ff];
-    const size = 1 + Math.random() * 2;
-    const geometry = new THREE.BoxGeometry(size, size, size);
-    const material = new THREE.MeshPhongMaterial({ 
-        color: colors[Math.floor(Math.random() * colors.length)],
-        emissive: 0x222222,
-        shininess: 100
-    });
+function showHitEffect(position, emoji) {
+    const effect = document.createElement('div');
+    effect.style.position = 'absolute';
+    effect.style.color = emoji === '💀' ? 'red' : 'yellow';
+    effect.style.fontSize = '30px';
+    effect.style.left = '50%';
+    effect.style.top = '50%';
+    effect.style.transform = `translate(calc(-50% + ${position.x * 10}px), calc(-50% + ${-position.y * 10}px))`;
+    effect.style.pointerEvents = 'none';
+    effect.textContent = emoji;
     
-    const cube = new THREE.Mesh(geometry, material);
-    cube.castShadow = true;
-    cube.receiveShadow = true;
-    
-    cube.position.x = (Math.random() - 0.5) * 40;
-    cube.position.z = (Math.random() - 0.5) * 40;
-    cube.position.y = size / 2;
-    
-    cube.userData = {
-        health: 100,
-        value: Math.floor(size * 10),
-        isTarget: true
-    };
-    
-    cubes.push(cube);
-    scene.add(cube);
-}
-
-function createNewEnemy() {
-    const geometry = new THREE.ConeGeometry(0.5, 2, 8);
-    const material = new THREE.MeshPhongMaterial({ 
-        color: 0xff5555,
-        emissive: 0x550000
-    });
-    
-    const enemy = new THREE.Mesh(geometry, material);
-    enemy.castShadow = true;
-    
-    enemy.position.x = (Math.random() - 0.5) * 30;
-    enemy.position.z = (Math.random() - 0.5) * 30;
-    enemy.position.y = 1;
-    
-    enemy.userData = {
-        health: 50,
-        speed: 0.02 + Math.random() * 0.03,
-        damage: 10,
-        isEnemy: true
-    };
-    
-    enemies.push(enemy);
-    scene.add(enemy);
-}
-
-function showDamage(value, x, y, z) {
-    const damageElement = document.createElement('div');
-    damageElement.className = 'damage-indicator';
-    damageElement.textContent = value > 0 ? `+${value}` : value;
-    damageElement.style.color = value > 0 ? '#00ff00' : '#ff0000';
-    damageElement.style.left = '50%';
-    damageElement.style.top = '50%';
-    damageElement.style.transform = `translate(calc(-50% + ${x * 10}px), calc(-50% + ${-y * 10}px))`;
-    
-    document.getElementById('game-ui').appendChild(damageElement);
+    document.getElementById('game-ui').appendChild(effect);
     
     setTimeout(() => {
-        if (damageElement.parentNode) {
-            damageElement.parentNode.removeChild(damageElement);
+        if (effect.parentNode) {
+            effect.parentNode.removeChild(effect);
         }
     }, 1000);
 }
 
 // ====================
-# СИСТЕМА МАЙНЕР (яйца, питомцы, перерождения)
+# УПРАВЛЕНИЕ
 # ====================
-function clickCore3D() {
-    const core = document.querySelector('.miner-core');
-    const userData = hubData[currentUser];
-    const multiplier = calculateMultiplier();
-    const clickPower = userData.upgrades.click_power || 1;
+let keys = {};
+
+function setupKeyboardControls() {
+    window.addEventListener('keydown', (e) => {
+        keys[e.key.toLowerCase()] = true;
+        
+        // Выстрел на пробел или F
+        if (e.key === ' ' || e.key === 'f') {
+            shoot();
+        }
+        
+        // Перезарядка на R
+        if (e.key === 'r') {
+            reload();
+        }
+        
+        // Меню на ESC
+        if (e.key === 'Escape') {
+            toggleGameMenu();
+        }
+    });
+    
+    window.addEventListener('keyup', (e) => {
+        keys[e.key.toLowerCase()] = false;
+    });
+}
+
+function setupMobileControls() {
+    const joystick = document.getElementById('joystick');
+    const area = document.querySelector('.joystick-area');
+    let dragging = false;
+    
+    joystick.addEventListener('touchstart', (e) => {
+        dragging = true;
+        e.preventDefault();
+    });
+    
+    document.addEventListener('touchmove', (e) => {
+        if (!dragging) return;
+        
+        const touch = e.touches[0];
+        const rect = area.getBoundingClientRect();
+        const x = touch.clientX - rect.left - rect.width / 2;
+        const y = touch.clientY - rect.top - rect.height / 2;
+        
+        // Ограничение движения джойстика
+        const distance = Math.sqrt(x * x + y * y);
+        const maxDistance = rect.width / 2 - 30;
+        
+        if (distance > maxDistance) {
+            const angle = Math.atan2(y, x);
+            joystick.style.transform = `translate(${Math.cos(angle) * maxDistance}px, ${Math.sin(angle) * maxDistance}px)`;
+            
+            // Движение игрока
+            player.position.x += Math.cos(angle) * 0.1;
+            player.position.z += Math.sin(angle) * 0.1;
+        } else {
+            joystick.style.transform = `translate(${x}px, ${y}px)`;
+            
+            // Движение игрока пропорционально смещению джойстика
+            player.position.x += (x / maxDistance) * 0.1;
+            player.position.z += (y / maxDistance) * 0.1;
+        }
+    });
+    
+    document.addEventListener('touchend', () => {
+        dragging = false;
+        joystick.style.transform = 'translate(0, 0)';
+    });
+}
+
+function mobileAction(action) {
+    switch(action) {
+        case 'jump':
+            player.position.y += 1;
+            setTimeout(() => {
+                if (player.position.y > 1) player.position.y = 1;
+            }, 500);
+            break;
+        case 'shoot':
+            shoot();
+            break;
+        case 'reload':
+            reload();
+            break;
+    }
+}
+
+function reload() {
+    ammo = currentWeapon === 'akm' ? 30 : currentWeapon === 'awp' ? 10 : 999;
+    updateGameUI();
+    showHitEffect(player.position, '🔄');
+}
+
+function switchWeapon(weapon) {
+    currentWeapon = weapon;
+    updateGameUI();
+    showHitEffect(player.position, weapon === 'akm' ? '🔫' : weapon === 'awp' ? '🎯' : '🔪');
+}
+
+// ====================
+# ИГРОВЫЕ РЕЖИМЫ
+# ====================
+function startPVP(mode) {
+    pvpMode = mode === 'pvp';
+    
+    // Очищаем сцену
+    if (scene) {
+        while(scene.children.length > 0){ 
+            scene.remove(scene.children[0]); 
+        }
+    }
+    
+    // Инициализируем игру
+    init3DGame();
+    
+    if (mode === 'bot') {
+        // Режим с ботами
+        for (let i = 0; i < 3; i++) {
+            createBot();
+        }
+        document.getElementById('game-player').textContent = 'Боты';
+    } else {
+        // PVP режим
+        const opponentName = document.getElementById('pvp-opponent').value;
+        if (opponentName === 'bot') {
+            createBot();
+            document.getElementById('game-player').textContent = 'Бот';
+        } else {
+            createOpponent(opponentName);
+            document.getElementById('game-player').textContent = opponentName;
+        }
+    }
+    
+    // Обновляем UI
+    kills = 0;
+    deaths = 0;
+    health = 100;
+    ammo = 30;
+    updateGameUI();
+    
+    // Закрываем меню
+    toggleGameMenu();
+}
+
+function resetPVPMatch() {
+    if (opponent) {
+        scene.remove(opponent);
+        opponent = null;
+    }
+    
+    health = 100;
+    ammo = 30;
+    updateGameUI();
+}
+
+function toggleGameMenu() {
+    const menu = document.getElementById('game-menu');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+function updateGameUI() {
+    document.getElementById('game-kills').textContent = kills;
+    document.getElementById('game-deaths').textContent = deaths;
+    document.getElementById('game-health').textContent = health;
+    document.getElementById('game-ammo').textContent = ammo;
+    document.getElementById('game-weapon').textContent = 
+        currentWeapon === 'akm' ? 'AKM' : 
+        currentWeapon === 'awp' ? 'AWP' : 'НОЖ';
+}
+
+// ====================
+# МАЙНЕР СИСТЕМА
+# ====================
+function clickMiner() {
+    const core = document.getElementById('miner-core');
+    const user = userData[currentUser];
+    const multiplier = 1 + (user.rebirths || 0) * 0.5;
     
     // Анимация
-    core.style.transform = 'translateX(-50%) scale(0.8)';
-    core.style.boxShadow = '0 0 50px var(--p)';
+    core.style.transform = 'scale(0.9)';
+    core.style.boxShadow = '0 0 30px var(--p)';
     
     setTimeout(() => {
-        core.style.transform = 'translateX(-50%) scale(1)';
-        core.style.boxShadow = '0 0 30px var(--p)';
+        core.style.transform = 'scale(1)';
+        core.style.boxShadow = 'none';
     }, 100);
     
     // Начисление
-    const gain = Math.floor(50 * multiplier * clickPower);
-    userData.bytes += gain;
-    hubData[currentUser] = userData;
+    const gain = Math.floor(100 * multiplier);
+    user.bytes += gain;
     
-    // Показываем урон
-    showDamage(gain, 0, 0, 0);
+    // Показываем эффект
+    const effect = document.createElement('div');
+    effect.textContent = `+${gain}`;
+    effect.style.position = 'absolute';
+    effect.style.color = '#00ff00';
+    effect.style.fontSize = '20px';
+    effect.style.fontWeight = 'bold';
+    effect.style.left = '50%';
+    effect.style.top = '50%';
+    effect.style.transform = 'translate(-50%, -50%)';
+    document.getElementById('miner').appendChild(effect);
     
-    updateAllUI();
-    saveData();
+    setTimeout(() => {
+        if (effect.parentNode) effect.parentNode.removeChild(effect);
+    }, 1000);
+    
+    updateUI();
+    saveAllData();
 }
 
 function buyEgg(type) {
-    const userData = hubData[currentUser];
-    const prices = {
-        common: 100,
-        rare: 500,
-        epic: 2000,
-        mythic: 10000
-    };
+    const user = userData[currentUser];
+    const price = type === 'common' ? 100 : 500;
     
-    const price = prices[type];
-    if (userData.bytes < price) {
+    if (user.bytes < price) {
         alert(`Нужно ${price} BYTES!`);
         return;
     }
     
-    userData.bytes -= price;
-    userData.eggsOpened = (userData.eggsOpened || 0) + 1;
+    user.bytes -= price;
     
-    const result = openEgg(type);
+    // Открываем яйцо
+    const pets = [
+        { name: "Кристаллический дракон", emoji: "💎🐲", bonus: "+0.3x", value: 0.3 },
+        { name: "Электро волк", emoji: "⚡🐺", bonus: "+0.2x", value: 0.2 },
+        { name: "Стальной орёл", emoji: "🦅🔩", bonus: "+0.15x", value: 0.15 },
+        { name: "Огненная лиса", emoji: "🔥🦊", bonus: "+0.1x", value: 0.1 }
+    ];
     
-    let message = `🥚 Вы получили:\n`;
-    result.forEach(pet => {
-        message += `${pet.emoji} ${pet.name} (${pet.bonus})\n`;
-    });
+    const pet = pets[Math.floor(Math.random() * pets.length)];
     
-    alert(message);
+    if (!user.pets) user.pets = [];
+    user.pets.push(pet);
     
-    if (!userData.pets) userData.pets = [];
-    result.forEach(pet => {
-        userData.pets.push({
-            ...pet,
-            active: true,
-            id: Date.now() + Math.random()
-        });
-    });
-    
-    hubData[currentUser] = userData;
-    updateAllUI();
-    saveData();
+    updateUI();
+    saveAllData();
+    alert(`🎉 Вы получили: ${pet.emoji} ${pet.name} (${pet.bonus})`);
 }
 
-function openEgg(type) {
-    const results = [];
-    const pool = petsDatabase[type];
-    
-    // Основной питомец
-    if (pool && pool.length > 0) {
-        const pet = {...pool[Math.floor(Math.random() * pool.length)]};
-        results.push(pet);
-    }
-    
-    // Шанс на дополнительного
-    const extraChance = { common: 0.1, rare: 0.2, epic: 0.3, mythic: 0.5 }[type] || 0;
-    if (Math.random() < extraChance) {
-        const extraTypes = ['common', 'rare', 'epic'];
-        const extraType = extraTypes[Math.floor(Math.random() * extraTypes.length)];
-        const extraPool = petsDatabase[extraType];
-        if (extraPool && extraPool.length > 0) {
-            results.push({...extraPool[Math.floor(Math.random() * extraPool.length)]});
-        }
-    }
-    
-    return results;
-}
-
-function renderPets() {
-    const container = document.getElementById('pets-container');
-    const userData = hubData[currentUser];
-    const pets = userData.pets || [];
-    
-    container.innerHTML = '';
-    
-    if (pets.length === 0) {
-        container.innerHTML = '<p>У вас пока нет питомцев</p>';
-        return;
-    }
-    
-    // Сортируем по редкости
-    const rarityOrder = { mythic: 4, epic: 3, rare: 2, common: 1 };
-    pets.sort((a, b) => (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0));
-    
-    pets.forEach(pet => {
-        const petCard = document.createElement('div');
-        petCard.className = 'pet-card';
-        petCard.innerHTML = `
-            <div class="pet-emoji">${pet.emoji}</div>
-            <h4>${pet.name}</h4>
-            <p>${pet.bonus}</p>
-            <p style="font-size: 12px; color: #888;">
-                ${pet.rarity === 'common' ? 'Обычный' : 
-                  pet.rarity === 'rare' ? 'Редкий' : 
-                  pet.rarity === 'epic' ? 'Эпический' : 'Мифический'}
-            </p>
-        `;
-        container.appendChild(petCard);
-    });
-}
-
-function doPrestige() {
-    const userData = hubData[currentUser];
-    const rebirths = userData.rebirths || 0;
+function doRebirth() {
+    const user = userData[currentUser];
+    const rebirths = user.rebirths || 0;
     const cost = Math.floor(10000 * Math.pow(1.5, rebirths));
     
-    if (userData.bytes < cost) {
-        alert(`Нужно ${cost.toLocaleString()} BYTES!`);
-        return;
-    }
-    
-    if (!confirm(`🔄 ПЕРЕРОЖДЕНИЕ #${rebirths + 1}\n\nСтоимость: ${cost.toLocaleString()} BYTES\n\nВы получите:\n• +0.5x к множителю\n• Сброс улучшений\n• Сохранение питомцев`)) {
-        return;
-    }
-    
-    userData.bytes = 0;
-    userData.rebirths = rebirths + 1;
-    userData.upgrades = { click_power: 1, auto_clicker: false };
-    
-    hubData[currentUser] = userData;
-    updateAllUI();
-    saveData();
-    alert(`🎉 Перерождение #${userData.rebirths} завершено!`);
-}
-
-function buyUpgrade(type) {
-    const userData = hubData[currentUser];
-    const costs = {
-        click_power: 1000,
-        auto_clicker: 5000
-    };
-    
-    const cost = costs[type];
-    if (userData.bytes < cost) {
+    if (user.bytes < cost) {
         alert(`Нужно ${cost} BYTES!`);
         return;
     }
     
-    userData.bytes -= cost;
-    
-    if (type === 'click_power') {
-        userData.upgrades.click_power = (userData.upgrades.click_power || 1) + 1;
-        alert(`💪 Сила клика: ${userData.upgrades.click_power}x`);
-    } else if (type === 'auto_clicker' && !userData.upgrades.auto_clicker) {
-        userData.upgrades.auto_clicker = true;
-        startAutoClicker();
-        alert(`🤖 Автокликер активирован!`);
+    if (!confirm(`Переродиться за ${cost} BYTES?\n+0.5x к множителю навсегда!`)) {
+        return;
     }
     
-    hubData[currentUser] = userData;
-    updateAllUI();
-    saveData();
-}
-
-function startAutoClicker() {
-    if (autoClickerInterval) return;
+    user.bytes = 0;
+    user.rebirths = rebirths + 1;
     
-    autoClickerInterval = setInterval(() => {
-        if (!hubData[currentUser]?.upgrades?.auto_clicker) {
-            clearInterval(autoClickerInterval);
-            autoClickerInterval = null;
-            return;
-        }
-        
-        const userData = hubData[currentUser];
-        const multiplier = calculateMultiplier();
-        const clickPower = userData.upgrades.click_power || 1;
-        const gain = Math.floor(10 * multiplier * clickPower);
-        userData.bytes += gain;
-        hubData[currentUser] = userData;
-        
-        updateAllUI();
-        saveData();
-    }, 1000);
+    updateUI();
+    saveAllData();
+    alert(`🎉 Перерождение #${user.rebirths} завершено!`);
 }
 
 // ====================
 # ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
 # ====================
-function updateAllUI() {
-    if (!currentUser || !hubData[currentUser]) return;
+function updateUI() {
+    const user = userData[currentUser] || {};
     
-    const userData = hubData[currentUser];
-    const balance = userData.bytes || 0;
-    const rebirths = userData.rebirths || 0;
-    const multiplier = calculateMultiplier();
-    
-    // Обновляем баланс
-    document.getElementById('balance-display').textContent = balance.toLocaleString();
-    document.getElementById('game-balance').textContent = balance.toLocaleString();
-    document.getElementById('menu-balance').textContent = balance.toLocaleString();
-    
-    // Множитель
-    document.getElementById('multiplier').textContent = multiplier.toFixed(1) + 'x';
-    document.getElementById('game-multiplier').textContent = multiplier.toFixed(1) + 'x';
-    
-    // Перерождения
-    document.getElementById('rebirth-count').textContent = rebirths;
-    document.getElementById('menu-rebirths').textContent = rebirths;
-    
-    // Питомцы
-    document.getElementById('pets-count').textContent = (userData.pets || []).length;
-    
-    // Стоимость перерождения
-    const prestigeCost = Math.floor(10000 * Math.pow(1.5, rebirths));
-    document.getElementById('menu-prestige-cost').textContent = prestigeCost.toLocaleString();
-    
-    // Улучшения
-    document.getElementById('click-power').textContent = userData.upgrades.click_power || 1;
-    document.getElementById('upgrade-click-power').textContent = userData.upgrades.click_power || 1;
-    document.getElementById('next-click-power').textContent = (userData.upgrades.click_power || 1) + 1;
-    
-    const autoStatus = userData.upgrades.auto_clicker ? 'ВКЛ' : 'ВЫКЛ';
-    document.getElementById('auto-clicker-status').textContent = autoStatus;
-    document.getElementById('upgrade-auto-status').textContent = autoStatus;
-    
-    if (userData.upgrades.auto_clicker) {
-        document.getElementById('auto-clicker-btn').innerHTML = '🤖 АКТИВЕН';
-        document.getElementById('auto-clicker-btn').style.background = '#00ff00';
-        document.getElementById('auto-clicker-btn').style.color = '#000';
-    } else {
-        document.getElementById('auto-clicker-btn').innerHTML = 'Активировать (5000 BYTES)';
-        document.getElementById('auto-clicker-btn').style.background = '';
-        document.getElementById('auto-clicker-btn').style.color = '';
-    }
-    
-    // Обновляем питомцев
-    renderPets();
-}
-
-function calculateMultiplier() {
-    const userData = hubData[currentUser];
-    let multiplier = 1 + (userData.rebirths || 0) * 0.5;
-    
-    // Бонус от питомцев
-    const activePets = (userData.pets || []).filter(p => p.active);
-    activePets.forEach(pet => {
-        multiplier += pet.value || 0;
-    });
-    
-    return multiplier;
+    document.getElementById('balance-display').textContent = user.bytes || 0;
+    document.getElementById('miner-balance').textContent = user.bytes || 0;
+    document.getElementById('multiplier').textContent = (1 + (user.rebirths || 0) * 0.5).toFixed(1) + 'x';
+    document.getElementById('pets-count').textContent = (user.pets || []).length;
+    document.getElementById('rebirth-level').textContent = user.rebirths || 0;
+    document.getElementById('rebirth-cost').textContent = Math.floor(10000 * Math.pow(1.5, user.rebirths || 0)).toLocaleString();
 }
 
 // ====================
-# ТОМ 2
-# ====================
-function startTom2System() {
-    updateTom2UI();
-    
-    setInterval(() => {
-        const tom2 = hubData[currentUser].tom2;
-        
-        tom2.hunger = Math.max(0, tom2.hunger - 0.3);
-        tom2.energy = Math.max(0, tom2.energy - 0.2);
-        
-        updateTom2UI();
-        saveData();
-    }, 10000);
-}
-
-function updateTom2UI() {
-    const tom2 = hubData[currentUser].tom2;
-    
-    document.getElementById('tom2-hunger-bar').style.width = tom2.hunger + '%';
-    document.getElementById('tom2-energy-bar').style.width = tom2.energy + '%';
-    
-    document.getElementById('tom2-hunger-value').textContent = Math.round(tom2.hunger) + '%';
-    document.getElementById('tom2-energy-value').textContent = Math.round(tom2.energy) + '%';
-    
-    let message = "Привет! Я Том!";
-    if (tom2.hunger < 20) message = "Я голоден! 🍕";
-    else if (tom2.energy < 20) message = "Я устал... 😴";
-    
-    document.getElementById('tom2-message').textContent = message;
-}
-
-function tomAction(action) {
-    const tom2 = hubData[currentUser].tom2;
-    const messages = {
-        feed: "Вкусно! Муррр... 😋",
-        sleep: "Zzz... Хорошо сплю... 💤",
-        play: "Ура! Играем! ⚽"
-    };
-    
-    switch(action) {
-        case 'feed':
-            tom2.hunger = Math.min(100, tom2.hunger + 30);
-            break;
-        case 'sleep':
-            tom2.energy = 100;
-            break;
-        case 'play':
-            tom2.energy = Math.max(0, tom2.energy - 15);
-            break;
-    }
-    
-    document.getElementById('tom2-message').textContent = messages[action];
-    updateTom2UI();
-    saveData();
-    
-    setTimeout(() => {
-        document.getElementById('tom2-message').textContent = "Привет! Я Том!";
-    }, 2000);
-}
-
-// ====================
-# ЧАТ И УТИЛИТЫ
+# ЧАТ
 # ====================
 function loadChat() {
     const container = document.getElementById('chat-container');
     container.innerHTML = '';
     
     chatData.slice(-20).forEach(msg => {
-        const msgDiv = document.createElement('div');
-        msgDiv.style.padding = '8px';
-        msgDiv.style.margin = '5px 0';
-        msgDiv.style.background = msg.user === currentUser ? 'rgba(0,255,0,0.1)' : 'rgba(0,242,255,0.1)';
-        msgDiv.style.borderRadius = '8px';
-        msgDiv.innerHTML = `<strong>${msg.user}:</strong> ${msg.text}`;
-        container.appendChild(msgDiv);
+        const div = document.createElement('div');
+        div.style.padding = '8px';
+        div.style.margin = '5px 0';
+        div.style.background = msg.user === currentUser ? 'rgba(0,255,0,0.1)' : 'rgba(0,242,255,0.1)';
+        div.style.borderRadius = '8px';
+        div.innerHTML = `<strong>${msg.user}:</strong> ${msg.text}`;
+        container.appendChild(div);
     });
     
     container.scrollTop = container.scrollHeight;
@@ -1472,11 +1264,14 @@ function sendChat() {
     chatData.push(message);
     if (chatData.length > 100) chatData.shift();
     
-    localStorage.setItem('hub_chat', JSON.stringify(chatData));
+    localStorage.setItem('chat_data', JSON.stringify(chatData));
     loadChat();
     input.value = '';
 }
 
+// ====================
+# УТИЛИТЫ
+# ====================
 function startClock() {
     function update() {
         const now = new Date();
@@ -1494,87 +1289,27 @@ function switchTab(tabId) {
     document.querySelectorAll('section').forEach(section => section.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
     
-    if (tabId === 'miner3d') {
+    if (tabId === 'pvp') {
         setTimeout(() => {
             if (!scene) {
                 init3DGame();
             }
-            resize3D();
         }, 100);
     }
 }
 
-function resize3D() {
-    if (camera && renderer) {
-        const canvas = document.getElementById('gameCanvas');
-        camera.aspect = canvas.clientWidth / canvas.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    }
-}
-
-function toggleGameMenu() {
-    const menu = document.getElementById('game-menu');
-    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-}
-
-function saveData() {
-    localStorage.setItem('hub_data', JSON.stringify(hubData));
-    localStorage.setItem('hub_chat', JSON.stringify(chatData));
+function saveAllData() {
+    localStorage.setItem('user_data', JSON.stringify(userData));
+    localStorage.setItem('chat_data', JSON.stringify(chatData));
+    localStorage.setItem('game_data', JSON.stringify(gameData));
     localStorage.setItem('last_user', currentUser);
 }
 
 function logout() {
     if (confirm('Выйти из системы?')) {
-        saveData();
+        saveAllData();
         location.reload();
     }
-}
-
-function exportData() {
-    const data = {
-        hubData: hubData,
-        chatData: chatData,
-        exportDate: new Date().toISOString()
-    };
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ultra-hub-3d-backup-${currentUser}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    
-    alert('💾 Данные экспортированы!');
-}
-
-function importData() {
-    document.getElementById('import-file').click();
-}
-
-function handleFileImport(file) {
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const data = JSON.parse(e.target.result);
-            
-            if (confirm("Заменить все данные?")) {
-                if (data.hubData) hubData = data.hubData;
-                if (data.chatData) chatData = data.chatData;
-                
-                saveData();
-                updateAllUI();
-                loadChat();
-                alert('💾 Данные импортированы!');
-            }
-        } catch (err) {
-            alert('⚠️ Ошибка при импорте!');
-        }
-    };
-    reader.readAsText(file);
 }
 
 function resetData() {
@@ -1598,53 +1333,27 @@ window.addEventListener('load', function() {
     
     // Автовход
     const lastUser = localStorage.getItem('last_user');
-    if (lastUser && hubData[lastUser]) {
+    if (lastUser && userData[lastUser]) {
         currentUser = lastUser;
         document.getElementById('auth-overlay').style.display = 'none';
         document.getElementById('main-content').style.display = 'flex';
+        document.getElementById('user-tag').textContent = `👤 ${lastUser}`;
         
-        updateAllUI();
-        startTom2System();
+        updateUI();
         loadChat();
         startClock();
-        
-        if (hubData[currentUser].upgrades.auto_clicker) {
-            startAutoClicker();
-        }
     }
 });
 
-// Горячие клавиши
-window.addEventListener('keydown', function(e) {
-    // Админ-панель
-    if (e.key === 'F8' && currentUser === "Никита") {
-        const bytes = parseInt(prompt("Сколько BYTES добавить?"));
-        if (!isNaN(bytes) && bytes > 0) {
-            hubData[currentUser].bytes += bytes;
-            updateAllUI();
-            saveData();
-            alert(`Добавлено ${bytes} BYTES!`);
-        }
-    }
-    
-    // Выстрел в 3D
-    if (e.key === 'f' && document.getElementById('miner3d').classList.contains('active')) {
-        shootBullet();
-    }
-    
-    // Меню в игре
-    if (e.key === 'Escape' && document.getElementById('miner3d').classList.contains('active')) {
-        toggleGameMenu();
-    }
-    
-    // Чат
-    if (e.key === 'Enter' && document.getElementById('chat-input') === document.activeElement) {
-        sendChat();
+// Ресайз игры
+window.addEventListener('resize', function() {
+    if (camera && renderer) {
+        const canvas = document.getElementById('game-canvas');
+        camera.aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
     }
 });
-
-// Ресайз 3D сцены
-window.addEventListener('resize', resize3D);
 </script>
 </body>
 </html>
